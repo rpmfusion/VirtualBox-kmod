@@ -7,7 +7,7 @@
 
 Name:           VirtualBox-OSE-kmod
 Version:        2.1.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -17,8 +17,9 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:  %{_bindir}/kmodtool
-BuildRequires:  VirtualBox-OSE-kmodsrc = %{version}
+%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}
+BuildRequires:  %{AkmodsBuildRequires}
+
 Requires:       VirtualBox-OSE = %{version}-%{release}
 
 # needed for plague to make sure it builds for i586 and i686
@@ -77,6 +78,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Apr 24 2009 Lubomir Rintel <lkundrak@v3.sk> - 2.1.4-2
+- Fix akmod requires
+
 * Sat Mar 14 2009 Lubomir Rintel <lkundrak@v3.sk> - 2.1.4-1
 - Update to 2.1.4
 - Enable VBOX_USE_INSERT_PAGE (VirtualBox #3403)
