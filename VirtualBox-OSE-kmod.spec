@@ -3,11 +3,11 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%define buildforkernels newest
+#define buildforkernels newest
 
 Name:           VirtualBox-OSE-kmod
-Version:        2.1.4
-Release:        2%{?dist}.2
+Version:        2.2.2
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -78,11 +78,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Sat May 02 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 2.1.4-2.2
-- rebuild for new kernels
+* Sun May 03 2009 Lubomir Rintel <lkundrak@v3.sk> - 2.2.2-1
+- New release
 
-* Sun Apr 26 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 2.1.4-2.1
-- rebuild for new kernels
+* Sat Apr 25 2009 Lubomir Rintel <lkundrak@v3.sk> - 2.2.0-1
+- New release
 
 * Fri Apr 24 2009 Lubomir Rintel <lkundrak@v3.sk> - 2.1.4-2
 - Fix akmod requires
