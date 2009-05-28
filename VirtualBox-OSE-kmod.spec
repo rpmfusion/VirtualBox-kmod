@@ -7,7 +7,7 @@
 
 Name:           VirtualBox-OSE-kmod
 Version:        2.2.2
-Release:        1%{?dist}.5
+Release:        1%{?dist}.6
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -78,6 +78,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu May 28 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 2.2.2-1.6
+- rebuild for new kernels
+
 * Wed May 27 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 2.2.2-1.5
 - rebuild for new kernels
 
