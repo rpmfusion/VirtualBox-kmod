@@ -6,8 +6,8 @@
 #define buildforkernels newest
 
 Name:           VirtualBox-OSE-kmod
-Version:        2.2.4
-Release:        2%{?dist}
+Version:        3.0.0
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -78,6 +78,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jul  3 2009 Jonathan Dieter <jdieter@gmail.com> - 3.0.0-1
+- New release
+
 * Thu Jul 02 2009 Lubomir Rintel <lkundrak@v3.sk> - 2.2.4-2
 - Enable the DRM module
 
