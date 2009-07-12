@@ -6,7 +6,7 @@
 #define buildforkernels newest
 
 Name:           VirtualBox-OSE-kmod
-Version:        3.0.0
+Version:        3.0.2
 Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
@@ -78,7 +78,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Fri Jul  3 2009 Jonathan Dieter <jdieter@gmail.com> - 3.0.0-1
+* Sun Jul 12 2009 Jonathan Dieter <jdieter@gmail.com> - 3.0.2-1
+- New release
+
+* Fri Jul 03 2009 Jonathan Dieter <jdieter@gmail.com> - 3.0.0-1
 - New release
 
 * Thu Jul 02 2009 Lubomir Rintel <lkundrak@v3.sk> - 2.2.4-2
