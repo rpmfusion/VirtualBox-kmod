@@ -7,7 +7,7 @@
 
 Name:           VirtualBox-OSE-kmod
 Version:        3.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -55,7 +55,7 @@ done
 
 %build
 for kernel_version in %{?kernel_versions}; do
-    for module in vbox{drv,netflt,add,vfs,video_drm}; do
+    for module in vbox{drv,netadp,netflt,add,vfs,video_drm}; do
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
 done
@@ -78,6 +78,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Aug 04 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.0.2-2
+- Add netadp bmodule (Vlastimil Holer, #744)
+
 * Sun Jul 12 2009 Jonathan Dieter <jdieter@gmail.com> - 3.0.2-1
 - New release
 
