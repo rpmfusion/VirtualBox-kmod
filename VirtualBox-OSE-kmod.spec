@@ -6,7 +6,7 @@
 #define buildforkernels newest
 
 Name:           VirtualBox-OSE-kmod
-Version:        3.0.2
+Version:        3.0.4
 Release:        2%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
@@ -73,11 +73,22 @@ done
 %{?akmod_install}
 
 
+%check
+# If we built modules, check if it was everything the kmodsrc package provided
+MODS=$(find $RPM_BUILD_ROOT -name '*.ko' -exec basename '{}' \; |wc -l)
+DIRS=$(ls %{name}-%{version} |wc -l)
+[ $MODS = $DIRS ] || [ $MODS = 0 ]
+
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Aug 09 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.0.4-1
+- New release
+- Check that we build all modules present
+
 * Tue Aug 04 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.0.2-2
 - Add netadp bmodule (Vlastimil Holer, #744)
 
