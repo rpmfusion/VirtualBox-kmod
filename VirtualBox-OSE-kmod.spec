@@ -5,9 +5,12 @@
 # a new akmod package will only get build when a new one is actually needed
 #define buildforkernels newest
 
+# Allow only root to access vboxdrv regardless of the file mode
+%bcond_with hardening
+
 Name:           VirtualBox-OSE-kmod
 Version:        3.0.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -47,6 +50,9 @@ tar --use-compress-program lzma -xf %{_datadir}/%{name}-%{version}/%{name}-%{ver
 # print kmodtool output for debugging purposes:
 kmodtool --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null
 
+# This is hardcoded in Makefiles
+# Kto zisti, preco tu nefunguje %%without hardening ma u mna nanuk
+%{?with_hardening:find %{name}-%{version} -name Makefile |xargs sed 's/-DVBOX_WITH_HARDENING//' -i}
 
 for kernel_version in %{?kernel_versions} ; do
     cp -al %{name}-%{version} _kmod_build_${kernel_version%%___*}
@@ -85,6 +91,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Aug 15 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.0.4-2
+- Make it possible to disable hardening, do so by default
+
 * Sun Aug 09 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.0.4-1
 - New release
 - Check that we build all modules present
