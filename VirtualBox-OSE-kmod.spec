@@ -20,11 +20,8 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}
+%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}, xz
 BuildRequires:  %{AkmodsBuildRequires}
-
-Requires:       VirtualBox-OSE = %{version}
-Requires:       VirtualBox-OSE >= 3.0.4-5
 
 # needed for plague to make sure it builds for i586 and i686
 ExclusiveArch:  i586 i686 x86_64
@@ -43,7 +40,7 @@ Kernel module for VirtualBox-OSE
 
 %prep
 %setup -T -c
-tar --use-compress-program lzma -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.lzma
+tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 
 # error out if there was something wrong with kmodtool
 %{?kmodtool_check}
