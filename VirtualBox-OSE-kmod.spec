@@ -23,7 +23,8 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}
 BuildRequires:  %{AkmodsBuildRequires}
 
-Requires:       VirtualBox-OSE = %{version}-%{release}
+Requires:       VirtualBox-OSE = %{version}
+Requires:       VirtualBox-OSE >= 3.0.4-5
 
 # needed for plague to make sure it builds for i586 and i686
 ExclusiveArch:  i586 i686 x86_64
@@ -91,6 +92,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Aug 17 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.0.4-3
+- Source package is now xz-compressed
+
 * Sat Aug 15 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.0.4-2
 - Make it possible to disable hardening, do so by default
 
