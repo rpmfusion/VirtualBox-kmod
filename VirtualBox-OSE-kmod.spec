@@ -10,7 +10,7 @@
 
 Name:           VirtualBox-OSE-kmod
 Version:        3.0.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -89,7 +89,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon Aug 17 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.0.4-3
+* Mon Aug 17 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.0.4-4
 - Source package is now xz-compressed
 
 * Sat Aug 15 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.0.4-2
