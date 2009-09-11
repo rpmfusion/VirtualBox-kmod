@@ -6,11 +6,12 @@
 #define buildforkernels newest
 
 # Allow only root to access vboxdrv regardless of the file mode
-%bcond_with hardening
+# use only for debugging!
+%bcond_without hardening
 
 Name:           VirtualBox-OSE-kmod
-Version:        3.0.4
-Release:        4%{?dist}
+Version:        3.0.6
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -89,6 +90,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Aug 17 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.0.6-1
+- Update to 3.0.6, re-enable hardening
+
 * Mon Aug 17 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.0.4-4
 - Source package is now xz-compressed
 
