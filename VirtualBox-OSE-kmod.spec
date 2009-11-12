@@ -4,14 +4,15 @@
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
 #define buildforkernels newest
+%define buildforkernels akmod
 
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
 %bcond_without hardening
 
 Name:           VirtualBox-OSE-kmod
-Version:        3.0.10
-Release:        1%{?dist}.4
+Version:        3.1.0
+Release:        0.1.beta1%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -60,7 +61,8 @@ done
 
 %build
 for kernel_version in %{?kernel_versions}; do
-    for module in vbox{drv,netadp,netflt,add,vfs,video_drm}; do
+    for module in vbox{drv,guest,netadp,netflt,vfs,video}; do
+
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
 done
@@ -90,6 +92,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Nov 12 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.1.0-0.1.beta1
+- Bump to beta
+
 * Tue Nov 10 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 3.0.10-1.4
 - rebuild for F12 release kernel
 
