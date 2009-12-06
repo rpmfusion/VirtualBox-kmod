@@ -12,7 +12,7 @@
 
 Name:           VirtualBox-OSE-kmod
 Version:        3.1.0
-Release:        0.1.beta2%{?dist}
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -92,6 +92,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Dec 06 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.1.0-1
+- stable
+
 * Tue Nov 24 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.1.0-0.1.beta2
 - Bump to beta2
 
