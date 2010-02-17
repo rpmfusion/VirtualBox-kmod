@@ -11,7 +11,7 @@
 %bcond_without hardening
 
 Name:           VirtualBox-OSE-kmod
-Version:        3.1.2
+Version:        3.1.4
 Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
@@ -92,6 +92,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Feb 17 2010 Lubomir Rintel <lkundrak@v3.sk> - 3.1.4-1
+- New release
+
 * Tue Jan 26 2010 Lubomir Rintel <lkundrak@v3.sk> - 3.1.2-1
 - New release
 
