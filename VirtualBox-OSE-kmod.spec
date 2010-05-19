@@ -126,26 +126,8 @@ rm -rf $RPM_BUILD_ROOT
 * Thu Nov 12 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.1.0-0.1.beta1
 - Bump to beta
 
-* Tue Nov 10 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 3.0.10-1.4
-- rebuild for F12 release kernel
-
-* Mon Nov 09 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 3.0.10-1.3
-- rebuild for new kernels
-
-* Fri Nov 06 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 3.0.10-1.2
-- rebuild for new kernels
-
-* Wed Nov 04 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 3.0.10-1.1
-- rebuild for new kernels
-
 * Sun Nov 01 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.0.10-1
 - Version bump
-
-* Sat Oct 24 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 3.0.8-1.2
-- rebuild for new kernels
-
-* Wed Oct 21 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 3.0.8-1.1
-- rebuild for new kernels
 
 * Wed Oct 07 2009 Lubomir Rintel <lkundrak@v3.sk> - 3.0.8-1
 - Version bump
@@ -180,24 +162,6 @@ rm -rf $RPM_BUILD_ROOT
 
 * Sun May 31 2009 Lubomir Rintel <lkundrak@v3.sk> - 2.2.4-1
 - New release
-
-* Thu May 28 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 2.2.2-1.6
-- rebuild for new kernels
-
-* Wed May 27 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 2.2.2-1.5
-- rebuild for new kernels
-
-* Thu May 21 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 2.2.2-1.4
-- rebuild for new kernels
-
-* Wed May 13 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 2.2.2-1.3
-- rebuild for new kernels
-
-* Tue May 05 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 2.2.2-1.2
-- rebuild for akmods
-
-* Tue May 05 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 2.2.2-1.1
-- rebuild for new kernels
 
 * Sun May 03 2009 Lubomir Rintel <lkundrak@v3.sk> - 2.2.2-1
 - New release
