@@ -6,13 +6,20 @@
 #define buildforkernels newest
 %define buildforkernels akmod
 
+# In prerelease builds (such as betas), this package has the same
+# major version number, while the kernel module abi is not guarranteed
+# to be stable. This is so that we force the module update in sync with
+# userspace.
+#global prerel beta3
+%global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
+
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
 %bcond_without hardening
 
 Name:           VirtualBox-OSE-kmod
 Version:        3.2.0
-Release:        0.2.beta2%{?dist}
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -22,7 +29,7 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}, xz
+%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE(kmodabi) = %{version}%{?prereltag}, xz
 BuildRequires:  %{AkmodsBuildRequires}
 
 # needed for plague to make sure it builds for i586 and i686
@@ -92,6 +99,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 10 2010 Lubomir Rintel <lkundrak@v3.sk> - 3.2.0-1
+- Release
+
 * Mon May 10 2010 Lubomir Rintel <lkundrak@v3.sk> - 3.2.0-0.2.beta2
 - Beta 2
 
