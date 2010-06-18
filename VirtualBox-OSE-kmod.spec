@@ -18,7 +18,7 @@
 %bcond_without hardening
 
 Name:           VirtualBox-OSE-kmod
-Version:        3.2.0
+Version:        3.2.4
 Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
@@ -29,7 +29,7 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE(kmodabi) = %{version}%{?prereltag}, xz
+%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}%{?prereltag}, xz
 BuildRequires:  %{AkmodsBuildRequires}
 
 # needed for plague to make sure it builds for i586 and i686
@@ -99,6 +99,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jun 18 2010 Lubomir Rintel <lkundrak@v3.sk> - 3.2.4-1
+- New release
+
 * Mon May 10 2010 Lubomir Rintel <lkundrak@v3.sk> - 3.2.0-1
 - Release
 
