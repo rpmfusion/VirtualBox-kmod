@@ -4,7 +4,7 @@
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
 #define buildforkernels newest
-%define buildforkernels akmod
+#define buildforkernels akmod
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -18,7 +18,7 @@
 %bcond_without hardening
 
 Name:           VirtualBox-OSE-kmod
-Version:        3.2.4
+Version:        3.2.6
 Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
@@ -68,8 +68,7 @@ done
 
 %build
 for kernel_version in %{?kernel_versions}; do
-    for module in vbox{drv,guest,netadp,netflt,vfs,video}; do
-
+    for module in vbox{drv,guest,netadp,netflt,sf,video}; do
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
 done
@@ -99,6 +98,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jul 12 2010 Lubomir Rintel <lkundrak@v3.sk> - 3.2.6-1
+- New release
+
 * Fri Jun 18 2010 Lubomir Rintel <lkundrak@v3.sk> - 3.2.4-1
 - New release
 
