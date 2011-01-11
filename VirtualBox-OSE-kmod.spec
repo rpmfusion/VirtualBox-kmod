@@ -19,7 +19,7 @@
 
 Name:           VirtualBox-OSE-kmod
 Version:        3.2.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -27,6 +27,7 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
+Patch0:         VirtualBox-OSE-3.2.10-linux-2.6.37.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}%{?prereltag}, xz
@@ -50,6 +51,7 @@ Kernel module for VirtualBox-OSE
 %prep
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
+%{__patch} %{?_default_patch_flags} %{name}-%{version}/vboxvideo/vboxvideo_drm.c <%{PATCH0}
 
 # error out if there was something wrong with kmodtool
 %{?kmodtool_check}
@@ -98,6 +100,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jan 11 2011 Lubomir Rintel <lkundrak@v3.sk> - 3.2.10-2
+- Fix build with 2.6.37
+
 * Tue Nov 16 2010 Lubomir Rintel <lkundrak@v3.sk> - 3.2.10-1
 - New release
 
