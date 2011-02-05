@@ -18,8 +18,8 @@
 %bcond_without hardening
 
 Name:           VirtualBox-OSE-kmod
-Version:        3.2.10
-Release:        2%{?dist}
+Version:        4.0.2
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -27,14 +27,13 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
-Patch0:         VirtualBox-OSE-3.2.10-linux-2.6.37.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}%{?prereltag}, xz
 BuildRequires:  %{AkmodsBuildRequires}
 
 # needed for plague to make sure it builds for i586 and i686
-ExclusiveArch:  i586 i686 x86_64
+ExclusiveArch:  i686 x86_64
 
 # get the proper build-sysbuild package from the repo, which
 # tracks in all the kernel-devel packages
@@ -51,7 +50,6 @@ Kernel module for VirtualBox-OSE
 %prep
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
-%{__patch} %{?_default_patch_flags} %{name}-%{version}/vboxvideo/vboxvideo_drm.c <%{PATCH0}
 
 # error out if there was something wrong with kmodtool
 %{?kmodtool_check}
@@ -100,6 +98,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Feb 05 2011 Lubomir Rintel <lkundrak@v3.sk> - 4.0.2-1
+- New release
+
 * Tue Jan 11 2011 Lubomir Rintel <lkundrak@v3.sk> - 3.2.10-2
 - Fix build with 2.6.37
 
