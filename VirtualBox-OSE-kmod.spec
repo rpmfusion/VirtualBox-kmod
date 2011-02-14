@@ -4,7 +4,7 @@
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
 #define buildforkernels newest
-#define buildforkernels akmod
+#define buldforkernels akmod
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -19,7 +19,7 @@
 
 Name:           VirtualBox-OSE-kmod
 Version:        4.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -68,7 +68,14 @@ done
 
 %build
 for kernel_version in %{?kernel_versions}; do
-    for module in vbox{drv,guest,netadp,netflt,sf,video}; do
+    for module in vbox{drv,guest}; do
+        make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
+    done
+    cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetadp}
+    cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetflt}
+    cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxsf}
+    cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxvideo}
+    for module in vbox{netadp,netflt,sf,video}; do
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
 done
@@ -98,6 +105,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Feb 14 2011 Lubomir Rintel <lkundrak@v3.sk> - 4.0.2-2
+- Fix module symbol versioning
+
 * Sat Feb 05 2011 Lubomir Rintel <lkundrak@v3.sk> - 4.0.2-1
 - New release
 
