@@ -18,8 +18,8 @@
 %bcond_without hardening
 
 Name:           VirtualBox-OSE-kmod
-Version:        4.0.4
-Release:        2%{?dist}
+Version:        4.1.2
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -75,7 +75,7 @@ for kernel_version in %{?kernel_versions}; do
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetflt}
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxsf}
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxvideo}
-    for module in vbox{netadp,netflt,sf,video}; do
+    for module in vbox{netadp,netflt,sf,video,pci}; do
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
 done
@@ -105,6 +105,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Sep 22 2011 Lubomir Rintel <lkundrak@v3.sk> - 4.1.2-1
+- New release
+- Added vboxpci
+
 * Sat May 28 2011 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 4.0.4-2
 - rebuild for F15 release kernel
 
