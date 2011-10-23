@@ -3,7 +3,7 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%define buildforkernels akmod
+%define buildforkernels current
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -18,7 +18,7 @@
 
 Name:           VirtualBox-OSE-kmod
 Version:        4.1.2
-Release:        1%{?dist}
+Release:        1%{?dist}.1
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -104,6 +104,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Oct 23 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.2-1.1
+- Rebuild for F-16 kernel
+
 * Thu Sep 22 2011 Lubomir Rintel <lkundrak@v3.sk> - 4.1.2-1
 - New release
 - Added vboxpci
