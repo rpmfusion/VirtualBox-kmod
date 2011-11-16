@@ -18,7 +18,7 @@
 
 Name:           VirtualBox-OSE-kmod
 Version:        4.1.2
-Release:        1%{?dist}.5
+Release:        1%{?dist}.6
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -104,6 +104,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Nov 16 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.2-1.6
+- rebuild for updated kernel
+
 * Mon Nov 14 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.2-1.5
 - rebuild for updated kernel
 
