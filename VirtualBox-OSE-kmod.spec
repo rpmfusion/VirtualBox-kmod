@@ -3,7 +3,7 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%define buildforkernels newest
+%define buildforkernels current
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -17,8 +17,8 @@
 %bcond_without hardening
 
 Name:           VirtualBox-OSE-kmod
-Version:        4.1.2
-Release:        1%{?dist}.8
+Version:        4.1.6
+Release:        1%{?dist}.1
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -28,7 +28,7 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}%{?prereltag}, xz
+%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}%{?prereltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
 
 # needed for plague to make sure it builds for i586 and i686
@@ -99,11 +99,13 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-
 %changelog
+* Fri Dec 9 2011 Sérgio Basto <sergio@serjux.com> - 4.1.6-1
+- Build for new release
+- added time package to AkmodsBuildRequires
+- removed clean section
+- change define to current
+
 * Thu Dec 01 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.2-1.8
 - rebuild for updated kernel
 
