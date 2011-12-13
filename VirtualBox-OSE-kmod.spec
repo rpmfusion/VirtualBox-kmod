@@ -3,11 +3,7 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-<<<<<<< VirtualBox-OSE-kmod.spec
-%define buildforkernels newest
-=======
 %define buildforkernels current
->>>>>>> 1.63
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -20,17 +16,10 @@
 # use only for debugging!
 %bcond_without hardening
 
-#Patch0 apply with fuzz
-%global _default_patch_fuzz 10
 
 Name:           VirtualBox-OSE-kmod
-<<<<<<< VirtualBox-OSE-kmod.spec
-Version:        4.0.4
-Release:        3%{?dist}.15
-=======
 Version:        4.1.2
-Release:        1%{?dist}.1
->>>>>>> 1.63
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -38,7 +27,7 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
-Patch0:         VirtualBox-OSE-kmod-4.0.4-kernel_3.0.patch
+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}%{?prereltag}, xz
@@ -61,7 +50,7 @@ Kernel module for VirtualBox-OSE
 
 %prep
 %setup -T -c
-%patch0 -p1 -b .fakek
+
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 
 # error out if there was something wrong with kmodtool
@@ -114,26 +103,12 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
-* Tue Dec 13 2011 Nicolas Chauvet <kwizart@gmail.com>
-- rebuild for updated kernel
-
-* Thu Dec 01 2011 Nicolas Chauvet <kwizart@gmail.com>
-- rebuild for updated kernel
-
 * Mon Nov 28 2011 Sérgio Basto <sergio@serjux.com> - 4.1.2-1.1
 - Update to new version
 - remove %clean from spec 
 - we had remove vboxpci from build because fails to compile with latest F15 kernel, so need hack
   %check to not fail, temporally I hope.
 
-<<<<<<< VirtualBox-OSE-kmod.spec
-
-%changelog
-* Wed Nov 23 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.0.4-3.13
-- Add patch from rfbz#1877 - Mohamed El Morabity
-
-=======
->>>>>>> 1.63
 * Wed Nov 23 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.0.4-2.13
 - rebuild for updated kernel
 
