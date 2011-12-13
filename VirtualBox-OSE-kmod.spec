@@ -26,7 +26,7 @@
 Name:           VirtualBox-OSE-kmod
 <<<<<<< VirtualBox-OSE-kmod.spec
 Version:        4.0.4
-Release:        3%{?dist}.14
+Release:        3%{?dist}.15
 =======
 Version:        4.1.2
 Release:        1%{?dist}.1
@@ -114,6 +114,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Dec 13 2011 Nicolas Chauvet <kwizart@gmail.com>
+- rebuild for updated kernel
+
 * Thu Dec 01 2011 Nicolas Chauvet <kwizart@gmail.com>
 - rebuild for updated kernel
 
