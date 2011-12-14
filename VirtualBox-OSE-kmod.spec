@@ -16,10 +16,9 @@
 # use only for debugging!
 %bcond_without hardening
 
-
 Name:           VirtualBox-OSE-kmod
 Version:        4.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}.1
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -27,7 +26,6 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
-
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}%{?prereltag}, xz
@@ -50,7 +48,6 @@ Kernel module for VirtualBox-OSE
 
 %prep
 %setup -T -c
-
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 
 # error out if there was something wrong with kmodtool
@@ -77,7 +74,7 @@ for kernel_version in %{?kernel_versions}; do
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetflt}
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxsf}
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxvideo}
-    for module in vbox{netadp,netflt,sf,video}; do
+    for module in vbox{netadp,netflt,sf,video,pci}; do
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
 done
@@ -99,10 +96,13 @@ done
 # If we built modules, check if it was everything the kmodsrc package provided
 MODS=$(find $(ls -d $RPM_BUILD_ROOT/lib/modules/* |head -n1) -name '*.ko' -exec basename '{}' \; |wc -l)
 DIRS=$(ls %{name}-%{version} |wc -l)
-[ $MODS = 6 ] || [ $MODS = 0 ]
+[ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 
 %changelog
+* Wed Dec 14 2011 Sérgio Basto <sergio@serjux.com> - 4.1.2-2.2
+- re-add vboxpci and check, because kernel updates have fixed vboxpci compile.
+
 * Mon Nov 28 2011 Sérgio Basto <sergio@serjux.com> - 4.1.2-1.1
 - Update to new version
 - remove %clean from spec 
