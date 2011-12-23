@@ -17,8 +17,8 @@
 %bcond_without hardening
 
 Name:           VirtualBox-OSE-kmod
-Version:        4.1.6
-Release:        2%{?dist}.1
+Version:        4.1.8
+Release:        1%{?dist}.1
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -100,6 +100,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Fri Dec 23 2011 Sérgio Basto <sergio@serjux.com> - 4.1.8-1
+- New release.
+
 * Sun Dec 11 2011 Sérgio Basto <sergio@serjux.com> - 4.1.6-2
 - rebuild for update kmodsrc. 
 
