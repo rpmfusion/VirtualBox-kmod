@@ -18,7 +18,7 @@
 
 Name:           VirtualBox-OSE-kmod
 Version:        4.1.6
-Release:        1%{?dist}.5
+Release:        1%{?dist}.6
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -100,6 +100,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Fri Feb 03 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.6-1.6
+- rebuild for updated kernel
+
 * Tue Jan 24 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.6-1.5
 - rebuild for updated kernel
 
