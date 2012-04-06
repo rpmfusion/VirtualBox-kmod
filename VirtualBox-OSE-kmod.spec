@@ -3,7 +3,7 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%define buildforkernels newest
+%define buildforkernels current
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -100,6 +100,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Apr 4 2012 Sérgio Basto <sergio@serjux.com> - 4.1.10-2.1
+- Need to create akmod too. 
+
 * Wed Apr 4 2012 Sérgio Basto <sergio@serjux.com> - 4.1.10-1.1
 - New release, for new kernel version major release.
 
