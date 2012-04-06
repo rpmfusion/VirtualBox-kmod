@@ -18,7 +18,7 @@
 
 Name:           VirtualBox-OSE-kmod
 Version:        4.1.10
-Release:        1%{?dist}.1
+Release:        2%{?dist}.1
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
