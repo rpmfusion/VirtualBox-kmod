@@ -3,7 +3,7 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-#define buildforkernels newest
+%define buildforkernels newest
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -18,7 +18,7 @@
 
 Name:           VirtualBox-OSE-kmod
 Version:        4.1.12
-Release:        3%{?dist}
+Release:        3%{?dist}.1
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -100,6 +100,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sun Apr 22 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-3.1
+- rebuild for updated kernel
+
 * Tue Apr 17 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-3
 - Update for UsrMove
 
