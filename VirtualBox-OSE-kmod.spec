@@ -17,8 +17,8 @@
 %bcond_without hardening
 
 Name:           VirtualBox-OSE-kmod
-Version:        4.1.12
-Release:        3%{?dist}
+Version:        4.1.14
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -100,6 +100,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Fri Apr 27 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-1
+- New release.
+
 * Tue Apr 17 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-3
 - Update for UsrMove
 
