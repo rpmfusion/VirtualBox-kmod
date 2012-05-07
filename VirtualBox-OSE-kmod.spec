@@ -3,7 +3,7 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%define buildforkernels newest
+#define buildforkernels newest
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -17,8 +17,8 @@
 %bcond_without hardening
 
 Name:           VirtualBox-OSE-kmod
-Version:        4.1.12
-Release:        1%{?dist}.4
+Version:        4.1.14
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox-OSE
 Group:          System Environment/Kernel
@@ -26,7 +26,6 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}%{?prereltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -81,9 +80,6 @@ done
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
-mkdir $RPM_BUILD_ROOT
-
 for kernel_version in %{?kernel_versions}; do
     install -d ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}
     install _kmod_build_${kernel_version%%___*}/*/*.ko ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}
@@ -100,6 +96,10 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Mon May 07 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-1
+- New release.
+- A little review.
+
 * Wed May 02 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-1.4
 - rebuild for updated kernel
 
