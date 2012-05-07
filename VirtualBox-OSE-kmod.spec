@@ -96,7 +96,7 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
-* Mon May 07 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-2
+* Mon May 07 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-1
 - New release.
 - A little review.
 
