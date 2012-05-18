@@ -16,18 +16,18 @@
 # use only for debugging!
 %bcond_without hardening
 
-Name:           VirtualBox-OSE-kmod
+Name:           VirtualBox-kmod
 Version:        4.1.14
-Release:        2%{?dist}
+Release:        3%{?dist}
 
-Summary:        Kernel module for VirtualBox-OSE
+Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
 License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
 
-%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}%{?prereltag}, xz, time
+%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc = %{version}%{?prereltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
 
 # needed for plague to make sure it builds for i586 and i686
@@ -38,11 +38,11 @@ ExclusiveArch:  i686 x86_64
 %{!?kernels:BuildRequires: buildsys-build-rpmfusion-kerneldevpkgs-%{?buildforkernels:%{buildforkernels}}%{!?buildforkernels:current}-%{_target_cpu} }
 
 # kmodtool does its magic here
-%{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null) }
+%{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} --obsolete-name VirtualBox-OSE --obsolete-version %{version}-%{release} 2>/dev/null) }
 
 
 %description
-Kernel module for VirtualBox-OSE
+Kernel module for VirtualBox
 
 
 %prep
@@ -53,7 +53,7 @@ tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{versi
 %{?kmodtool_check}
 
 # print kmodtool output for debugging purposes:
-kmodtool --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null
+kmodtool --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} --obsolete-name VirtualBox-OSE --obsolete-version %{version}-%{release} 2>/dev/null
 
 # This is hardcoded in Makefiles
 # Kto zisti, preco tu nefunguje %%without hardening ma u mna nanuk
@@ -96,6 +96,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Fri May 18 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-3
+- Rename to VirtualBox-kmod
+
 * Mon May 07 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-2
 - A little review.
 
