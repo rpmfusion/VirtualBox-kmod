@@ -18,7 +18,7 @@
 
 Name:           VirtualBox-kmod
 Version:        4.1.14
-Release:        3%{?dist}
+Release:        4%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -96,6 +96,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sat May 19 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-4
+- Bump a release.
+
 * Fri May 18 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-3
 - Rename to VirtualBox-kmod
 
