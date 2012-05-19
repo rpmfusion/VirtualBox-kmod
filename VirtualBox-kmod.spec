@@ -16,18 +16,18 @@
 # use only for debugging!
 %bcond_without hardening
 
-Name:           VirtualBox-OSE-kmod
+Name:           VirtualBox-kmod
 Version:        4.1.14
-Release:        2%{?dist}
+Release:        3%{?dist}
 
-Summary:        Kernel module for VirtualBox-OSE
+Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
 License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
 
-%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}%{?prereltag}, xz, time
+%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc = %{version}%{?prereltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
 
 # needed for plague to make sure it builds for i586 and i686
@@ -38,11 +38,11 @@ ExclusiveArch:  i686 x86_64
 %{!?kernels:BuildRequires: buildsys-build-rpmfusion-kerneldevpkgs-%{?buildforkernels:%{buildforkernels}}%{!?buildforkernels:current}-%{_target_cpu} }
 
 # kmodtool does its magic here
-%{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null) }
+%{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} --obsolete-name VirtualBox-OSE --obsolete-version %{version}-%{release} 2>/dev/null) }
 
 
 %description
-Kernel module for VirtualBox-OSE
+Kernel module for VirtualBox
 
 
 %prep
@@ -53,7 +53,7 @@ tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{versi
 %{?kmodtool_check}
 
 # print kmodtool output for debugging purposes:
-kmodtool --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null
+kmodtool --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} --obsolete-name VirtualBox-OSE --obsolete-version %{version}-%{release} 2>/dev/null
 
 # This is hardcoded in Makefiles
 # Kto zisti, preco tu nefunguje %%without hardening ma u mna nanuk
@@ -90,148 +90,65 @@ done
 
 %check
 # If we built modules, check if it was everything the kmodsrc package provided
-MODS=$(find $(ls -d $RPM_BUILD_ROOT/lib/modules/* |head -n1) -name '*.ko' -exec basename '{}' \; |wc -l)
+MODS=$(find $(ls -d $RPM_BUILD_ROOT%{_prefix}/lib/modules/* |head -n1) -name '*.ko' -exec basename '{}' \; |wc -l)
 DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 
 %changelog
-* Fri May 11 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-2
-- build new current. 
+* Sat May 19 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-3
+- Rename to VirtualBox-kmod
 
-* Wed May 09 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.14-1.1
-- rebuild for updated kernel
-
-* Mon May 07 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-1
-- New release.
+* Mon May 07 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-2
 - A little review.
 
-* Wed May 02 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-1.4
+* Fri Apr 27 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-1
+- New release.
+
+* Tue Apr 17 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-3
+- Update for UsrMove
+
+* Mon Apr 16 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-2.2
 - rebuild for updated kernel
 
-* Sun Apr 22 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-1.3
-- rebuild for updated kernel
-
-* Sat Apr 14 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-1.2
-- reuilt for updated kernel
+* Fri Apr 13 2012 Sérgio Basto <sergio@serjux.com> - 4.1.12-2.1
+- Just build akmods
 
 * Fri Apr 13 2012 Sérgio Basto <sergio@serjux.com> - 4.1.12-1.1
 - New release
 
-* Thu Apr 12 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.10-2.2
-- rebuild for updated kernel
+* Thu Apr 12 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.3
+- rebuild for beta kernel
 
-* Wed Apr 4 2012 Sérgio Basto <sergio@serjux.com> - 4.1.10-2.1
-- Need to create akmod too. 
+* Tue Feb 07 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.2
+- Rebuild for UsrMove
 
-* Wed Apr 4 2012 Sérgio Basto <sergio@serjux.com> - 4.1.10-1.1
-- New release, for new kernel version major release.
-
-* Tue Apr 03 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.11
-- rebuild for updated kernel
-
-* Wed Mar 21 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.10
-- rebuild for updated kernel
-
-* Wed Mar 21 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.9
-- rebuild for updated kernel
-
-* Sun Mar 18 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.8
-- rebuild for updated kernel
-
-* Thu Mar 08 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.7
-- rebuild for updated kernel
-
-* Sat Mar 03 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.6
-- rebuild for updated kernel
-
-* Thu Mar 01 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.5
-- rebuild for updated kernel
-
-* Wed Feb 22 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.4
-- rebuild for updated kernel
-
-* Wed Feb 15 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.3
-- rebuild for updated kernel
-
-* Thu Feb 09 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.2
-- rebuild for updated kernel
-
-* Mon Feb 6 2012 Sérgio Basto <sergio@serjux.com> - 4.1.8-1
+* Fri Dec 23 2011 Sérgio Basto <sergio@serjux.com> - 4.1.8-1
 - New release.
+
+* Sun Dec 11 2011 Sérgio Basto <sergio@serjux.com> - 4.1.6-2
+- rebuild for update kmodsrc. 
+
+* Sat Dec 3 2011 Sérgio Basto <sergio@serjux.com> - 4.1.6-1
+- Build for new release
 - added time package to AkmodsBuildRequires
+- removed clean section
 
-* Fri Feb 03 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.6-1.6
-- rebuild for updated kernel
+* Wed Nov 02 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.2-1.4
+- Rebuild for F-16 kernel
 
-* Tue Jan 24 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.6-1.5
-- rebuild for updated kernel
+* Tue Nov 01 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.2-1.3
+- Rebuild for F-16 kernel
 
-* Sun Jan 15 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.6-1.4
-- rebuild for updated kernel
+* Fri Oct 28 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.2-1.2
+- Rebuild for F-16 kernel
 
-* Mon Jan 09 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.6-1.3
-- rebuild for updated kernel
+* Sun Oct 23 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.2-1.1
+- Rebuild for F-16 kernel
 
-* Wed Jan 04 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.6-1.2
-- rebuild for updated kernel
-
-* Sat Dec 24 2011 Sérgio Basto <sergio@serjux.com> - 4.1.6-1.1
+* Thu Sep 22 2011 Lubomir Rintel <lkundrak@v3.sk> - 4.1.2-1
 - New release
-
-* Fri Dec 23 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.2-2.3
-- rebuild for updated kernel
-
-* Sat Dec 17 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.2-2.2
-- rebuild for updated kernel
-
-* Wed Dec 14 2011 Sérgio Basto <sergio@serjux.com> - 4.1.2-2.2
-- re-add vboxpci and check, because kernel updates have fixed vboxpci compile.
-
-* Mon Nov 28 2011 Sérgio Basto <sergio@serjux.com> - 4.1.2-1.1
-- Update to new version
-- remove %clean from spec 
-- we had remove vboxpci from build because fails to compile with latest F15 kernel, so need hack
-  %check to not fail, temporally I hope.
-
-* Wed Nov 23 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.0.4-2.13
-- rebuild for updated kernel
-
-* Sun Nov 13 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.0.4-2.12
-- rebuild for updated kernel
-
-* Wed Nov 02 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.0.4-2.11
-- rebuild for updated kernel
-
-* Sun Oct 30 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.0.4-2.10
-- rebuild for updated kernel
-
-* Wed Oct 19 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.0.4-2.9
-- rebuild for updated kernel
-
-* Fri Oct 07 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.0.4-2.8
-- rebuild for updated kernel
-
-* Sat Sep 03 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.0.4-2.7
-- rebuild for updated kernel
-
-* Wed Aug 17 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.0.4-2.6
-- rebuild for updated kernel
-
-* Sun Jul 31 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.0.4-2.5
-- rebuild for updated kernel
-
-* Tue Jul 12 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.0.4-2.4
-- Rebuild for updated kernel
-
-* Wed Jun 15 2011 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 4.0.4-2.3
-- rebuild for updated kernel
-
-* Sat Jun 04 2011 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 4.0.4-2.2
-- rebuild for updated kernel
-
-* Sat May 28 2011 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 4.0.4-2.1
-- rebuild for updated kernel
+- Added vboxpci
 
 * Sat May 28 2011 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 4.0.4-2
 - rebuild for F15 release kernel
