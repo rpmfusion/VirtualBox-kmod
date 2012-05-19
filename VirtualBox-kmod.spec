@@ -3,7 +3,7 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%define buildforkernels current
+#define buildforkernels newest
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -16,18 +16,18 @@
 # use only for debugging!
 %bcond_without hardening
 
-Name:           VirtualBox-OSE-kmod
+Name:           VirtualBox-kmod
 Version:        4.1.14
-Release:        2%{?dist}.2
+Release:        3%{?dist}
 
-Summary:        Kernel module for VirtualBox-OSE
+Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
 License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
 
-%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}%{?prereltag}, xz, time
+%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc = %{version}%{?prereltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
 
 # needed for plague to make sure it builds for i586 and i686
@@ -38,11 +38,11 @@ ExclusiveArch:  i686 x86_64
 %{!?kernels:BuildRequires: buildsys-build-rpmfusion-kerneldevpkgs-%{?buildforkernels:%{buildforkernels}}%{!?buildforkernels:current}-%{_target_cpu} }
 
 # kmodtool does its magic here
-%{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null) }
+%{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} --obsolete-name VirtualBox-OSE --obsolete-version %{version}-%{release} 2>/dev/null) }
 
 
 %description
-Kernel module for VirtualBox-OSE
+Kernel module for VirtualBox
 
 
 %prep
@@ -53,7 +53,7 @@ tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{versi
 %{?kmodtool_check}
 
 # print kmodtool output for debugging purposes:
-kmodtool --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null
+kmodtool --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} --obsolete-name VirtualBox-OSE --obsolete-version %{version}-%{release} 2>/dev/null
 
 # This is hardcoded in Makefiles
 # Kto zisti, preco tu nefunguje %%without hardening ma u mna nanuk
@@ -96,32 +96,14 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
-* Sun May 13 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.14-2.2
-- Rebuilt for release kernel
-
-* Wed May 09 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.14-2.1
-- rebuild for updated kernel
+* Sat May 19 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-3
+- Rename to VirtualBox-kmod
 
 * Mon May 07 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-2
 - A little review.
 
-* Sun May 06 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.14-1.4
-- rebuild for updated kernel
-
-* Sat May 05 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.14-1.3
-- rebuild for updated kernel
-
-* Wed May 02 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.14-1.2
-- rebuild for updated kernel
-
-* Sat Apr 28 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.14-1.1
-- rebuild for updated kernel
-
 * Fri Apr 27 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-1
 - New release.
-
-* Sun Apr 22 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-3.1
-- rebuild for updated kernel
 
 * Tue Apr 17 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-3
 - Update for UsrMove
