@@ -3,7 +3,7 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%define buildforkernels current
+#define buildforkernels newest
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -16,18 +16,18 @@
 # use only for debugging!
 %bcond_without hardening
 
-Name:           VirtualBox-OSE-kmod
+Name:           VirtualBox-kmod
 Version:        4.1.14
-Release:        2%{?dist}.1
+Release:        3%{?dist}
 
-Summary:        Kernel module for VirtualBox-OSE
+Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
 License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
 
-%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-OSE-kmodsrc = %{version}%{?prereltag}, xz, time
+%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc = %{version}%{?prereltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
 
 # needed for plague to make sure it builds for i586 and i686
@@ -38,11 +38,11 @@ ExclusiveArch:  i686 x86_64
 %{!?kernels:BuildRequires: buildsys-build-rpmfusion-kerneldevpkgs-%{?buildforkernels:%{buildforkernels}}%{!?buildforkernels:current}-%{_target_cpu} }
 
 # kmodtool does its magic here
-%{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null) }
+%{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} --obsolete-name VirtualBox-OSE --obsolete-version %{version}-%{release} 2>/dev/null) }
 
 
 %description
-Kernel module for VirtualBox-OSE
+Kernel module for VirtualBox
 
 
 %prep
@@ -53,7 +53,7 @@ tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{versi
 %{?kmodtool_check}
 
 # print kmodtool output for debugging purposes:
-kmodtool --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null
+kmodtool --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} --obsolete-name VirtualBox-OSE --obsolete-version %{version}-%{release} 2>/dev/null
 
 # This is hardcoded in Makefiles
 # Kto zisti, preco tu nefunguje %%without hardening ma u mna nanuk
@@ -90,138 +90,49 @@ done
 
 %check
 # If we built modules, check if it was everything the kmodsrc package provided
-MODS=$(find $(ls -d $RPM_BUILD_ROOT/lib/modules/* |head -n1) -name '*.ko' -exec basename '{}' \; |wc -l)
+MODS=$(find $(ls -d $RPM_BUILD_ROOT%{_prefix}/lib/modules/* |head -n1) -name '*.ko' -exec basename '{}' \; |wc -l)
 DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 
 %changelog
-* Fri May 18 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.14-2.1
-- Rebuilt for release kernel
+* Sat May 19 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-3
+- Rename to VirtualBox-kmod
 
-* Fri May 11 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-2
-- build new current. 
-
-* Wed May 09 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.14-1.1
-- rebuild for updated kernel
-
-* Mon May 07 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-1
-- New release.
+* Mon May 07 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-2
 - A little review.
 
-* Fri May 04 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-1.10
-- rebuild for updated kernel
-
-* Wed May 02 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-1.9
-- rebuild for updated kernel
-
-* Wed May 02 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-1.8
-- rebuild for updated kernel
-
-* Sun Apr 22 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-1.7
-- rebuild for updated kernel
-
-* Mon Apr 16 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-1.6
-- rebuild for updated kernel
-
-* Thu Apr 12 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-1.4
-- rebuild for updated kernel
-
-* Sat Apr 07 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-1.3
-- rebuild for updated kernel
-
-* Tue Apr 03 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-1.2
-- rebuild for updated kernel
-
-* Tue Apr 3 2012 Sérgio Basto <sergio@serjux.com> - 4.1.12-1.1
+* Fri Apr 27 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-1
 - New release.
 
-* Fri Mar 30 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.10-1.2
+* Tue Apr 17 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-3
+- Update for UsrMove
+
+* Mon Apr 16 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.12-2.2
 - rebuild for updated kernel
 
-* Fri Mar 23 2012 Sérgio Basto <sergio@serjux.com> - 4.1.10-1.1
+* Fri Apr 13 2012 Sérgio Basto <sergio@serjux.com> - 4.1.12-2.1
+- Just build akmods
+
+* Fri Apr 13 2012 Sérgio Basto <sergio@serjux.com> - 4.1.12-1.1
+- New release
+
+* Thu Apr 12 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.3
+- rebuild for beta kernel
+
+* Tue Feb 07 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.2
+- Rebuild for UsrMove
+
+* Fri Dec 23 2011 Sérgio Basto <sergio@serjux.com> - 4.1.8-1
 - New release.
 
-* Wed Mar 21 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.17
-- rebuild for updated kernel
+* Sun Dec 11 2011 Sérgio Basto <sergio@serjux.com> - 4.1.6-2
+- rebuild for update kmodsrc. 
 
-* Sat Mar 17 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.16
-- rebuild for updated kernel
-
-* Thu Mar 15 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.15
-- rebuild for updated kernel
-
-* Thu Mar 08 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.14
-- rebuild for updated kernel
-
-* Fri Mar 02 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.13
-- rebuild for updated kernel
-
-* Thu Mar 01 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.12
-- rebuild for updated kernel
-
-* Wed Feb 22 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.11
-- rebuild for updated kernel
-
-* Tue Feb 14 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.10
-- rebuild for updated kernel
-
-* Thu Feb 09 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.9
-- rebuild for updated kernel
-
-* Fri Feb 03 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.8
-- rebuild for updated kernel
-
-* Fri Jan 27 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.7
-- rebuild for updated kernel
-
-* Tue Jan 24 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.6
-- rebuild for updated kernel
-
-* Sun Jan 15 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.5
-- rebuild for updated kernel
-
-* Mon Jan 09 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.4
-- rebuild for updated kernel
-
-* Wed Jan 04 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.3
-- rebuild for updated kernel
-
-* Sat Dec 31 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.8-1.2
-- Build for current in F-16
-
-* Sat Dec 24 2011 Sérgio Basto <sergio@serjux.com> - 4.1.8-1                                          
-- New release.
-
-* Fri Dec 23 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.6-1.5
-- rebuild for updated kernel
-
-* Sat Dec 17 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.6-1.4
-- rebuild for updated kernel
-
-* Tue Dec 13 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.6-1.3
-- rebuild for updated kernel
-
-* Sat Dec 10 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.6-1.2
-- rebuild for updated kernel
-
-* Fri Dec 9 2011 Sérgio Basto <sergio@serjux.com> - 4.1.6-1
+* Sat Dec 3 2011 Sérgio Basto <sergio@serjux.com> - 4.1.6-1
 - Build for new release
 - added time package to AkmodsBuildRequires
 - removed clean section
-- change define to current
-
-* Thu Dec 01 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.2-1.8
-- rebuild for updated kernel
-
-* Wed Nov 23 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.2-1.7
-- rebuild for updated kernel
-
-* Wed Nov 16 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.2-1.6
-- rebuild for updated kernel
-
-* Mon Nov 14 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.2-1.5
-- rebuild for updated kernel
 
 * Wed Nov 02 2011 Nicolas Chauvet <kwizart@gmail.com> - 4.1.2-1.4
 - Rebuild for F-16 kernel
