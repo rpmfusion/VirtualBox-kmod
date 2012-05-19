@@ -18,7 +18,7 @@
 
 Name:           VirtualBox-kmod
 Version:        4.1.14
-Release:        3%{?dist}
+Release:        4%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -90,12 +90,15 @@ done
 
 %check
 # If we built modules, check if it was everything the kmodsrc package provided
-MODS=$(find $(ls -d $RPM_BUILD_ROOT%{_prefix}/lib/modules/* |head -n1) -name '*.ko' -exec basename '{}' \; |wc -l)
+MODS=$(find $(ls -d $RPM_BUILD_ROOT/lib/modules/* |head -n1) -name '*.ko' -exec basename '{}' \; |wc -l)
 DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 
 %changelog
+* Sat May 19 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-4
+- undo UsrMove.
+
 * Sat May 19 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-3
 - Rename to VirtualBox-kmod
 
