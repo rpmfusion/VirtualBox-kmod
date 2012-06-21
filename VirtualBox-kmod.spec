@@ -17,8 +17,8 @@
 %bcond_without hardening
 
 Name:           VirtualBox-kmod
-Version:        4.1.16
-Release:        2%{?dist}
+Version:        4.1.18
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -29,8 +29,6 @@ Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc = %{version}%{?prereltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
-BuildRequires:  VirtualBox-kmodsrc >= %{version}-4
-
 
 # needed for plague to make sure it builds for i586 and i686
 ExclusiveArch:  i686 x86_64
@@ -98,6 +96,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Jun 21 2012 Sérgio Basto <sergio@serjux.com> - 4.1.18-1
+- New upstream release.
+
 * Wed Jun 13 2012 Sérgio Basto <sergio@serjux.com> - 4.1.16-2
 - build with patches to kernels 3.5
 
