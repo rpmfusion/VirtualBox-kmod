@@ -9,16 +9,18 @@
 # major version number, while the kernel module abi is not guarranteed
 # to be stable. This is so that we force the module update in sync with
 # userspace.
-%global prerel RC3
+%global prerel RC4
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
+%global vboxrel 0.6
+%global vboxreltag %{?vboxrel:-%{vboxrel}}
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
 %bcond_without hardening
 
 Name:           VirtualBox-kmod
 Version:        4.2.0
-Release:        0.1%{?prerel:.%{prerel}}%{?dist}
+Release:        0.2%{?prerel:.%{prerel}}%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -27,7 +29,7 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
 
-%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc = %{version}, xz, time
+%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
 
 # needed for plague to make sure it builds for i586 and i686
@@ -96,6 +98,10 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sun Sep 09 2012 Sérgio Basto <sergio@serjux.com> - 4.2.0-0.2.RC4
+- New RC4
+- Force use VirtualBox-kmodsrc >= 4.2.0-0.6
+
 * Sat Sep 01 2012 Sérgio Basto <sergio@serjux.com> - 4.2.0-0.1.RC3
 - New RC major upstream release.
 
