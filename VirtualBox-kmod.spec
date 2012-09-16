@@ -9,10 +9,10 @@
 # major version number, while the kernel module abi is not guarranteed
 # to be stable. This is so that we force the module update in sync with
 # userspace.
-%global prerel RC4
+#global prerel RC4
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
-%global vboxrel 0.6
+%global vboxrel 1
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
@@ -20,7 +20,7 @@
 
 Name:           VirtualBox-kmod
 Version:        4.2.0
-Release:        0.2%{?prerel:.%{prerel}}%{?dist}
+Release:        1%{?prerel:.%{prerel}}%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -98,6 +98,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sat Sep 15 2012 Sérgio Basto <sergio@serjux.com> - 4.2.0-1
+- 4.2.0 released
+
 * Sun Sep 09 2012 Sérgio Basto <sergio@serjux.com> - 4.2.0-0.2.RC4
 - New RC4
 - Force use VirtualBox-kmodsrc >= 4.2.0-0.6
