@@ -99,7 +99,7 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 %changelog
 * Thu Nov 01 2012 Sérgio Basto <sergio@serjux.com> - 4.2.4-1.1
-- Rebuilt for updated kernel
+- Rebuilt for updated kernel.
 
 * Thu Nov 01 2012 Sérgio Basto <sergio@serjux.com> - 4.2.4-1
 - New upstream release.
