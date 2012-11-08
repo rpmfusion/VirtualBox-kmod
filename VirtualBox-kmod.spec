@@ -3,7 +3,7 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%define buildforkernels newest
+#define buildforkernels newest
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -20,7 +20,7 @@
 
 Name:           VirtualBox-kmod
 Version:        4.2.4
-Release:        1%{?prerel:.%{prerel}}%{?dist}.2
+Release:        3%{?prerel:.%{prerel}}%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -98,25 +98,28 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
-* Thu Nov 08 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.2.4-1.2
+* Thu Nov 08 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.2.4-3
+- Bump for akmod - rfbz#2563
+
+* Thu Nov 08 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.2.4-2.2
 - Rebuilt for updated kernel
 
-* Thu Nov 01 2012 Sérgio Basto <sergio@serjux.com> - 4.2.4-1.1
-- Rebuilt for updated kernel.
+* Thu Nov 01 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.2.4-2.1
+- Rebuilt for updated kernel
 
-* Thu Nov 01 2012 Sérgio Basto <sergio@serjux.com> - 4.2.4-1
+* Sun Oct 28 2012 Sérgio Basto <sergio@serjux.com> - 4.2.4-1
 - New upstream release.
 
-* Thu Nov 01 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.2.0-1.5
+* Tue Oct 23 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.2.0-1.5
 - Rebuilt for updated kernel
 
 * Thu Oct 18 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.2.0-1.4
 - Rebuilt for updated kernel
 
-* Wed Oct 17 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.2.0-1.3
+* Thu Oct 11 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.2.0-1.3
 - Rebuilt for updated kernel
 
-* Thu Oct 11 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.2.0-1.2
+* Mon Oct 08 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.2.0-1.2
 - Rebuilt for updated kernel
 
 * Wed Oct 03 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.2.0-1.1
@@ -125,29 +128,41 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 * Sun Sep 30 2012 Sérgio Basto <sergio@serjux.com> - 4.2.0-1
 - New upstream release.
 
-* Mon Sep 17 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.20-1.1
+* Thu Sep 27 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.20-2.2
 - Rebuilt for updated kernel
+
+* Mon Sep 17 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.20-2.1
+- Rebuilt for updated kernel
+
+* Tue Sep 04 2012 Sérgio Basto <sergio@serjux.com> - 4.1.20-2
+- build kmods for new kernel in updates (stable).
 
 * Sat Sep 01 2012 Sérgio Basto <sergio@serjux.com> - 4.1.20-1
-- New upstream release
+- New upstream release, only build akmods.
 
-* Sun Aug 26 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.18-1.5
+* Fri Aug 31 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.18-1.7
 - Rebuilt for updated kernel
 
-* Thu Aug 16 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.18-1.4
+* Wed Aug 22 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.18-1.6
+- Rebuilt for updated kernel
+
+* Thu Aug 16 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.18-1.5
+- Rebuilt for updated kernel
+
+* Sat Aug 11 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.18-1.4
 - Rebuilt for updated kernel
 
 * Tue Jul 31 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.18-1.3
 - Rebuilt for updated kernel
 
-* Thu Jul 26 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.18-1.2
+* Sat Jul 21 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.18-1.2
 - Rebuilt for updated kernel
 
 * Tue Jul 17 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.18-1.1
 - Rebuilt for updated kernel
 
 * Sun Jul 08 2012 Sérgio Basto <sergio@serjux.com> - 4.1.18-1
-- New upstream release
+- New upstream release.
 
 * Fri Jul 06 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.16-1.5
 - Rebuilt for updated kernel
@@ -155,20 +170,23 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 * Thu Jun 28 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.16-1.4
 - Rebuilt for updated kernel
 
-* Sun Jun 17 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.16-1.3
+* Thu Jun 21 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.16-1.3
 - Rebuilt for updated kernel
 
-* Tue Jun 05 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.16-1.2
+* Sun Jun 17 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.16-1.2
 - Rebuilt for updated kernel
 
-* Wed May 23 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.16-1.1
+* Tue Jun 05 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.16-1.1
 - Rebuilt for updated kernel
 
-* Tue May 22 2012 Sérgio Basto <sergio@serjux.com> - 4.1.16-1
-- New upstream release
+* Thu May 31 2012 Sérgio Basto <sergio@serjux.com> - 4.1.16-1
+- New upstream release. 
 
-* Sat May 19 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-4
-- undo UsrMove.
+* Sun May 27 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.14-3.2
+- Rebuilt for updated kernel
+
+* Sat May 26 2012 Nicolas Chauvet <kwizart@gmail.com> - 4.1.14-3.1
+- Rebuilt for release kernel
 
 * Sat May 19 2012 Sérgio Basto <sergio@serjux.com> - 4.1.14-3
 - Rename to VirtualBox-kmod
