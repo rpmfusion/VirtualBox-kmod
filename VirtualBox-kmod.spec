@@ -98,6 +98,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Dec 25 2012 Sérgio Basto <sergio@serjux.com> - 4.2.6-1
+- New upstream release.
+
 * Sun Sep 23 2012 Sérgio Basto <sergio@serjux.com> - 4.2.0-2
 - Build with newest VirtualBox-kmodsrc (4.2.0-3).
 
