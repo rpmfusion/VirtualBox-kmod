@@ -19,7 +19,7 @@
 %bcond_without hardening
 
 Name:           VirtualBox-kmod
-Version:        4.2.6
+Version:        4.2.8
 Release:        1%{?prerel:.%{prerel}}%{?dist}
 
 Summary:        Kernel module for VirtualBox
