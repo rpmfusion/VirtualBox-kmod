@@ -12,14 +12,14 @@
 #global prerel RC4
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
-%global vboxrel 2
+%global vboxrel 1
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
 %bcond_without hardening
 
 Name:           VirtualBox-kmod
-Version:        4.2.8
+Version:        4.2.10
 Release:        1%{?prerel:.%{prerel}}%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -98,6 +98,12 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sat Mar 16 2013 Sérgio Basto <sergio@serjux.com> - 4.2.10-1
+- New upstream release.
+
+* Sat Mar 02 2013 Sérgio Basto <sergio@serjux.com> - 4.2.8-1
+- New upstream release.
+
 * Tue Dec 25 2012 Sérgio Basto <sergio@serjux.com> - 4.2.6-1
 - New upstream release.
 
