@@ -98,7 +98,7 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
- Sat Jul 06 2013 Sérgio Basto <sergio@serjux.com> - 4.2.16-1
+* Sat Jul 06 2013 Sérgio Basto <sergio@serjux.com> - 4.2.16-1
 - New upstream release and akmods.
 
 * Sun Jun 30 2013 Nicolas Chauvet <kwizart@gmail.com> - 4.2.14-1.2
