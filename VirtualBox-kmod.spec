@@ -3,7 +3,7 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-#define buildforkernels newest
+%define buildforkernels akmod
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -12,15 +12,15 @@
 #global prerel RC4
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
-%global vboxrel 2
+%global vboxrel 1
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
 %bcond_without hardening
 
 Name:           VirtualBox-kmod
-Version:        4.2.16
-Release:        2%{?prerel:.%{prerel}}%{?dist}
+Version:        4.2.18
+Release:        1%{?prerel:.%{prerel}}%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -98,6 +98,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Sep 26 2013 Sérgio Basto <sergio@serjux.com> - 4.2.18-1
+- New upstream release.
+
 * Sun Sep 01 2013 Sérgio Basto <sergio@serjux.com> - 4.2.16-2
 - Build akmods with src patched for kernel 3.11
 
