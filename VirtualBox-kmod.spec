@@ -16,7 +16,7 @@
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
-%bcond_without hardening
+%bcond_with hardening
 
 Name:           VirtualBox-kmod
 Version:        4.3.0
@@ -98,6 +98,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Oct 30 2013 Sérgio Basto <sergio@serjux.com> - 4.3.0-2
+- Don't disable hardening which create /dev/vboxdrvu .
+
 * Mon Oct 28 2013 Sérgio Basto <sergio@serjux.com> - 4.3.0-1
 - New upstream release.
 
