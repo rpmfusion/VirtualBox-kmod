@@ -3,7 +3,7 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%global buildforkernels newest
+#global buildforkernels newest
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -16,11 +16,11 @@
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
-%bcond_without hardening
+%bcond_with hardening
 
 Name:           VirtualBox-kmod
 Version:        4.3.0
-Release:        1%{?prerel:.%{prerel}}%{?dist}.5
+Release:        2%{?prerel:.%{prerel}}%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -98,6 +98,10 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Oct 30 2013 Sérgio Basto <sergio@serjux.com> - 4.3.0-2
+- don't disable hardening which create /dev/vboxdrvu .
+- fix release number number and now we really build akmods.
+
 * Tue Oct 29 2013 Sérgio Basto <sergio@serjux.com> - 4.3.0-1
 - New upstream release and akmods.
 
