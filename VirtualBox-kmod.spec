@@ -20,7 +20,7 @@
 
 Name:           VirtualBox-kmod
 Version:        4.3.0
-Release:        1%{?prerel:.%{prerel}}%{?dist}
+Release:        2%{?prerel:.%{prerel}}%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
