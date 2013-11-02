@@ -19,8 +19,8 @@
 %bcond_with hardening
 
 Name:           VirtualBox-kmod
-Version:        4.3.0
-Release:        2%{?prerel:.%{prerel}}%{?dist}
+Version:        4.3.2
+Release:        1%{?prerel:.%{prerel}}%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -98,6 +98,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sat Nov 02 2013 Sérgio Basto <sergio@serjux.com> - 4.3.2-1
+- New upstream release.
+
 * Wed Oct 30 2013 Sérgio Basto <sergio@serjux.com> - 4.3.0-2
 - Don't disable hardening which create /dev/vboxdrvu .
 
