@@ -3,7 +3,7 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%global buildforkernels newest
+#global buildforkernels newest
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -99,7 +99,7 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 %changelog
 * Sat Nov 30 2013 Sérgio Basto <sergio@serjux.com> - 4.3.4-1
-- New upstream release.
+- New upstream release and build akmods.
 
 * Thu Nov 21 2013 Nicolas Chauvet <kwizart@gmail.com> - 4.3.2-1.5
 - Rebuilt for kernel
