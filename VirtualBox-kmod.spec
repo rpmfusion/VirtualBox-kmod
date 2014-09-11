@@ -19,7 +19,7 @@
 %bcond_with hardening
 
 Name:           VirtualBox-kmod
-Version:        4.3.14
+Version:        4.3.16
 Release:        1%{?prerel:.%{prerel}}%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -98,6 +98,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Sep 11 2014 Sérgio Basto <sergio@serjux.com> - 4.3.16-1
+- New upstream release and just build akmods for devel.
+
 * Fri Jul 25 2014 Sérgio Basto <sergio@serjux.com> - 4.3.14-1
 - New upstream release and just build akmods for rawhide/F21.
 
