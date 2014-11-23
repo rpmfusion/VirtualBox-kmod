@@ -19,7 +19,7 @@
 %bcond_with hardening
 
 Name:           VirtualBox-kmod
-Version:        4.3.18
+Version:        4.3.20
 Release:        1%{?prerel:.%{prerel}}%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -98,6 +98,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sun Nov 23 2014 Sérgio Basto <sergio@serjux.com> - 4.3.20-1
+- New upstream release and just build akmods for devel.
+
 * Sun Oct 12 2014 Sérgio Basto <sergio@serjux.com> - 4.3.18-1
 - New upstream release and just build akmods for devel.
 
