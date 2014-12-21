@@ -20,7 +20,7 @@
 
 Name:           VirtualBox-kmod
 Version:        4.3.20
-Release:        2%{?prerel:.%{prerel}}%{?dist}.2
+Release:        2%{?prerel:.%{prerel}}%{?dist}.3
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -83,8 +83,8 @@ done
 
 %install
 for kernel_version in %{?kernel_versions}; do
-    install -d ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}
-    install _kmod_build_${kernel_version%%___*}/*/*.ko ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}
+    install -d %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}
+    install _kmod_build_${kernel_version%%___*}/*/*.ko %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}
 done
 
 %{?akmod_install}
@@ -92,12 +92,15 @@ done
 
 %check
 # If we built modules, check if it was everything the kmodsrc package provided
-MODS=$(find $(ls -d $RPM_BUILD_ROOT%{_prefix}/lib/modules/* |head -n1) -name '*.ko' -exec basename '{}' \; |wc -l)
+MODS=$(find $(ls -d %{buildroot}%{_prefix}/lib/modules/* |head -n1) -name '*.ko' -exec basename '{}' \; |wc -l)
 DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 
 %changelog
+* Sun Dec 21 2014 Sérgio Basto <sergio@serjux.com> - 4.3.20-2.3
+- s/$RPM_BUILD_ROOT/%{buildroot}/g.
+
 * Fri Dec 19 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-2.2
 - Rebuilt for kernel
 
