@@ -10,6 +10,7 @@
 # to be stable. This is so that we force the module update in sync with
 # userspace.
 #global prerel RC4
+%global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
 %global vboxrel 1
@@ -20,7 +21,7 @@
 
 Name:           VirtualBox-kmod
 Version:        4.3.20
-Release:        3%{?prerel:.%{prerel}}%{?dist}.5
+Release:        4%{?prerel:.%{prerel}}%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -98,6 +99,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Mon Jan 26 2015 Leigh Scott <leigh123linux@googlemail.com> - 4.3.20-4
+- fix build issue
+
 * Thu Jan 22 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-3.5
 - Bump
 
