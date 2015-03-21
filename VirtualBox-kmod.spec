@@ -21,7 +21,7 @@
 
 Name:           VirtualBox-kmod
 Version:        4.3.20
-Release:        4%{?prerel:.%{prerel}}%{?dist}.6
+Release:        4%{?prerel:.%{prerel}}%{?dist}.7
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -99,6 +99,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sat Mar 21 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-4.7
+- Rebuilt for kernel
+
 * Tue Mar 10 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-4.6
 - Rebuilt for kernel
 
