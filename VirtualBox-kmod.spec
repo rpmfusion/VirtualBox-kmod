@@ -3,7 +3,7 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%global buildforkernels current
+%global buildforkernels newest
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -21,7 +21,7 @@
 
 Name:           VirtualBox-kmod
 Version:        4.3.26
-Release:        1%{?prerel:.%{prerel}}%{?dist}
+Release:        1%{?prerel:.%{prerel}}%{?dist}.1
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -99,6 +99,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Fri Mar 27 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.26-1.1
+- Rebuilt for kernel
+
 * Tue Mar 24 2015 Leigh Scott <leigh123linux@googlemail.com> - 4.3.26-1
 - New upstream release.
 
