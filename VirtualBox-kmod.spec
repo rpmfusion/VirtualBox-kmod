@@ -99,6 +99,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Fri Jul 24 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.30-1.1
+- Rebuilt for kernel
+
 * Thu Jul 16 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.30-1.1
 - Rebuilt for kernel
 
