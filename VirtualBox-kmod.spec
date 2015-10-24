@@ -20,7 +20,7 @@
 %bcond_without hardening
 
 Name:           VirtualBox-kmod
-Version:        4.3.32
+Version:        5.0.8
 Release:        1%{?prerel:.%{prerel}}%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -99,32 +99,17 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
-* Tue Oct 20 2015 Sérgio Basto <sergio@serjux.com> - 4.3.32-1
-- New upstream release (4.3.32), build akmod.
+* Thu Oct 22 2015 Sérgio Basto <sergio@serjux.com> - 5.0.8-1
+- Update to VirtualBox-5.0.8
 
-* Tue Oct 06 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.30-2.1
-- Rebuilt for kernel
+* Mon Oct 05 2015 Sérgio Basto <sergio@serjux.com> - 5.0.6-1
+- Update to VirtualBox-5.0.6
 
-* Mon Oct 05 2015 Sérgio Basto <sergio@serjux.com> - 4.3.30-2
-- Rebuild to fix missing akmod.
+* Fri Sep 25 2015 Sérgio Basto <sergio@serjux.com> - 5.0.4-2
+- no debuginfo, if we, just build akmod, debuginfo will be empty.
 
-* Wed Sep 23 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.30-1.8
-- Rebuilt for kernel
-
-* Wed Sep 16 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.30-1.7
-- Rebuilt for kernel
-
-* Fri Aug 21 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.30-1.6
-- Rebuilt for kernel
-
-* Thu Aug 13 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.30-1.5
-- Rebuilt for kernel
-
-* Fri Aug 07 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.30-1.4
-- Rebuilt for kernel
-
-* Thu Jul 30 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.30-1.3
-- Rebuilt for kernel
+* Thu Sep 24 2015 Sérgio Basto <sergio@serjux.com> - 5.0.4-1
+- Update to 5.0.4, just build akmod.
 
 * Fri Jul 24 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.30-1.2
 - Rebuilt for kernel
