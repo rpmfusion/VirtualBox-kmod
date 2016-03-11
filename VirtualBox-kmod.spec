@@ -20,8 +20,9 @@
 %bcond_without hardening
 
 Name:           VirtualBox-kmod
-Version:        5.0.14
-Release:        1%{?prerel:.%{prerel}}%{?dist}
+Version:        5.0.16
+#Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -99,6 +100,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sat Mar 05 2016 Sérgio Basto <sergio@serjux.com> - 5.0.16-1
+- Building akmod for VirtualBox 5.0.16
+
 * Wed Jan 20 2016 Sérgio Basto <sergio@serjux.com> - 5.0.14-1
 - Building akmod for VirtualBox 5.0.14
 
