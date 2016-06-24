@@ -20,9 +20,9 @@
 %bcond_without hardening
 
 Name:           VirtualBox-kmod
-Version:        5.0.16
+Version:        5.0.22
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        2%{?dist}
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -100,6 +100,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Fri Jun 24 2016 Sérgio Basto <sergio@serjux.com> - 5.0.22-1
+- Update to 5.0.22
+
 * Mon Mar 14 2016 Sérgio Basto <sergio@serjux.com> - 5.0.16-2
 - Force use of VirtualBox-kmodsrc-5.0.16-3
 
