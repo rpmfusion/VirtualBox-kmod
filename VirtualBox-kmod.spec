@@ -102,6 +102,7 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 %changelog
 * Wed Jun 29 2016 Sérgio Basto <sergio@serjux.com> - 5.0.22-2
 - Update VirtualBox to 5.0.24
+- No more obsolete VirtualBox-OSE , simplify snippets 
 
 * Fri Jun 24 2016 Sérgio Basto <sergio@serjux.com> - 5.0.22-1
 - Update to 5.0.22
