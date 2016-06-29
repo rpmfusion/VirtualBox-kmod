@@ -20,9 +20,9 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.0.22
+Version:        5.0.24
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        2%{?dist}
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -100,7 +100,7 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
-* Wed Jun 29 2016 Sérgio Basto <sergio@serjux.com> - 5.0.22-2
+* Wed Jun 29 2016 Sérgio Basto <sergio@serjux.com> - 5.0.24-1
 - Update VirtualBox to 5.0.24
 - No more obsolete VirtualBox-OSE , simplify snippets 
 
