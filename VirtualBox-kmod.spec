@@ -10,7 +10,6 @@
 # to be stable. This is so that we force the module update in sync with
 # userspace.
 #global prerel RC4
-%global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
 %global vboxrel 1
@@ -18,11 +17,12 @@
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
 %bcond_without hardening
+%global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
 Version:        5.0.22
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -42,7 +42,7 @@ ExclusiveArch:  i686 x86_64
 %{!?kernels:BuildRequires: buildsys-build-rpmfusion-kerneldevpkgs-%{?buildforkernels:%{buildforkernels}}%{!?buildforkernels:current}-%{_target_cpu} }
 
 # kmodtool does its magic here
-%{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} --obsolete-name VirtualBox-OSE --obsolete-version %{version}-%{release} 2>/dev/null) }
+%{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null) }
 
 
 %description
@@ -57,7 +57,7 @@ tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{versi
 %{?kmodtool_check}
 
 # print kmodtool output for debugging purposes:
-kmodtool --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} --obsolete-name VirtualBox-OSE --obsolete-version %{version}-%{release} 2>/dev/null
+kmodtool --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null
 
 # This is hardcoded in Makefiles
 # Kto zisti, preco tu nefunguje %%without hardening ma u mna nanuk
@@ -100,6 +100,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Jun 29 2016 Sérgio Basto <sergio@serjux.com> - 5.0.22-2
+- Update VirtualBox to 5.0.24
+
 * Fri Jun 24 2016 Sérgio Basto <sergio@serjux.com> - 5.0.22-1
 - Update to 5.0.22
 
