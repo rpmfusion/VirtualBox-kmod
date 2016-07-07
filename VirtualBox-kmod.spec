@@ -3,7 +3,8 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%global buildforkernels newest
+%global buildforkernels akmod
+%global    debug_package %{nil}
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -22,7 +23,7 @@
 Name:           VirtualBox-kmod
 Version:        5.0.24
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -100,6 +101,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Jul 07 2016 Sérgio Basto <sergio@serjux.com> - 5.0.24-2
+- Build only akmods
+
 * Wed Jun 29 2016 Sérgio Basto <sergio@serjux.com> - 5.0.24-1
 - Update VirtualBox to 5.0.24
 - No more obsolete VirtualBox-OSE , simplify snippets 
