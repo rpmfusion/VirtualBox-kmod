@@ -21,9 +21,9 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.0.24
+Version:        5.0.26
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        2%{?dist}
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -101,6 +101,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Mon Jul 18 2016 Sérgio Basto <sergio@serjux.com> - 5.0.26-1
+- Update to 5.0.26
+
 * Thu Jul 07 2016 Sérgio Basto <sergio@serjux.com> - 5.0.24-2
 - Build only akmods
 
