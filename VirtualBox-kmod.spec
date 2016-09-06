@@ -4,7 +4,12 @@
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
 %global buildforkernels akmod
-%global    debug_package %{nil}
+
+%global debug_package %{nil}
+#akmods still generate debuginfo but have the wrong name:
+#/var/cache/akmods/VirtualBox/VirtualBox-kmod-debuginfo-5.0.4-1.fc21.x86_64.rpm
+#/var/cache/akmods/VirtualBox/kmod-VirtualBox-4.1.8-100.fc21.x86_64-5.0.4-1.fc21.x86_64.rpm
+#and when just build akmod, debuginfo will be empty.
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
@@ -21,7 +26,7 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.0.26
+Version:        5.1.4
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:        1%{?dist}
 
@@ -101,6 +106,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Sep 06 2016 Sérgio Basto <sergio@serjux.com> - 5.1.4-1
+- Update VBox to 5.1.4
+
 * Mon Jul 18 2016 Sérgio Basto <sergio@serjux.com> - 5.0.26-1
 - Update to 5.0.26
 
