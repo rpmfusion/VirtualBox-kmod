@@ -18,7 +18,7 @@
 #global prerel RC4
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
-%global vboxrel 4
+%global vboxrel 1
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
@@ -26,9 +26,9 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.1.4
+Version:        5.1.6
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        3%{?dist}
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -106,6 +106,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Sep 13 2016 Sérgio Basto <sergio@serjux.com> - 5.1.6-1
+- Update VBox to 5.1.6
+
 * Sat Sep 10 2016 Sérgio Basto <sergio@serjux.com> - 5.1.4-3
 - Force use VirtualBox-kmodsrc >= 5.1.4-4, with fix for 4.8.0-rc5
 
