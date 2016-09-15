@@ -15,8 +15,8 @@
 # major version number, while the kernel module abi is not guarranteed
 # to be stable. This is so that we force the module update in sync with
 # userspace.
-#global prerel RC4
-%global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
+#global prerel 106108
+%global prereltag %{?prerel:-%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
 %global vboxrel 1
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
@@ -35,7 +35,7 @@ Group:          System Environment/Kernel
 License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
-Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
+Source1:        VirtualBox-kmod-excludekernel-filter.txt
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -126,10 +126,16 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 * Wed Jun 29 2016 Sérgio Basto <sergio@serjux.com> - 5.0.24-1
 - Update VirtualBox to 5.0.24
-- No more obsolete VirtualBox-OSE , simplify snippets 
+- No more obsolete VirtualBox-OSE , simplify snippets
 
 * Fri Jun 24 2016 Sérgio Basto <sergio@serjux.com> - 5.0.22-1
 - Update to 5.0.22
+
+* Sat Apr 23 2016 Sérgio Basto <sergio@serjux.com> - 5.0.18-1
+- Update to 5.0.18
+
+* Sun Mar 20 2016 Sérgio Basto <sergio@serjux.com> - 5.0.17-1.106108
+- Update to 5.0.17
 
 * Mon Mar 14 2016 Sérgio Basto <sergio@serjux.com> - 5.0.16-2
 - Force use of VirtualBox-kmodsrc-5.0.16-3
@@ -395,7 +401,7 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 - New release.
 
 * Sun Dec 11 2011 Sérgio Basto <sergio@serjux.com> - 4.1.6-2
-- rebuild for update kmodsrc. 
+- rebuild for update kmodsrc.
 
 * Sat Dec 3 2011 Sérgio Basto <sergio@serjux.com> - 4.1.6-1
 - Build for new release
