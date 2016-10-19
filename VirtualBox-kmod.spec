@@ -26,7 +26,7 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.1.6
+Version:        5.1.8
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:        1%{?dist}
 
@@ -106,6 +106,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Oct 18 2016 Sérgio Basto <sergio@serjux.com> - 5.1.8-1
+- Update VBox to 5.1.8
+
 * Tue Sep 13 2016 Sérgio Basto <sergio@serjux.com> - 5.1.6-1
 - Update VBox to 5.1.6
 
