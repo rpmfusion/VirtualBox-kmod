@@ -3,31 +3,39 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%global buildforkernels newest
+%global buildforkernels akmod
+
+%global debug_package %{nil}
+#akmods still generate debuginfo but have the wrong name:
+#/var/cache/akmods/VirtualBox/VirtualBox-kmod-debuginfo-5.0.4-1.fc21.x86_64.rpm
+#/var/cache/akmods/VirtualBox/kmod-VirtualBox-4.1.8-100.fc21.x86_64-5.0.4-1.fc21.x86_64.rpm
+#and when just build akmod, debuginfo will be empty.
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guarranteed
 # to be stable. This is so that we force the module update in sync with
 # userspace.
-#global prerel RC4
-%global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
+#global prerel 106108
+%global prereltag %{?prerel:-%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
 %global vboxrel 1
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
-%bcond_with hardening
+%bcond_without hardening
+%global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        4.3.28
-Release:        1%{?prerel:.%{prerel}}%{?dist}.3
+Version:        5.1.10
+#Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
 License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
-Source1:        VirtualBox-OSE-kmod-1.6.4-kernel-variants.txt
+Source1:        VirtualBox-kmod-excludekernel-filter.txt
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -40,7 +48,7 @@ ExclusiveArch:  i686 x86_64
 %{!?kernels:BuildRequires: buildsys-build-rpmfusion-kerneldevpkgs-%{?buildforkernels:%{buildforkernels}}%{!?buildforkernels:current}-%{_target_cpu} }
 
 # kmodtool does its magic here
-%{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} --obsolete-name VirtualBox-OSE --obsolete-version %{version}-%{release} 2>/dev/null) }
+%{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null) }
 
 
 %description
@@ -55,11 +63,11 @@ tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{versi
 %{?kmodtool_check}
 
 # print kmodtool output for debugging purposes:
-kmodtool --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} --obsolete-name VirtualBox-OSE --obsolete-version %{version}-%{release} 2>/dev/null
+kmodtool --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null
 
 # This is hardcoded in Makefiles
 # Kto zisti, preco tu nefunguje %%without hardening ma u mna nanuk
-%{?with_hardening:find %{name}-%{version} -name Makefile |xargs sed 's/-DVBOX_WITH_HARDENING//' -i}
+%{!?with_hardening:find %{name}-%{version} -name Makefile |xargs sed 's/-DVBOX_WITH_HARDENING//' -i}
 
 for kernel_version in %{?kernel_versions} ; do
     cp -al %{name}-%{version} _kmod_build_${kernel_version%%___*}
@@ -83,8 +91,8 @@ done
 
 %install
 for kernel_version in %{?kernel_versions}; do
-    install -d ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}
-    install _kmod_build_${kernel_version%%___*}/*/*.ko ${RPM_BUILD_ROOT}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}
+    install -d %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}
+    install _kmod_build_${kernel_version%%___*}/*/*.ko %{buildroot}%{kmodinstdir_prefix}/${kernel_version%%___*}/%{kmodinstdir_postfix}
 done
 
 %{?akmod_install}
@@ -92,242 +100,208 @@ done
 
 %check
 # If we built modules, check if it was everything the kmodsrc package provided
-MODS=$(find $(ls -d $RPM_BUILD_ROOT%{_prefix}/lib/modules/* |head -n1) -name '*.ko' -exec basename '{}' \; |wc -l)
+MODS=$(find $(ls -d %{buildroot}%{_prefix}/lib/modules/* |head -n1) -name '*.ko' -exec basename '{}' \; |wc -l)
 DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 
 %changelog
-* Wed Jun 10 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.28-1.3
+* Tue Nov 22 2016 Sérgio Basto <sergio@serjux.com> - 5.1.10-1
+- New upstream vesion, 5.1.10
+
+* Tue Oct 18 2016 Sérgio Basto <sergio@serjux.com> - 5.1.8-1
+- Update VBox to 5.1.8
+
+* Tue Sep 13 2016 Sérgio Basto <sergio@serjux.com> - 5.1.6-1
+- Update VBox to 5.1.6
+
+* Sat Sep 10 2016 Sérgio Basto <sergio@serjux.com> - 5.1.4-3
+- Force use VirtualBox-kmodsrc >= 5.1.4-4, with fix for 4.8.0-rc5
+
+* Wed Sep 07 2016 Sérgio Basto <sergio@serjux.com> - 5.1.4-2
+- Force use VirtualBox-kmodsrc >= 5.1.4-3
+
+* Tue Sep 06 2016 Sérgio Basto <sergio@serjux.com> - 5.1.4-1
+- Update VBox to 5.1.4
+
+* Mon Jul 18 2016 Sérgio Basto <sergio@serjux.com> - 5.0.26-1
+- Update to 5.0.26
+
+* Thu Jul 07 2016 Sérgio Basto <sergio@serjux.com> - 5.0.24-2
+- Build only akmods
+
+* Wed Jun 29 2016 Sérgio Basto <sergio@serjux.com> - 5.0.24-1
+- Update VirtualBox to 5.0.24
+- No more obsolete VirtualBox-OSE , simplify snippets
+
+* Fri Jun 24 2016 Sérgio Basto <sergio@serjux.com> - 5.0.22-1
+- Update to 5.0.22
+
+* Sat Apr 23 2016 Sérgio Basto <sergio@serjux.com> - 5.0.18-1
+- Update to 5.0.18
+
+* Sun Mar 20 2016 Sérgio Basto <sergio@serjux.com> - 5.0.17-1.106108
+- Update to 5.0.17
+
+* Mon Mar 14 2016 Sérgio Basto <sergio@serjux.com> - 5.0.16-2
+- Force use of VirtualBox-kmodsrc-5.0.16-3
+
+* Sat Mar 05 2016 Sérgio Basto <sergio@serjux.com> - 5.0.16-1
+- Building akmod for VirtualBox 5.0.16
+
+* Wed Jan 20 2016 Sérgio Basto <sergio@serjux.com> - 5.0.14-1
+- Building akmod for VirtualBox 5.0.14
+
+* Tue Dec 22 2015 Sérgio Basto <sergio@serjux.com> - 5.0.12-1
+- Building akmod for VirtualBox-5.0.12
+
+* Thu Nov 12 2015 Sérgio Basto <sergio@serjux.com> - 5.0.10-1
+- Building akmod for VirtualBox-5.0.10
+
+* Thu Oct 22 2015 Sérgio Basto <sergio@serjux.com> - 5.0.8-1
+- Update to VirtualBox-5.0.8
+
+* Mon Oct 05 2015 Sérgio Basto <sergio@serjux.com> - 5.0.6-1
+- Update to VirtualBox-5.0.6
+
+* Fri Sep 25 2015 Sérgio Basto <sergio@serjux.com> - 5.0.4-2
+- no debuginfo, if we, just build akmod, debuginfo will be empty.
+
+* Thu Sep 24 2015 Sérgio Basto <sergio@serjux.com> - 5.0.4-1
+- Update to 5.0.4, just build akmod.
+
+* Fri Jul 24 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.30-1.2
 - Rebuilt for kernel
 
-* Tue Jun 02 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.28-1.2
+* Thu Jul 16 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.30-1.1
 - Rebuilt for kernel
 
-* Sun May 24 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.28-1.1
+* Wed Jul 15 2015 Sérgio Basto <sergio@serjux.com> - 4.3.30-1
+- New upstream release (4.3.30), build akmods.
+- Invert logic of conditional build, just to have more logic.
+
+* Thu Jul 02 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.28-1.6
 - Rebuilt for kernel
 
-* Mon May 18 2015 Sérgio Basto <sergio@serjux.com> - 4.3.28-1
+* Sun Jun 28 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.28-1.5
+- Rebuilt for kernel
+
+* Wed Jun 10 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.28-1.4
+- Rebuilt for kernel
+
+* Tue Jun 02 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.28-1.3
+- Rebuilt for kernel
+
+* Sun May 24 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.28-1.2
+- Rebuilt for kernel
+
+* Wed May 20 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.28-1.1
+- Rebuilt for kernel
+
+* Wed May 13 2015 Sérgio Basto <sergio@serjux.com> - 4.3.28-1
 - New upstream release (4.3.28), build akmods.
 
-* Wed May 13 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.26-1.5
+* Wed May 13 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.26-2.2
 - Rebuilt for kernel
 
-* Sat May 09 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.26-1.4
+* Sat May 09 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.26-2.1
 - Rebuilt for kernel
 
-* Sat May 02 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.26-1.3
+* Tue May 05 2015 Sérgio Basto <sergio@serjux.com> - 4.3.26-2
+- Rebuild for newest VirtualBox-kmodsrc and build a new akmod .
+
+* Sat May 02 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.26-1.6
 - Rebuilt for kernel
 
-* Wed Apr 22 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.26-1.2
+* Wed Apr 22 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.26-1.5
 - Rebuilt for kernel
 
-* Wed Apr 15 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.26-1.1
+* Wed Apr 15 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.26-1.4
 - Rebuilt for kernel
 
-* Tue Mar 31 2015 Sérgio Basto <sergio@serjux.com> - 4.3.26-1
-- Update to 4.3.26 and build akmods.
-
-* Mon Mar 30 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-1.12
+* Mon Mar 30 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.26-1.3
 - Rebuilt for kernel
 
-* Tue Mar 10 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-1.11
+* Fri Mar 27 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.26-1.1
 - Rebuilt for kernel
 
-* Fri Mar 06 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-1.10
+* Tue Mar 24 2015 Leigh Scott <leigh123linux@googlemail.com> - 4.3.26-1
+- New upstream release.
+
+* Mon Mar 23 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-4.8
 - Rebuilt for kernel
 
-* Sat Feb 14 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-1.9
+* Sat Mar 21 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-4.7
 - Rebuilt for kernel
 
-* Sun Feb 08 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-1.8
+* Tue Mar 10 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-4.6
 - Rebuilt for kernel
 
-* Wed Feb 04 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-1.7
+* Fri Mar 06 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-4.5
 - Rebuilt for kernel
 
-* Mon Feb 02 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-1.6
+* Sat Feb 14 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-4.4
 - Rebuilt for kernel
 
-* Sat Jan 10 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-1.5
+* Sun Feb 08 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-4.3
 - Rebuilt for kernel
 
-* Thu Dec 18 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-1.4
+* Wed Feb 04 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-4.2
 - Rebuilt for kernel
 
-* Sat Dec 13 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-1.3
+* Mon Feb 02 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-4.1
 - Rebuilt for kernel
 
-* Sun Nov 23 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-1.2
-- Rebuilt for current
+* Mon Jan 26 2015 Leigh Scott <leigh123linux@googlemail.com> - 4.3.20-4
+- fix build issue
+
+* Thu Jan 22 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-3.5
+- Bump
+
+* Wed Jan 21 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-2.5
+- Rebuilt for kernel
+
+* Sat Jan 10 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-2.3
+- Rebuilt for kernel
+
+* Sun Dec 21 2014 Sérgio Basto <sergio@serjux.com> - 4.3.20-2.3
+- s/$RPM_BUILD_ROOT/%{buildroot}/g.
+
+* Fri Dec 19 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-2.2
+- Rebuilt for kernel
+
+* Sun Dec 14 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-2.1
+- Rebuilt for kernel
+
+* Fri Dec 05 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-2
+- Rebuilt for f21 final kernel
 
 * Sun Nov 23 2014 Sérgio Basto <sergio@serjux.com> - 4.3.20-1
-- New upstream release and also build akmods.
-
-* Sun Nov 16 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.18-1.6
-- Rebuilt for kernel
-
-* Sun Nov 16 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.18-1.5
-- Rebuilt for kernel
-
-* Mon Nov 10 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.18-1.4
-- Rebuilt for kernel
-
-* Fri Oct 31 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.18-1.3
-- Rebuilt for kernel
-
-* Tue Oct 28 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.18-1.2
-- Rebuilt for kernel
-
-* Thu Oct 16 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.18-1.1
-- Rebuilt for kernel
+- New upstream release and just build akmods for devel.
 
 * Sun Oct 12 2014 Sérgio Basto <sergio@serjux.com> - 4.3.18-1
-- New upstream release and also build akmods
-
-* Fri Oct 10 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.16-1.4
-- Rebuilt for kernel
-
-* Tue Oct 07 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.16-1.3
-- Rebuilt for kernel
-
-* Fri Sep 19 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.16-1.2
-- Rebuilt for kernel
-
-* Thu Sep 18 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.16-1.1
-- Rebuilt for kernel
+- New upstream release and just build akmods for devel.
 
 * Thu Sep 11 2014 Sérgio Basto <sergio@serjux.com> - 4.3.16-1
-- New upstream release and also build akmods
+- New upstream release and just build akmods for devel.
 
-* Tue Sep 09 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.14-1.8
-- Rebuilt for kernel
+* Fri Jul 25 2014 Sérgio Basto <sergio@serjux.com> - 4.3.14-1
+- New upstream release and just build akmods for rawhide/F21.
 
-* Sat Aug 30 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.14-1.7
-- Rebuilt for kernel
+* Sun May 18 2014 Sérgio Basto <sergio@serjux.com> - 4.3.12-1
+- New upstream release and just build akmods for rawhide.
 
-* Wed Aug 20 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.14-1.6
-- Rebuilt for kernel
-
-* Wed Aug 20 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.14-1.5
-- Rebuilt for kernel
-
-* Fri Aug 15 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.14-1.4
-- Rebuilt for kernel
-
-* Wed Aug 13 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.14-1.3
-- Rebuilt for kernel
-
-* Sat Aug 02 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.14-1.2
-- Rebuilt for kernel
-
-* Fri Aug 01 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.14-1.1
-- Rebuilt for new kernel
-
-* Mon Jul 28 2014 Sérgio Basto <sergio@serjux.com> - 4.3.14-1
-- New upstream release and also build akmods
-
-* Fri Jul 18 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.12-1.9
-- Rebuilt for kernel
-
-* Thu Jul 17 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.12-1.8
-- Rebuilt for kernel
-
-* Tue Jul 08 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.12-1.7
-- Rebuilt for kernel
-
-* Tue Jul 08 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.12-1.6
-- Rebuilt for kernel
-
-* Tue Jul 08 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.12-1.5
-- Rebuilt for kernel
-
-* Tue Jun 17 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.12-1.4
-- Rebuilt for kernel
-
-* Fri Jun 13 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.12-1.3
-- Rebuilt for kernel
-
-* Sun Jun 08 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.12-1.2
-- Rebuilt for kernel
-
-* Tue Jun 03 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.12-1.1
-- Rebuilt for kernel
-
-* Sat May 17 2014 Sérgio Basto <sergio@serjux.com> - 4.3.12-1
-- New upstream release and also build akmods
-
-* Thu May 15 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.10-1.7
-- Rebuilt for kernel
-
-* Thu May 08 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.10-1.6
-- Rebuilt for kernel
-
-* Wed Apr 30 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.10-1.5
-- Rebuilt for kernel
-
-* Sat Apr 26 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.10-1.4
-- Rebuilt for kernel
-
-* Wed Apr 16 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.10-1.3
-- Rebuilt for kernel
-
-* Fri Apr 04 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.10-1.2
-- Rebuilt for kernel
-
-* Wed Apr 02 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.10-1.1
-- Rebuilt for kernel
+* Fri May 02 2014 Sérgio Basto <sergio@serjux.com> - 4.3.10-2
+- Rebuild for new x11-xorg-server
 
 * Mon Mar 31 2014 Sérgio Basto <sergio@serjux.com> - 4.3.10-1
-- New upstream release and build also akmods
+- New upstream release and just build akmods for rawhide
 
-* Tue Mar 25 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.6-2.13
-- Rebuilt for kernel
+* Fri Mar 14 2014 Sérgio Basto <sergio@serjux.com> - 4.3.8-1
+- New upstream release and just build akmods for rawhide
 
-* Sun Mar 09 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.6-2.12
-- Rebuilt for kernel
-
-* Tue Mar 04 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.6-2.11
-- Rebuilt for kernel
-
-* Tue Feb 25 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.6-2.10
-- Rebuilt for kernel
-
-* Mon Feb 24 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.6-2.9
-- Rebuilt for kernel
-
-* Mon Feb 17 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.6-2.8
-- Rebuilt for kernel
-
-* Sat Feb 15 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.6-2.7
-- Rebuilt for kernel
-
-* Wed Feb 12 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.6-2.6
-- Rebuilt for kernel
-
-* Fri Feb 07 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.6-2.5
-- Rebuilt for kernel
-
-* Thu Jan 30 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.6-2.4
-- Rebuilt for kernel
-
-* Tue Jan 28 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.6-2.3
-- Rebuilt for kernel
-
-* Fri Jan 17 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.6-2.2
-- Rebuilt for kernel
-
-* Sun Jan 12 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.6-2.1
-- Rebuilt for kernel
-
-* Thu Dec 26 2013 Sérgio Basto <sergio@serjux.com> - 4.3.6-2
-- Rebuild for newer VirtualBox-kmodsrc and build akmods.
-
-* Wed Dec 25 2013 Nicolas Chauvet <kwizart@gmail.com> - 4.3.6-1.2
-- Rebuilt for kernel
-
-* Fri Dec 20 2013 Nicolas Chauvet <kwizart@gmail.com> - 4.3.6-1.1
-- Rebuilt for kernel
+* Wed Dec 25 2013 Sérgio Basto <sergio@serjux.com> - 4.3.6-2
+- Rebuild for newest VirtualBox-kmodsrc and just build akmods for rawhide.
 
 * Thu Dec 19 2013 Sérgio Basto <sergio@serjux.com> - 4.3.6-1
 - New upstream release.
@@ -433,7 +407,7 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 - New release.
 
 * Sun Dec 11 2011 Sérgio Basto <sergio@serjux.com> - 4.1.6-2
-- rebuild for update kmodsrc. 
+- rebuild for update kmodsrc.
 
 * Sat Dec 3 2011 Sérgio Basto <sergio@serjux.com> - 4.1.6-1
 - Build for new release
