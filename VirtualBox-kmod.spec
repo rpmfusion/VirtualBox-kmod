@@ -28,7 +28,7 @@
 Name:           VirtualBox-kmod
 Version:        5.1.14
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -36,6 +36,7 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-kmod-excludekernel-filter.txt
+Patch1:         kernel-4.10.0-0.rc5.lnkops.patch
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -58,6 +59,7 @@ Kernel module for VirtualBox
 %prep
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
+%patch1 -p1 -b .lnkops
 
 # error out if there was something wrong with kmodtool
 %{?kmodtool_check}
@@ -106,6 +108,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Fri Jan 27 2017 Sérgio Basto <sergio@serjux.com> - 5.1.14-2
+- Applied lnkops.patch for kernel-4.10.0-0.rc5
+
 * Wed Jan 18 2017 Sérgio Basto <sergio@serjux.com> - 5.1.14-1
 - Update VBox to 5.1.14
 

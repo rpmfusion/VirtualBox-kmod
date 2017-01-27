@@ -1,0 +1,17 @@
+Fix kernel-4.10.0-0.rc5
+
+based on https://patchwork.kernel.org/patch/9327855/
+--- ./VirtualBox-kmod-5.1.14/vboxsf/lnkops.c.orig	2017-01-27 00:42:02.874808843 +0000
++++ ./VirtualBox-kmod-5.1.14/vboxsf/lnkops.c	2017-01-27 00:43:37.814861397 +0000
+@@ -90,7 +90,11 @@ static const char *sf_get_link(struct de
+ 
+ struct inode_operations sf_lnk_iops =
+ {
++# if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
++    .readlink       = vfs_readlink,
++# else
+     .readlink       = generic_readlink,
++# endif
+ # if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 0)
+     .get_link       = sf_get_link
+ # elif LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
