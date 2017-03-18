@@ -28,7 +28,7 @@
 Name:           VirtualBox-kmod
 Version:        5.1.18
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -106,6 +106,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sat Mar 18 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 5.1.18-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
 * Thu Mar 16 2017 Sérgio Basto <sergio@serjux.com> - 5.1.18-1
 - Update VirtualBox to 5.1.18
 
