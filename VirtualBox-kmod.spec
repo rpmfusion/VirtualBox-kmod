@@ -26,7 +26,7 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.1.20
+Version:        5.1.22
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:        1%{?dist}
 
@@ -106,6 +106,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Fri Jun 16 2017 Sérgio Basto <sergio@serjux.com> - 5.1.22-1
+- Update VBox to 5.1.22
+
 * Thu Apr 20 2017 Sérgio Basto <sergio@serjux.com> - 5.1.20-1
 - Update VBox to 5.1.20, security fixes
 
