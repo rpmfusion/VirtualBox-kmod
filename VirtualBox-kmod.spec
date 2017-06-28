@@ -30,7 +30,7 @@
 Name:           VirtualBox-kmod
 Version:        5.1.22
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -108,6 +108,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Jun 28 2017 Nicolas Chauvet <kwizart@gmail.com> - 5.1.22-2
+- Allow to build pre-built kmod on el
+
 * Fri Jun 16 2017 Sérgio Basto <sergio@serjux.com> - 5.1.22-1
 - Update VBox to 5.1.22
 
