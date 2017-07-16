@@ -30,7 +30,7 @@
 Name:           VirtualBox-kmod
 Version:        5.1.22
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        3%{?dist}
+Release:        4%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -39,6 +39,7 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-kmod-excludekernel-filter.txt
 patch1:         vbox_fix_for_kernel_4.12_rf.patch
+patch2:         vbox_fix_for_kernel_4.13_rc0_rf.patch
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -62,6 +63,7 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 %patch1 -p1
+%patch2 -p1
 
 # error out if there was something wrong with kmodtool
 %{?kmodtool_check}
@@ -110,6 +112,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Jul 12 2017 Sérgio Basto <sergio@serjux.com> - 5.1.22-4
+- Add patch for kernel_4.13_rc1
+
 * Fri Jun 30 2017 Sérgio Basto <sergio@serjux.com> - 5.1.22-3
 - Add patch for kernel 4.12
 
