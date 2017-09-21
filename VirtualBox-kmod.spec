@@ -29,7 +29,7 @@
 Name:           VirtualBox-kmod
 Version:        5.1.28
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        3%{?dist}
+Release:        4%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -37,6 +37,7 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-kmod-excludekernel-filter.txt
+Patch1:         fixes_for_4.14.patch
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -59,6 +60,7 @@ Kernel module for VirtualBox
 %prep
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
+%patch1 -p1 -b .kernel_4.14
 
 # error out if there was something wrong with kmodtool
 %{?kmodtool_check}
@@ -107,6 +109,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Sep 21 2017 Sérgio Basto <sergio@serjux.com> - 5.1.28-4
+- Add fixes for kernel 4.14
+
 * Sat Sep 16 2017 Sérgio Basto <sergio@serjux.com> - 5.1.28-3
 - Reenable buildsys-build-rpmfusion-kerneldevpkgs-current
 
