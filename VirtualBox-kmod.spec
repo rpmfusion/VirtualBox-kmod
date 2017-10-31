@@ -27,9 +27,9 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.1.28
+Version:        5.1.30
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        4%{?dist}
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -109,6 +109,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Oct 31 2017 Sérgio Basto <sergio@serjux.com> - 5.1.30-1
+- Update VBox to 5.1.30
+
 * Thu Sep 21 2017 Sérgio Basto <sergio@serjux.com> - 5.1.28-4
 - Add fixes for kernel 4.14
 
