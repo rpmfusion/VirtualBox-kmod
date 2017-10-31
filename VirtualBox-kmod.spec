@@ -37,7 +37,6 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-kmod-excludekernel-filter.txt
-Patch1:         fixes_for_4.14.patch
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -60,7 +59,6 @@ Kernel module for VirtualBox
 %prep
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
-%patch1 -p1 -b .kernel_4.14
 
 # error out if there was something wrong with kmodtool
 %{?kmodtool_check}
