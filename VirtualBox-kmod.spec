@@ -29,7 +29,7 @@
 Name:           VirtualBox-kmod
 Version:        5.1.30
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        2%{?dist}
+Release:        3%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -109,6 +109,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sun Nov 19 2017 Sérgio Basto <sergio@serjux.com> - 5.1.30-3
+- Add more fixes for kernel 4.14
+
 * Sun Nov 19 2017 Sérgio Basto <sergio@serjux.com> - 5.1.30-2
 - Readd fixes for kernel 4.14
 
