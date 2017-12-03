@@ -1,0 +1,219 @@
+This patch file makes the necessary changes to the VirtualBox 5.1.30 sources
+to allow the kernel modules to build with kernel 4.15.
+
+The API changes are of several types:
+
+1. The timer initialization routine init_timer_pinned() no longer exists, and
+   is replaced by timer_setup().
+2. The timer callback routine calling sequence is changed as is the technique
+   for getting the timer information from the callback parameters.
+3. The calling sequence for drm_encoder_find() is changed.
+4. The calling sequence for the .get and .set members of the module_param_call()
+   calls have changed.
+
+This patch is released under the MIT license when appropriate, GPLv2 otherwise.
+
+Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
+
+--- ./VirtualBox-kmod-5.1.30/vboxdrv/r0drv/linux/timer-r0drv-linux.c.orig	2017-12-01 19:02:19.075998155 +0000
++++ ./VirtualBox-kmod-5.1.30/vboxdrv/r0drv/linux/timer-r0drv-linux.c	2017-12-01 19:06:14.396334418 +0000
+@@ -715,6 +715,14 @@ static enum hrtimer_restart rtTimerLinux
+ #endif /* RTTIMER_LINUX_WITH_HRTIMER */
+ 
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
++/**
++ * Timer callback for kernels 4.15 and later
++ */
++static void rtTimerLinuxStdCallback(struct timer_list *t)
++{
++    PRTTIMERLNXSUBTIMER pSubTimer = from_timer(pSubTimer, t, u.Std.LnxTimer);
++#else
+ /**
+  * Timer callback function for standard timers.
+  *
+@@ -723,6 +731,7 @@ static enum hrtimer_restart rtTimerLinux
+ static void rtTimerLinuxStdCallback(unsigned long ulUser)
+ {
+     PRTTIMERLNXSUBTIMER pSubTimer = (PRTTIMERLNXSUBTIMER)ulUser;
++#endif
+     PRTTIMER            pTimer    = pSubTimer->pParent;
+ 
+     RTTIMERLNX_LOG(("stdcallback %p\n", pTimer));
+@@ -1584,13 +1593,17 @@ RTDECL(int) RTTimerCreateEx(PRTTIMER *pp
+         else
+ #endif
+         {
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
++            timer_setup(&pTimer->aSubTimers[iCpu].u.Std.LnxTimer,rtTimerLinuxStdCallback, TIMER_PINNED);
++#elif LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0)
+             init_timer_pinned(&pTimer->aSubTimers[iCpu].u.Std.LnxTimer);
+ #else
+             init_timer(&pTimer->aSubTimers[iCpu].u.Std.LnxTimer);
+ #endif
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
+             pTimer->aSubTimers[iCpu].u.Std.LnxTimer.data        = (unsigned long)&pTimer->aSubTimers[iCpu];
+             pTimer->aSubTimers[iCpu].u.Std.LnxTimer.function    = rtTimerLinuxStdCallback;
++#endif
+             pTimer->aSubTimers[iCpu].u.Std.LnxTimer.expires     = jiffies;
+             pTimer->aSubTimers[iCpu].u.Std.u64NextTS            = 0;
+         }
+--- ./VirtualBox-kmod-5.1.30/vboxguest/r0drv/linux/timer-r0drv-linux.c.orig	2017-12-01 19:02:19.075998155 +0000
++++ ./VirtualBox-kmod-5.1.30/vboxguest/r0drv/linux/timer-r0drv-linux.c	2017-12-01 19:06:14.396334418 +0000
+@@ -715,6 +715,14 @@ static enum hrtimer_restart rtTimerLinux
+ #endif /* RTTIMER_LINUX_WITH_HRTIMER */
+ 
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
++/**
++ * Timer callback for kernels 4.15 and later
++ */
++static void rtTimerLinuxStdCallback(struct timer_list *t)
++{
++    PRTTIMERLNXSUBTIMER pSubTimer = from_timer(pSubTimer, t, u.Std.LnxTimer);
++#else
+ /**
+  * Timer callback function for standard timers.
+  *
+@@ -723,6 +731,7 @@ static enum hrtimer_restart rtTimerLinux
+ static void rtTimerLinuxStdCallback(unsigned long ulUser)
+ {
+     PRTTIMERLNXSUBTIMER pSubTimer = (PRTTIMERLNXSUBTIMER)ulUser;
++#endif
+     PRTTIMER            pTimer    = pSubTimer->pParent;
+ 
+     RTTIMERLNX_LOG(("stdcallback %p\n", pTimer));
+@@ -1584,13 +1593,17 @@ RTDECL(int) RTTimerCreateEx(PRTTIMER *pp
+         else
+ #endif
+         {
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
++            timer_setup(&pTimer->aSubTimers[iCpu].u.Std.LnxTimer,rtTimerLinuxStdCallback, TIMER_PINNED);
++#elif LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0)
+             init_timer_pinned(&pTimer->aSubTimers[iCpu].u.Std.LnxTimer);
+ #else
+             init_timer(&pTimer->aSubTimers[iCpu].u.Std.LnxTimer);
+ #endif
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
+             pTimer->aSubTimers[iCpu].u.Std.LnxTimer.data        = (unsigned long)&pTimer->aSubTimers[iCpu];
+             pTimer->aSubTimers[iCpu].u.Std.LnxTimer.function    = rtTimerLinuxStdCallback;
++#endif
+             pTimer->aSubTimers[iCpu].u.Std.LnxTimer.expires     = jiffies;
+             pTimer->aSubTimers[iCpu].u.Std.u64NextTS            = 0;
+         }
+--- ./VirtualBox-kmod-5.1.30/vboxguest/VBoxGuest-linux.c.orig
++++ ./VirtualBox-kmod-5.1.30/vboxguest/VBoxGuest-linux.c
+@@ -958,7 +958,11 @@ EXPORT_SYMBOL(VBoxGuestIDCCall);
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0)
+ 
+ /** log and dbg_log parameter setter. */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
++static int vgdrvLinuxParamLogGrpSet(const char *pszValue, const struct kernel_param *pParam)
++#else
+ static int vgdrvLinuxParamLogGrpSet(const char *pszValue, struct kernel_param *pParam)
++#endif
+ {
+     if (g_fLoggerCreated)
+     {
+@@ -973,7 +973,11 @@ static int vgdrvLinuxParamLogGrpSet(cons
+ }
+ 
+ /** log and dbg_log parameter getter. */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
++static int vgdrvLinuxParamLogGrpGet(char *pszBuf, const struct kernel_param *pParam)
++#else
+ static int vgdrvLinuxParamLogGrpGet(char *pszBuf, struct kernel_param *pParam)
++#endif
+ {
+     PRTLOGGER pLogger = pParam->name[0] == 'd' ? RTLogDefaultInstance() : RTLogRelGetDefaultInstance();
+     *pszBuf = '\0';
+@@ -984,7 +984,11 @@ static int vgdrvLinuxParamLogGrpGet(char
+ 
+ 
+ /** log and dbg_log_flags parameter setter. */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
++static int vgdrvLinuxParamLogFlagsSet(const char *pszValue, const struct kernel_param *pParam)
++#else
+ static int vgdrvLinuxParamLogFlagsSet(const char *pszValue, struct kernel_param *pParam)
++#endif
+ {
+     if (g_fLoggerCreated)
+     {
+@@ -998,7 +998,11 @@ static int vgdrvLinuxParamLogFlagsSet(co
+ }
+ 
+ /** log and dbg_log_flags parameter getter. */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
++static int vgdrvLinuxParamLogFlagsGet(char *pszBuf, const struct kernel_param *pParam)
++#else
+ static int vgdrvLinuxParamLogFlagsGet(char *pszBuf, struct kernel_param *pParam)
++#endif
+ {
+     PRTLOGGER pLogger = pParam->name[0] == 'd' ? RTLogDefaultInstance() : RTLogRelGetDefaultInstance();
+     *pszBuf = '\0';
+@@ -1009,7 +1009,11 @@ static int vgdrvLinuxParamLogFlagsGet(ch
+ 
+ 
+ /** log and dbg_log_dest parameter setter. */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
++static int vgdrvLinuxParamLogDstSet(const char *pszValue, const struct kernel_param *pParam)
++#else
+ static int vgdrvLinuxParamLogDstSet(const char *pszValue, struct kernel_param *pParam)
++#endif
+ {
+     if (g_fLoggerCreated)
+     {
+@@ -1023,7 +1023,11 @@ static int vgdrvLinuxParamLogDstSet(cons
+ }
+ 
+ /** log and dbg_log_dest parameter getter. */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
++static int vgdrvLinuxParamLogDstGet(char *pszBuf, const struct kernel_param *pParam)
++#else
+ static int vgdrvLinuxParamLogDstGet(char *pszBuf, struct kernel_param *pParam)
++#endif
+ {
+     PRTLOGGER pLogger = pParam->name[0] == 'd' ? RTLogDefaultInstance() : RTLogRelGetDefaultInstance();
+     *pszBuf = '\0';
+@@ -1034,7 +1034,11 @@ static int vgdrvLinuxParamLogDstGet(char
+ 
+ 
+ /** r3_log_to_host parameter setter. */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
++static int vgdrvLinuxParamR3LogToHostSet(const char *pszValue, const struct kernel_param *pParam)
++#else
+ static int vgdrvLinuxParamR3LogToHostSet(const char *pszValue, struct kernel_param *pParam)
++#endif
+ {
+     if (    pszValue == NULL
+         || *pszValue == '\0'
+@@ -1052,7 +1052,11 @@ static int vgdrvLinuxParamR3LogToHostSet
+ }
+ 
+ /** r3_log_to_host parameter getter. */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
++static int vgdrvLinuxParamR3LogToHostGet(char *pszBuf, const struct kernel_param *pParam)
++#else
+ static int vgdrvLinuxParamR3LogToHostGet(char *pszBuf, struct kernel_param *pParam)
++#endif
+ {
+     strcpy(pszBuf, g_DevExt.fLoggingEnabled ? "enabled" : "disabled");
+     return strlen(pszBuf);
+--- ./VirtualBox-kmod-5.1.30/vboxvideo/vbox_mode.c.orig
++++ ./VirtualBox-kmod-5.1.30/vboxvideo/vbox_mode.c
+@@ -369,7 +369,12 @@ static struct drm_encoder *vbox_best_sin
+     LogFunc(("vboxvideo: %d: connector=%p\n", __LINE__, connector));
+     /* pick the encoder ids */
+     if (enc_id)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
++        return drm_encoder_find(connector->dev, NULL, enc_id);
++#else
+         return drm_encoder_find(connector->dev, enc_id);
++#endif
++
+     LogFunc(("vboxvideo: %d\n", __LINE__));
+     return NULL;
+ }
+
