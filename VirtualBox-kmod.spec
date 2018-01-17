@@ -27,9 +27,9 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.1.30
+Version:        5.2.6
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        4%{?dist}
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -37,8 +37,6 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-kmod-excludekernel-filter.txt
-Patch1:         fixes_for_4.14.patch
-Patch2:         Patch_for_kernel_4.15-rc1.patch
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -61,8 +59,6 @@ Kernel module for VirtualBox
 %prep
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
-%patch1 -p1 -b .kernel_4.14
-%patch2 -p1 -b .kernel_4.15
 
 # error out if there was something wrong with kmodtool
 %{?kmodtool_check}
@@ -111,6 +107,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Jan 17 2018 Sérgio Basto <sergio@serjux.com> - 5.2.6-1
+- Update VBox to 5.2.6
+
 * Fri Dec 01 2017 Sérgio Basto <sergio@serjux.com> - 5.1.30-4
 - Add fixes for kernel 4.15
 
