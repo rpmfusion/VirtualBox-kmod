@@ -82,14 +82,14 @@ done
 %build
 for kernel_version in %{?kernel_versions}; do
     for module in vbox{drv,guest}; do
-        make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
+        make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetadp}
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetflt}
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxsf}
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxvideo}
     for module in vbox{netadp,netflt,sf,video,pci}; do
-        make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
+        make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
 done
 
