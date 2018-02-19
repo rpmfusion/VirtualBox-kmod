@@ -1,3 +1,13 @@
+%if 0%{?fedora} > 27
+%bcond_with    vboxvideo
+%else
+%bcond_without vboxvideo
+%endif
+
+# Allow only root to access vboxdrv regardless of the file mode
+# use only for debugging!
+%bcond_without hardening
+
 # buildforkernels macro hint: when you build a new version or a new release
 # that contains bugfixes or other improvements then you must disable the
 # "buildforkernels newest" macro for just that build; immediately after
@@ -21,15 +31,12 @@
 
 %global vboxrel 1
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
-# Allow only root to access vboxdrv regardless of the file mode
-# use only for debugging!
-%bcond_without hardening
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
 Version:        5.2.6
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        2%{?dist}
+Release:        3%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -87,8 +94,10 @@ for kernel_version in %{?kernel_versions}; do
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetadp}
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetflt}
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxsf}
+%if %{with vboxvideo}
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxvideo}
-    for module in vbox{netadp,netflt,sf,video,pci}; do
+%endif
+    for module in vbox{netadp,netflt,sf,%{?with_vboxvideo:video,}pci}; do
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
 done
@@ -106,11 +115,17 @@ done
 %check
 # If we built modules, check if it was everything the kmodsrc package provided
 MODS=$(find $(ls -d %{buildroot}%{_prefix}/lib/modules/* |head -n1) -name '*.ko' -exec basename '{}' \; |wc -l)
+%if ! %{with vboxvideo}
+rm -rf %{name}-%{version}/vboxvideo
+%endif
 DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 
 %changelog
+* Mon Feb 19 2018 Sérgio Basto <sergio@serjux.com> - 5.2.6-3
+- Remove vboxvideo.ko in Fedora rawhide, it fix build for kernel 4.16-rc1
+
 * Thu Jan 18 2018 Sérgio Basto <sergio@serjux.com> - 5.2.6-2
 - Fixes for kernel 4.15
 
