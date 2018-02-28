@@ -36,7 +36,7 @@
 Name:           VirtualBox-kmod
 Version:        5.2.6
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        3%{?dist}
+Release:        4%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -123,6 +123,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Feb 28 2018 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 5.2.6-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
 * Mon Feb 19 2018 Sérgio Basto <sergio@serjux.com> - 5.2.6-3
 - Remove vboxvideo.ko in Fedora rawhide, it fix build for kernel 4.16-rc1
 
