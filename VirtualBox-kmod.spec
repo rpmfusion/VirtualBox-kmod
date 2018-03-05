@@ -23,7 +23,7 @@
 #and when just build akmod, debuginfo will be empty.
 
 # In prerelease builds (such as betas), this package has the same
-# major version number, while the kernel module abi is not guarranteed
+# major version number, while the kernel module abi is not guaranteed
 # to be stable. This is so that we force the module update in sync with
 # userspace.
 #global prerel 106108
@@ -78,7 +78,7 @@ popd
 kmodtool --target %{_target_cpu}  --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null
 
 # This is hardcoded in Makefiles
-# Kto zisti, preco tu nefunguje %%without hardening ma u mna nanuk
+# who will find out why %%without hardening does not work?
 %{!?with_hardening:find %{name}-%{version} -name Makefile |xargs sed 's/-DVBOX_WITH_HARDENING//' -i}
 
 for kernel_version in %{?kernel_versions} ; do
@@ -205,7 +205,7 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 - Update VBox to 5.1.14
 
 * Tue Nov 22 2016 Sérgio Basto <sergio@serjux.com> - 5.1.10-1
-- New upstream vesion, 5.1.10
+- New upstream version, 5.1.10
 
 * Tue Oct 18 2016 Sérgio Basto <sergio@serjux.com> - 5.1.8-1
 - Update VBox to 5.1.8
@@ -230,7 +230,7 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 * Wed Jun 29 2016 Sérgio Basto <sergio@serjux.com> - 5.0.24-1
 - Update VirtualBox to 5.0.24
-- No more obsolete VirtualBox-OSE , simplify snippets
+- No more obsolete VirtualBox-OSE, simplify snippets
 
 * Fri Jun 24 2016 Sérgio Basto <sergio@serjux.com> - 5.0.22-1
 - Update to 5.0.22
