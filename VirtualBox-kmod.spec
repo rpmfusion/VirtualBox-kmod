@@ -36,7 +36,7 @@
 Name:           VirtualBox-kmod
 Version:        5.2.8
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -123,6 +123,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Mar 07 2018 Sérgio Basto <sergio@serjux.com> - 5.2.8-2
+- Fix minor spelling mistakes
+
 * Sat Mar 03 2018 Sérgio Basto <sergio@serjux.com> - 5.2.8-1
 - Update VirtualBox-kmod to 5.2.8
 
