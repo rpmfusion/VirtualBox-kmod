@@ -91,12 +91,11 @@ for kernel_version in %{?kernel_versions}; do
     for module in vbox{drv,guest}; do
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
+    # copy vboxdrv (for host) module symbols which are used by vboxnetflt and vboxnetadp km's:
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetadp}
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetflt}
+    # copy vboxguest (for guest) module symbols which are used by vboxsf km:
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxsf}
-%if %{with vboxvideo}
-    cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxvideo}
-%endif
     for module in vbox{netadp,netflt,sf,%{?with_vboxvideo:video,}pci}; do
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
