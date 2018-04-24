@@ -34,9 +34,9 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.2.8
+Version:        5.2.10
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        3%{?dist}
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -122,6 +122,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Apr 24 2018 Sérgio Basto <sergio@serjux.com> - 5.2.10-1
+- Update to 5.2.10
+
 * Sat Mar 10 2018 Sérgio Basto <sergio@serjux.com> - 5.2.8-3
 - All fedora kernels have vboxvideo.ko
 
