@@ -36,7 +36,7 @@
 Name:           VirtualBox-kmod
 Version:        5.2.10
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -122,6 +122,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Apr 25 2018 Sérgio Basto <sergio@serjux.com> - 5.2.10-2
+- Add fix for kernel 4.17
+
 * Tue Apr 24 2018 Sérgio Basto <sergio@serjux.com> - 5.2.10-1
 - Update to 5.2.10
 
