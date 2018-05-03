@@ -36,7 +36,7 @@
 Name:           VirtualBox-kmod
 Version:        5.2.10
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        2%{?dist}
+Release:        3%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -44,6 +44,8 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-kmod-excludekernel-filter.txt
+Source2:        https://github.com/jwrdegoede/vboxsf/archive/master.zip
+
 #Patch1:         fixes_for_4.15.v2.patch
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
@@ -69,6 +71,11 @@ Kernel module for VirtualBox
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
 #patch1 -p2 -b .kernel_4.15
+%if 0%{?fedora} > 27
+rm -rf vboxsf/
+unzip %{SOURCE2}
+mv vboxsf-master/ vboxsf/
+%endif
 popd
 
 # error out if there was something wrong with kmodtool
@@ -122,6 +129,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu May 03 2018 Sérgio Basto <sergio@serjux.com> - 5.2.10-3
+- Start with jwrdegoede/vboxsf on Fedora 28
+
 * Wed Apr 25 2018 Sérgio Basto <sergio@serjux.com> - 5.2.10-2
 - Add fix for kernel 4.17
 
