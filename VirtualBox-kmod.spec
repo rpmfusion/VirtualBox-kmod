@@ -3,6 +3,11 @@
 %else
 %bcond_without vboxvideo
 %endif
+%if 0%{?fedora} > 27
+%bcond_without  newvboxsf
+%else
+%bcond_with     newvboxsf
+%endif
 
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
@@ -36,7 +41,7 @@
 Name:           VirtualBox-kmod
 Version:        5.2.10
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        3%{?dist}
+Release:        4%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -71,7 +76,7 @@ Kernel module for VirtualBox
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
 #patch1 -p2 -b .kernel_4.15
-%if 0%{?fedora} > 27
+%if %{with newvboxsf}
 rm -rf vboxsf/
 unzip %{SOURCE2}
 mv vboxsf-master/ vboxsf/
@@ -95,14 +100,17 @@ done
 
 %build
 for kernel_version in %{?kernel_versions}; do
-    for module in vbox{drv,guest}; do
+    for module in vbox{drv,{!?with_newvboxsf:guest}}; do
+    
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
     # copy vboxdrv (for host) module symbols which are used by vboxnetflt and vboxnetadp km's:
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetadp}
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetflt}
+    %if ! %{with newvboxsf}
     # copy vboxguest (for guest) module symbols which are used by vboxsf km:
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxsf}
+    %endif
     for module in vbox{netadp,netflt,sf,%{?with_vboxvideo:video,}pci}; do
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
@@ -124,11 +132,17 @@ MODS=$(find $(ls -d %{buildroot}%{_prefix}/lib/modules/* |head -n1) -name '*.ko'
 %if ! %{with vboxvideo}
 rm -rf %{name}-%{version}/vboxvideo
 %endif
+%if %{with newvboxsf}
+rm -rf %{name}-%{version}/vboxguest
+%endif
 DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 
 %changelog
+* Thu May 10 2018 Sérgio Basto <sergio@serjux.com> - 5.2.10-4
+- if we use new vboxsf, we do not need build vboxguest neither add his headers
+
 * Thu May 03 2018 Sérgio Basto <sergio@serjux.com> - 5.2.10-3
 - Start with jwrdegoede/vboxsf on Fedora 28
 
