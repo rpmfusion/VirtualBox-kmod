@@ -18,10 +18,10 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%if 0%{?fedora}
+#if 0%{?fedora}
 %global buildforkernels akmod
 %global debug_package %{nil}
-%endif
+#endif
 #akmods still generate debuginfo but have the wrong name:
 #/var/cache/akmods/VirtualBox/VirtualBox-kmod-debuginfo-5.0.4-1.fc21.x86_64.rpm
 #/var/cache/akmods/VirtualBox/kmod-VirtualBox-4.1.8-100.fc21.x86_64-5.0.4-1.fc21.x86_64.rpm
@@ -41,7 +41,7 @@
 Name:           VirtualBox-kmod
 Version:        5.2.12
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -100,7 +100,7 @@ done
 
 %build
 for kernel_version in %{?kernel_versions}; do
-    for module in vbox{drv,{!?with_newvboxsf:guest}}; do
+    for module in vbox{drv%{!?with_newvboxsf:,guest}}; do
     
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
@@ -111,7 +111,7 @@ for kernel_version in %{?kernel_versions}; do
     # copy vboxguest (for guest) module symbols which are used by vboxsf km:
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxsf}
     %endif
-    for module in vbox{netadp,netflt,sf,%{?with_vboxvideo:video,}pci}; do
+    for module in vbox{netadp,netflt,sf%{?with_vboxvideo:,video},pci}; do
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
 done
@@ -140,6 +140,10 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sat May 12 2018 Sérgio Basto <sergio@serjux.com> - 5.2.12-2
+- Fix a double bug
+- Just build akmods for el7
+
 * Fri May 11 2018 Sérgio Basto <sergio@serjux.com> - 5.2.12-1
 - Update to 5.2.12
 
