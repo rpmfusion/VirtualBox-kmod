@@ -41,7 +41,7 @@
 Name:           VirtualBox-kmod
 Version:        5.2.12
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        3%{?dist}
+Release:        4%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -100,7 +100,7 @@ done
 
 %build
 for kernel_version in %{?kernel_versions}; do
-    for module in vbox{drv%{!?with_newvboxsf:,guest}}; do
+    for module in vboxdrv %{!?with_newvboxsf:vboxguest}; do
     
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
@@ -140,6 +140,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed May 16 2018 Sérgio Basto <sergio@serjux.com> - 5.2.12-4
+- Another fix
+
 * Wed May 16 2018 Sérgio Basto <sergio@serjux.com> - 5.2.12-3
 - Reenable build of pre-built kmod on el7
 
