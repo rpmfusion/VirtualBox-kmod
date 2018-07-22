@@ -39,7 +39,7 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.2.14
+Version:        5.2.16
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 Release:        1%{?dist}
 
@@ -140,6 +140,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sun Jul 22 2018 Sérgio Basto <sergio@serjux.com> - 5.2.16-1
+- Update to 5.2.16
+
 * Tue Jul 03 2018 Sérgio Basto <sergio@serjux.com> - 5.2.14-1
 - Update to 5.2.14
 
