@@ -41,7 +41,7 @@
 Name:           VirtualBox-kmod
 Version:        5.2.16
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -140,6 +140,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Jul 26 2018 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 5.2.16-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
 * Sun Jul 22 2018 Sérgio Basto <sergio@serjux.com> - 5.2.16-1
 - Update to 5.2.16
 
