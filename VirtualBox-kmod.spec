@@ -41,7 +41,7 @@
 Name:           VirtualBox-kmod
 Version:        5.2.18
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        2%{?dist}
+Release:        3%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -140,6 +140,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Sep 12 2018 Leigh Scott <leigh123linux@googlemail.com> - 5.2.18-3
+- Update master source, fixes kernel 4.18 >=f28 (rfbz#5017)
+
 * Tue Sep 04 2018 Sérgio Basto <sergio@serjux.com> - 5.2.18-2
 - Fixes for kernel 4.18
 
