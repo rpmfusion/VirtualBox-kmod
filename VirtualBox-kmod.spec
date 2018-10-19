@@ -39,9 +39,9 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.2.18
+Version:        5.2.20
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        3%{?dist}
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -140,6 +140,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Fri Oct 19 2018 Sérgio Basto <sergio@serjux.com> - 5.2.20-1
+- Update VBox to 5.2.20
+
 * Wed Sep 12 2018 Leigh Scott <leigh123linux@googlemail.com> - 5.2.18-3
 - Update master source, fixes kernel 4.18 >=f28 (rfbz#5017)
 
