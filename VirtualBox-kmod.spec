@@ -51,7 +51,7 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 Source1:        VirtualBox-kmod-excludekernel-filter.txt
 Source2:        https://github.com/jwrdegoede/vboxsf/archive/master.zip
 
-Patch1:         kernel-4.18.patch
+#Patch1:         kernel-4.18.patch
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -75,7 +75,7 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
-%patch1 -p2 -b .kernel_4.18
+#patch1 -p2 -b .kernel_4.18
 %if %{with newvboxsf}
 rm -rf vboxsf/
 unzip %{SOURCE2}
