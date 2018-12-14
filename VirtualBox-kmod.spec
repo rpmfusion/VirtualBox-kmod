@@ -41,7 +41,7 @@
 Name:           VirtualBox-kmod
 Version:        5.2.22
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        2%{?dist}
+Release:        3%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -51,7 +51,7 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 Source1:        VirtualBox-kmod-excludekernel-filter.txt
 Source2:        https://github.com/jwrdegoede/vboxsf/archive/master.zip
 
-#Patch1:         kernel-4.18.patch
+Patch1:         changeset_75402.diff
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -75,7 +75,7 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
-#patch1 -p2 -b .kernel_4.18
+%patch1 -p1 -b .rhel76_fix
 %if %{with newvboxsf}
 rm -rf vboxsf/
 unzip %{SOURCE2}
@@ -140,6 +140,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Dec 13 2018 Sérgio Basto <sergio@serjux.com> - 5.2.22-3
+- Fix vboxvideo.ko build on rhel76
+
 * Thu Dec 13 2018 Nicolas Chauvet <kwizart@gmail.com> - 5.2.22-2
 - Rebuilt
 

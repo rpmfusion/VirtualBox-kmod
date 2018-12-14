@@ -1,0 +1,125 @@
+--- ./vboxvideo/vbox_drv.h	(revision 74882)
++++ ./vboxvideo/vbox_drv.h	(revision 75402)
+@@ -46,6 +46,9 @@
+ #include <linux/string.h>
+ 
+ #if defined(RHEL_MAJOR) && defined(RHEL_MINOR)
++# if RHEL_MAJOR == 7 && RHEL_MINOR >= 6
++#  define RHEL_76
++# endif
+ # if RHEL_MAJOR == 7 && RHEL_MINOR >= 5
+ #  define RHEL_75
+ # endif
+--- ./vboxvideo/vbox_mode.c	(revision 74986)
++++ ./vboxvideo/vbox_mode.c	(revision 75402)
+@@ -351,7 +351,8 @@ static struct drm_encoder *vbox_best_sin
+ 	/* pick the encoder ids */
+ 	if (enc_id)
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0) || \
+-	(defined(CONFIG_SUSE_VERSION) && CONFIG_SUSE_VERSION == 15)
++	(defined(CONFIG_SUSE_VERSION) && CONFIG_SUSE_VERSION == 15) || \
++        defined(RHEL_76)
+ 		return drm_encoder_find(connector->dev, NULL, enc_id);
+ #else
+ 		return drm_encoder_find(connector->dev, enc_id);
+--- ./vboxvideo/vbox_ttm.c	(revision 74810)
++++ ./vboxvideo/vbox_ttm.c	(revision 75402)
+@@ -203,7 +203,7 @@ static struct ttm_backend_func vbox_tt_b
+ 	.destroy = &vbox_ttm_backend_destroy,
+ };
+ 
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 17, 0)
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 17, 0)) && !defined(RHEL_76)
+ static struct ttm_tt *vbox_ttm_tt_create(struct ttm_bo_device *bdev,
+ 					 unsigned long size,
+ 					 u32 page_flags,
+@@ -220,7 +220,7 @@ static struct ttm_tt *vbox_ttm_tt_create
+ 		return NULL;
+ 
+ 	tt->func = &vbox_tt_backend_func;
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 17, 0)
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 17, 0)) && !defined(RHEL_76)
+ 	if (ttm_tt_init(tt, bdev, size, page_flags, dummy_read_page)) {
+ #else
+ 	if (ttm_tt_init(tt, bo, page_flags)) {
+@@ -233,7 +233,7 @@ static struct ttm_tt *vbox_ttm_tt_create
+ }
+ 
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 17, 0)
+-# if LINUX_VERSION_CODE < KERNEL_VERSION(4, 16, 0)
++# if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 16, 0)) && !defined(RHEL_76)
+ static int vbox_ttm_tt_populate(struct ttm_tt *ttm)
+ {
+ 	return ttm_pool_populate(ttm);
+@@ -267,7 +267,7 @@ struct ttm_bo_driver vbox_bo_driver = {
+ 	.io_mem_reserve = &vbox_ttm_io_mem_reserve,
+ 	.io_mem_free = &vbox_ttm_io_mem_free,
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0) || defined(RHEL_75)
+-# if LINUX_VERSION_CODE < KERNEL_VERSION(4, 16, 0)
++# if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 16, 0)) && !defined(RHEL_76)
+ 	.io_mem_pfn = ttm_bo_default_io_mem_pfn,
+ # endif
+ #endif
+@@ -410,7 +410,7 @@ int vbox_bo_create(struct drm_device *de
+ #else
+ 			  align >> PAGE_SHIFT, false, acc_size,
+ #endif
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0) || defined(RHEL_72)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0) || defined(RHEL_72) && !defined(RHEL_76)
+ 			  NULL,
+ #endif
+ 			  NULL, vbox_bo_ttm_destroy);
+@@ -429,7 +429,7 @@ static inline u64 vbox_bo_gpu_offset(str
+ 
+ int vbox_bo_pin(struct vbox_bo *bo, u32 pl_flag, u64 *gpu_addr)
+ {
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 16, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 16, 0)) || defined(RHEL_76)
+ 	struct ttm_operation_ctx ctx = { false, false };
+ #endif
+ 	int i, ret;
+@@ -447,7 +447,7 @@ int vbox_bo_pin(struct vbox_bo *bo, u32
+ 	for (i = 0; i < bo->placement.num_placement; i++)
+ 		PLACEMENT_FLAGS(bo->placements[i]) |= TTM_PL_FLAG_NO_EVICT;
+ 
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 16, 0)
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 16, 0)) && !defined(RHEL_76)
+ 	ret = ttm_bo_validate(&bo->bo, &bo->placement, false, false);
+ #else
+ 	ret = ttm_bo_validate(&bo->bo, &bo->placement, &ctx);
+@@ -465,7 +465,7 @@ int vbox_bo_pin(struct vbox_bo *bo, u32
+ 
+ int vbox_bo_unpin(struct vbox_bo *bo)
+ {
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 16, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 16, 0)) || defined(RHEL_76)
+ 	struct ttm_operation_ctx ctx = { false, false };
+ #endif
+ 	int i, ret;
+@@ -481,7 +481,7 @@ int vbox_bo_unpin(struct vbox_bo *bo)
+ 	for (i = 0; i < bo->placement.num_placement; i++)
+ 		PLACEMENT_FLAGS(bo->placements[i]) &= ~TTM_PL_FLAG_NO_EVICT;
+ 
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 16, 0)
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 16, 0)) && !defined(RHEL_76)
+ 	ret = ttm_bo_validate(&bo->bo, &bo->placement, false, false);
+ #else
+ 	ret = ttm_bo_validate(&bo->bo, &bo->placement, &ctx);
+@@ -499,7 +499,7 @@ int vbox_bo_unpin(struct vbox_bo *bo)
+  */
+ int vbox_bo_push_sysram(struct vbox_bo *bo)
+ {
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 16, 0)
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 16, 0)) || defined(RHEL_76)
+ 	struct ttm_operation_ctx ctx = { false, false };
+ #endif
+ 	int i, ret;
+@@ -520,7 +520,7 @@ int vbox_bo_push_sysram(struct vbox_bo *
+ 	for (i = 0; i < bo->placement.num_placement; i++)
+ 		PLACEMENT_FLAGS(bo->placements[i]) |= TTM_PL_FLAG_NO_EVICT;
+ 
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 16, 0)
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 16, 0)) && !defined(RHEL_76)
+ 	ret = ttm_bo_validate(&bo->bo, &bo->placement, false, false);
+ #else
+ 	ret = ttm_bo_validate(&bo->bo, &bo->placement, &ctx);
