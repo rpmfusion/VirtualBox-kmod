@@ -48,7 +48,7 @@ Group:          System Environment/Kernel
 License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
-Source1:        VirtualBox-kmod-excludekernel-filter.txt
+Source1:        excludekernel-filter.txt
 Source2:        https://github.com/jwrdegoede/vboxsf/archive/master.zip
 
 Patch1:         changeset_75402.diff
