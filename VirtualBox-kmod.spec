@@ -31,17 +31,17 @@
 # major version number, while the kernel module abi is not guaranteed
 # to be stable. This is so that we force the module update in sync with
 # userspace.
-#global prerel 106108
-%global prereltag %{?prerel:-%(awk 'BEGIN {print toupper("%{prerel}")}')}
+#global prerel RC1
+%global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
 %global vboxrel 1
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.2.22
-#Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        3%{?dist}
+Version:        6.0.0
+Release:        1%{?prerel:.%{prerel}}%{?dist}
+#Release:        1%%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -51,7 +51,7 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 Source1:        excludekernel-filter.txt
 Source2:        https://github.com/jwrdegoede/vboxsf/archive/master.zip
 
-Patch1:         changeset_75402.diff
+#Patch1:         kernel-4.18.patch
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -75,7 +75,7 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
-%patch1 -p1 -b .rhel76_fix
+#patch1 -p2 -b .kernel_4.18
 %if %{with newvboxsf}
 rm -rf vboxsf/
 unzip %{SOURCE2}
@@ -140,6 +140,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Dec 19 2018 Sérgio Basto <sergio@serjux.com> - 6.0.0-1
+- VirtualBox 6.0
+
 * Thu Dec 13 2018 Sérgio Basto <sergio@serjux.com> - 5.2.22-3
 - Fix vboxvideo.ko build on rhel76
 
