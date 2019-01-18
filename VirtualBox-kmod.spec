@@ -138,6 +138,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Jan 17 2019 Vasiliy N. Glazov <vascom2@gmail.com> - 5.2.24-1
+- Update to 5.2.24
+
 * Sat Nov 10 2018 Sérgio Basto <sergio@serjux.com> - 5.2.22-1
 - Update VBox to 5.2.22
 
