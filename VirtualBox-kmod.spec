@@ -39,7 +39,7 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        6.0.0
+Version:        6.0.2
 Release:        1%{?prerel:.%{prerel}}%{?dist}
 #Release:        1%%{?dist}
 
@@ -51,7 +51,6 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 Source1:        excludekernel-filter.txt
 Source2:        https://github.com/jwrdegoede/vboxsf/archive/master.zip
 
-#Patch1:         kernel-4.18.patch
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -140,6 +139,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Jan 17 2019 Vasiliy N. Glazov <vascom2@gmail.com> - 6.0.2-1
+- Update to 6.0.2
+
 * Wed Dec 19 2018 Sérgio Basto <sergio@serjux.com> - 6.0.0-1
 - VirtualBox 6.0
 
