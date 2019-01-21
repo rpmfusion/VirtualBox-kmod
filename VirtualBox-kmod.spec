@@ -39,19 +39,18 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.2.22
+Version:        5.2.24
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        3%{?dist}
+Release:        1%{?dist}
 
 Summary:        Kernel module for VirtualBox
-Group:          System Environment/Kernel
 License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        VirtualBox-kmod-excludekernel-filter.txt
 Source2:        https://github.com/jwrdegoede/vboxsf/archive/master.zip
 
-Patch1:         changeset_75402.diff
+#Patch1:         changeset_75402.diff
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -75,7 +74,7 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
-%patch1 -p1 -b .rhel76_fix
+#patch1 -p1 -b .rhel76_fix
 %if %{with newvboxsf}
 rm -rf vboxsf/
 unzip %{SOURCE2}
@@ -140,6 +139,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Mon Jan 21 2019 Sérgio Basto <sergio@serjux.com> - 5.2.24-1
+- Update to 5.2.24
+
 * Thu Dec 13 2018 Sérgio Basto <sergio@serjux.com> - 5.2.22-3
 - Fix vboxvideo.ko build on rhel76
 
