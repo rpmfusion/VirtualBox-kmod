@@ -1,0 +1,26 @@
+From d1860de35252ec91f03d1f32618ee147cda14eac Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?S=C3=A9rgio=20M=2E=20Basto?= <sergio@serjux.com>
+Date: Tue, 29 Jan 2019 04:06:03 +0000
+Subject: [PATCH] Fix FTBFS for kernel 5.0.0-rc3
+
+---
+ vfsmod.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/vfsmod.h b/vfsmod.h
+index 20efcb7..b0c257c 100644
+--- a/vfsmod.h
++++ b/vfsmod.h
+@@ -10,6 +10,9 @@
+ 
+ #include <linux/backing-dev.h>
+ #include <linux/version.h>
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0)
++# include <uapi/linux/mount.h>
++#endif
+ #include "shfl_hostintf.h"
+ 
+ #define DIR_BUFFER_SIZE SZ_16K
+-- 
+2.17.2
+

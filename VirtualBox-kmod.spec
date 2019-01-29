@@ -39,8 +39,8 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        6.0.2
-Release:        1%{?prerel:.%{prerel}}%{?dist}
+Version:        6.0.4
+Release:        1%{?dist}
 #Release:        1%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -50,6 +50,8 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
 Source2:        https://github.com/jwrdegoede/vboxsf/archive/master.zip
+Patch1:         Fix_compilation_of_host_modules_on_Linux_kernel_5.0.v1.patch
+Patch2:         0001-Fix-FTBFS-for-kernel-5.0.0-rc3.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
@@ -74,11 +76,14 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
-#patch1 -p2 -b .kernel_4.18
+%patch1 -p2 -b .kernel_5.0
 %if %{with newvboxsf}
 rm -rf vboxsf/
 unzip %{SOURCE2}
 mv vboxsf-master/ vboxsf/
+pushd vboxsf
+%patch2 -p1 -b .kernel_5.0.rc3
+popd
 %endif
 popd
 
@@ -139,6 +144,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Jan 29 2019 Sérgio Basto <sergio@serjux.com> - 6.0.4-1
+- Update to 6.0.4
+
 * Thu Jan 17 2019 Vasiliy N. Glazov <vascom2@gmail.com> - 6.0.2-1
 - Update to 6.0.2
 
