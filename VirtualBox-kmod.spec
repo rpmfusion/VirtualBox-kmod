@@ -9,6 +9,11 @@
 %bcond_with     newvboxsf
 %endif
 
+# newvboxsf
+# globals for https://github.com/jwrdegoede/vboxsf/archive/fb360320b7d5c2dc74cb958c9b27e8708c1c9bc2.zip
+%global commit1 fb360320b7d5c2dc74cb958c9b27e8708c1c9bc2
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
 %bcond_without hardening
@@ -40,7 +45,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.0.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 #Release:        1%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -49,9 +54,9 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
-Source2:        https://github.com/jwrdegoede/vboxsf/archive/master.zip
+Source2:        https://github.com/jwrdegoede/vboxsf/archive/%{shortcommit1}.zip
 Patch1:         Fix_compilation_of_host_modules_on_Linux_kernel_5.0.v1.patch
-Patch2:         0001-Fix-FTBFS-for-kernel-5.0.0-rc3.patch
+Patch2:         efc7d3081f77ad8507070beecb84fe2d3b62cd74.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
@@ -77,13 +82,11 @@ Kernel module for VirtualBox
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
 %patch1 -p2 -b .kernel_5.0
+%patch2 -p1 -b .kernel_5.1
 %if %{with newvboxsf}
 rm -rf vboxsf/
 unzip %{SOURCE2}
-mv vboxsf-master/ vboxsf/
-pushd vboxsf
-%patch2 -p1 -b .kernel_5.0.rc3
-popd
+mv vboxsf-%{commit1}/ vboxsf/
 %endif
 popd
 
@@ -144,6 +147,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Feb 13 2019 Sérgio Basto <sergio@serjux.com> - 6.0.4-2
+- Fixes for upcoming kernel 5.1 and update of new vboxsf
+
 * Tue Jan 29 2019 Sérgio Basto <sergio@serjux.com> - 6.0.4-1
 - Update to 6.0.4
 

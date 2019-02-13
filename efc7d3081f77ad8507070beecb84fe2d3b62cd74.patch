@@ -1,0 +1,86 @@
+From efc7d3081f77ad8507070beecb84fe2d3b62cd74 Mon Sep 17 00:00:00 2001
+From: vboxsync <vboxsync@cfe28804-0f27-0410-a406-dd0f0b0b656f>
+Date: Thu, 7 Feb 2019 15:15:22 +0000
+Subject: [PATCH] Drivers/Linux: fixes for upcoming Linux 5.1 kernel.
+ bugref:4567: Linux kernel driver maintenance. Linux 5.1 moves MAP_SHARED to
+ uapi/linux/mman.h. Thank you Valdis Kletnieks.
+
+git-svn-id: http://www.virtualbox.org/svn/vbox@77198 cfe28804-0f27-0410-a406-dd0f0b0b656f
+---
+ trunk/src/VBox/Runtime/r0drv/linux/the-linux-kernel.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/trunk/src/VBox/Runtime/r0drv/linux/the-linux-kernel.h b/trunk/src/VBox/Runtime/r0drv/linux/the-linux-kernel.h
+index e7c75ec677..de22ee6cd6 100644
+--- ./vboxnetflt/r0drv/linux/the-linux-kernel.h
++++ ./vboxnetflt/r0drv/linux/the-linux-kernel.h
+@@ -128,6 +128,9 @@
+ # include <linux/cpu.h>
+ # include <linux/notifier.h>
+ #endif
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
++# include <uapi/linux/mman.h>
++#endif
+ /* For the basic additions module */
+ #include <linux/pci.h>
+ #include <linux/delay.h>
+--- ./vboxguest/r0drv/linux/the-linux-kernel.h
++++ ./vboxguest/r0drv/linux/the-linux-kernel.h
+@@ -128,6 +128,9 @@
+ # include <linux/cpu.h>
+ # include <linux/notifier.h>
+ #endif
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
++# include <uapi/linux/mman.h>
++#endif
+ /* For the basic additions module */
+ #include <linux/pci.h>
+ #include <linux/delay.h>
+--- ./vboxdrv/r0drv/linux/the-linux-kernel.h
++++ ./vboxdrv/r0drv/linux/the-linux-kernel.h
+@@ -128,6 +128,9 @@
+ # include <linux/cpu.h>
+ # include <linux/notifier.h>
+ #endif
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
++# include <uapi/linux/mman.h>
++#endif
+ /* For the basic additions module */
+ #include <linux/pci.h>
+ #include <linux/delay.h>
+--- ./vboxpci/r0drv/linux/the-linux-kernel.h
++++ ./vboxpci/r0drv/linux/the-linux-kernel.h
+@@ -128,6 +128,9 @@
+ # include <linux/cpu.h>
+ # include <linux/notifier.h>
+ #endif
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
++# include <uapi/linux/mman.h>
++#endif
+ /* For the basic additions module */
+ #include <linux/pci.h>
+ #include <linux/delay.h>
+--- ./vboxsf/r0drv/linux/the-linux-kernel.h
++++ ./vboxsf/r0drv/linux/the-linux-kernel.h
+@@ -128,6 +128,9 @@
+ # include <linux/cpu.h>
+ # include <linux/notifier.h>
+ #endif
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
++# include <uapi/linux/mman.h>
++#endif
+ /* For the basic additions module */
+ #include <linux/pci.h>
+ #include <linux/delay.h>
+--- ./vboxnetadp/r0drv/linux/the-linux-kernel.h
++++ ./vboxnetadp/r0drv/linux/the-linux-kernel.h
+@@ -128,6 +128,9 @@
+ # include <linux/cpu.h>
+ # include <linux/notifier.h>
+ #endif
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 1, 0)
++# include <uapi/linux/mman.h>
++#endif
+ /* For the basic additions module */
+ #include <linux/pci.h>
+ #include <linux/delay.h>
