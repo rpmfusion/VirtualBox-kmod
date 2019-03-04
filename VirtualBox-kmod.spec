@@ -45,7 +45,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.0.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 #Release:        1%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -147,6 +147,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Mon Mar 04 2019 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 6.0.4-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
 * Wed Feb 13 2019 Sérgio Basto <sergio@serjux.com> - 6.0.4-2
 - Fixes for upcoming kernel 5.1 and update of new vboxsf
 
