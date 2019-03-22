@@ -9,6 +9,11 @@
 %bcond_with     newvboxsf
 %endif
 
+# newvboxsf
+# globals for https://github.com/jwrdegoede/vboxsf/archive/fb360320b7d5c2dc74cb958c9b27e8708c1c9bc2.zip
+%global commit1 fb360320b7d5c2dc74cb958c9b27e8708c1c9bc2
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
 %bcond_without hardening
@@ -31,26 +36,28 @@
 # major version number, while the kernel module abi is not guaranteed
 # to be stable. This is so that we force the module update in sync with
 # userspace.
-#global prerel 106108
-%global prereltag %{?prerel:-%(awk 'BEGIN {print toupper("%{prerel}")}')}
+#global prerel RC1
+%global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
 %global vboxrel 1
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        5.2.24
-#Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
-Release:        1%{?dist}
+Version:        6.0.4
+Release:        3%{?dist}
+#Release:        1%%{?dist}
 
 Summary:        Kernel module for VirtualBox
+Group:          System Environment/Kernel
 License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
-Source1:        VirtualBox-kmod-excludekernel-filter.txt
-Source2:        https://github.com/jwrdegoede/vboxsf/archive/master.zip
+Source1:        excludekernel-filter.txt
+Source2:        https://github.com/jwrdegoede/vboxsf/archive/%{shortcommit1}.zip
+Patch1:         Fix_compilation_of_host_modules_on_Linux_kernel_5.0.v1.patch
+Patch2:         efc7d3081f77ad8507070beecb84fe2d3b62cd74.patch
 
-#Patch1:         changeset_75402.diff
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
@@ -74,11 +81,12 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
-#patch1 -p1 -b .rhel76_fix
+%patch1 -p2 -b .kernel_5.0
+%patch2 -p1 -b .kernel_5.1
 %if %{with newvboxsf}
 rm -rf vboxsf/
 unzip %{SOURCE2}
-mv vboxsf-master/ vboxsf/
+mv vboxsf-%{commit1}/ vboxsf/
 %endif
 popd
 
@@ -139,8 +147,20 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
-* Mon Jan 21 2019 Sérgio Basto <sergio@serjux.com> - 5.2.24-1
-- Update to 5.2.24
+* Mon Mar 04 2019 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 6.0.4-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
+* Wed Feb 13 2019 Sérgio Basto <sergio@serjux.com> - 6.0.4-2
+- Fixes for upcoming kernel 5.1 and update of new vboxsf
+
+* Tue Jan 29 2019 Sérgio Basto <sergio@serjux.com> - 6.0.4-1
+- Update to 6.0.4
+
+* Thu Jan 17 2019 Vasiliy N. Glazov <vascom2@gmail.com> - 6.0.2-1
+- Update to 6.0.2
+
+* Wed Dec 19 2018 Sérgio Basto <sergio@serjux.com> - 6.0.0-1
+- VirtualBox 6.0
 
 * Thu Dec 13 2018 Sérgio Basto <sergio@serjux.com> - 5.2.22-3
 - Fix vboxvideo.ko build on rhel76
