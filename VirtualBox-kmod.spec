@@ -11,7 +11,7 @@
 
 # newvboxsf
 # globals for https://github.com/jwrdegoede/vboxsf/archive/fb360320b7d5c2dc74cb958c9b27e8708c1c9bc2.zip
-%global commit1 fb360320b7d5c2dc74cb958c9b27e8708c1c9bc2
+%global commit1 2f85f96e02c36e8f25abfc5c1f78fafc2ba82988
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 # Allow only root to access vboxdrv regardless of the file mode
@@ -45,7 +45,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.0.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 #Release:        1%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -147,6 +147,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Mar 27 2019 Vasiliy N. Glazov <vascom2@gmail.com> - 6.0.4-4
+- Update of new vboxsf
+
 * Mon Mar 04 2019 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 6.0.4-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
