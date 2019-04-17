@@ -11,7 +11,7 @@
 
 # newvboxsf
 # globals for https://github.com/jwrdegoede/vboxsf/archive/fb360320b7d5c2dc74cb958c9b27e8708c1c9bc2.zip
-%global commit1 2f85f96e02c36e8f25abfc5c1f78fafc2ba82988
+%global commit1 8dd4b8bd5cfe6ddae8fe7056dff790013b985d22
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 # Allow only root to access vboxdrv regardless of the file mode
@@ -44,8 +44,8 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        6.0.4
-Release:        4%{?dist}
+Version:        6.0.6
+Release:        1%{?dist}
 #Release:        1%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -55,8 +55,6 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
 Source2:        https://github.com/jwrdegoede/vboxsf/archive/%{shortcommit1}.zip
-Patch1:         Fix_compilation_of_host_modules_on_Linux_kernel_5.0.v1.patch
-Patch2:         efc7d3081f77ad8507070beecb84fe2d3b62cd74.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
@@ -81,8 +79,6 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
-%patch1 -p2 -b .kernel_5.0
-%patch2 -p1 -b .kernel_5.1
 %if %{with newvboxsf}
 rm -rf vboxsf/
 unzip %{SOURCE2}
@@ -147,6 +143,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Apr 17 2019 Vasiliy N. Glazov <vascom2@gmail.com> - 6.0.6-1
+- Update to 6.0.6
+
 * Wed Mar 27 2019 Vasiliy N. Glazov <vascom2@gmail.com> - 6.0.4-4
 - Update of new vboxsf
 
