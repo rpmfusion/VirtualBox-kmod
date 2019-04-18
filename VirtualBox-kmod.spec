@@ -11,7 +11,7 @@
 
 # newvboxsf
 # globals for https://github.com/jwrdegoede/vboxsf/archive/fb360320b7d5c2dc74cb958c9b27e8708c1c9bc2.zip
-%global commit1 8dd4b8bd5cfe6ddae8fe7056dff790013b985d22
+%global commit1 87b9015c57dd7f226c768131bf8b4c0249de9835
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 # Allow only root to access vboxdrv regardless of the file mode
@@ -39,14 +39,14 @@
 #global prerel RC1
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
-%global vboxrel 1
+%global vboxrel 2
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
 Version:        6.0.6
-Release:        1%{?dist}
-#Release:        1%%{?dist}
+Release:        2%{?dist}
+#Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
 Group:          System Environment/Kernel
@@ -143,6 +143,10 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Apr 18 2019 Sérgio Basto <sergio@serjux.com> - 6.0.6-2
+- Update new vboxsf
+- Force build with VirtualBox-kmodsrc-6.0.6-2
+
 * Wed Apr 17 2019 Vasiliy N. Glazov <vascom2@gmail.com> - 6.0.6-1
 - Update to 6.0.6
 
