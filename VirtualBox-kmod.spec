@@ -39,13 +39,13 @@
 #global prerel RC1
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
-%global vboxrel 3
+%global vboxrel 1
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        6.0.6
-Release:        3%{?dist}
+Version:        6.0.8
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -143,6 +143,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed May 15 2019 Sérgio Basto <sergio@serjux.com> - 6.0.8-1
+- Update to 6.0.8
+
 * Mon Apr 29 2019 Sérgio Basto <sergio@serjux.com> - 6.0.6-3
 - Force build with VirtualBox-kmodsrc-6.0.6-3
 
