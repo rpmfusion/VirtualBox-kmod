@@ -1,5 +1,6 @@
-VERSION=6.0.6
-REL=3
+VERSION=6.0.8
+REL=1
+RAWHIDE=31
 
 if [ -z "$1" ]
 then
@@ -15,6 +16,7 @@ then
 echo STAGE 0
 rpmdev-bumpspec -n $VERSION -c "Update to $VERSION" VirtualBox-kmod.spec
 rfpkg ci -c && git show
+rfpkg srpm && copr-cli build sergiomb/vboxfor23 VirtualBox-kmod-$VERSION-$REL.fc$RAWHIDE.src.rpm
 #rfpkg srpm && mock -r fedora-27-x86_64-rpmfusion_free --no-clean --rebuild smplayer-17.5.0-1.fc27.src.rpm
 #cp VirtualBox-kmod.spec VirtualBox-kmod.spec.new
 #git reset HEAD~1
