@@ -114,9 +114,10 @@ for kernel_version in %{?kernel_versions}; do
     
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" M="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
-    # copy vboxdrv (for host) module symbols which are used by vboxnetflt and vboxnetadp km's:
+    # copy vboxdrv (for host) module symbols which are used by vboxpci, vboxnetflt and vboxnetadp km's:
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetadp}
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetflt}
+    cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxpci}
     %if ! %{with newvboxsf}
     # copy vboxguest (for guest) module symbols which are used by vboxsf km:
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxsf}
