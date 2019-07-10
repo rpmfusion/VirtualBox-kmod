@@ -45,7 +45,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.0.8
-Release:        1%{?dist}
+Release:        3%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -55,6 +55,8 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
 Source2:        https://github.com/jwrdegoede/vboxsf/archive/%{shortcommit1}.zip
+Patch1:         new-kernel-5.2.patch
+Patch2:         kernel-5.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
@@ -79,11 +81,16 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
+
+%patch2 -p1
+
 %if %{with newvboxsf}
 rm -rf vboxsf/
 unzip %{SOURCE2}
 mv vboxsf-%{commit1}/ vboxsf/
 %endif
+
+%patch1 -p1
 popd
 
 # error out if there was something wrong with kmodtool
@@ -105,17 +112,18 @@ done
 for kernel_version in %{?kernel_versions}; do
     for module in vboxdrv %{!?with_newvboxsf:vboxguest}; do
     
-        make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
+        make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" M="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
-    # copy vboxdrv (for host) module symbols which are used by vboxnetflt and vboxnetadp km's:
+    # copy vboxdrv (for host) module symbols which are used by vboxpci, vboxnetflt and vboxnetadp km's:
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetadp}
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetflt}
+    cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxpci}
     %if ! %{with newvboxsf}
     # copy vboxguest (for guest) module symbols which are used by vboxsf km:
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxsf}
     %endif
     for module in vbox{netadp,netflt,sf%{?with_vboxvideo:,video},pci}; do
-        make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" SUBDIRS="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
+        make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" M="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
 done
 
@@ -143,6 +151,12 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Jul 10 2019 Sérgio Basto <sergio@serjux.com> - 6.0.8-3
+- Fix build of vboxpci module under Linux 5.2, thanks to Steve Storey
+
+* Fri May 31 2019 Sérgio Basto <sergio@serjux.com> - 6.0.8-2
+- Fixes for kernel 5.2
+
 * Wed May 15 2019 Sérgio Basto <sergio@serjux.com> - 6.0.8-1
 - Update to 6.0.8
 
