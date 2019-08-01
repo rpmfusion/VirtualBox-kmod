@@ -45,7 +45,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.0.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -55,7 +55,7 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
 Source2:        https://github.com/jwrdegoede/vboxsf/archive/%{shortcommit1}.zip
-#Patch1:         new-kernel-5.2.patch
+Patch1:         Fixes_for_Kernel_5.3.patch
 Patch2:         kernel-5.patch
 
 
@@ -82,15 +82,14 @@ Kernel module for VirtualBox
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
 
+%patch1 -p1
 %patch2 -p1
-
 %if %{with newvboxsf}
 rm -rf vboxsf/
 unzip %{SOURCE2}
 mv vboxsf-%{commit1}/ vboxsf/
 %endif
 
-#patch1 -p1
 popd
 
 # error out if there was something wrong with kmodtool
@@ -151,6 +150,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Mon Jul 29 2019 Sérgio Basto <sergio@serjux.com> - 6.0.10-2
+- Fixes for kernel 5.3
+
 * Wed Jul 17 2019 Sérgio Basto <sergio@serjux.com> - 6.0.10-1
 - Update to 6.0.10
 
