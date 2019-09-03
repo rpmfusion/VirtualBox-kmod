@@ -45,7 +45,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.0.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -150,6 +150,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Sep 03 2019 Leigh Scott <leigh123linux@googlemail.com> - 6.0.10-4
+- Rebuild for new el7 kernel
+
 * Fri Aug 09 2019 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 6.0.10-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
