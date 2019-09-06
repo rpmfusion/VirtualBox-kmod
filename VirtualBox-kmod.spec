@@ -11,7 +11,7 @@
 
 # newvboxsf
 # globals for https://github.com/jwrdegoede/vboxsf/archive/fb360320b7d5c2dc74cb958c9b27e8708c1c9bc2.zip
-%global commit1 87b9015c57dd7f226c768131bf8b4c0249de9835
+%global commit1 83b9657878a229c83e4ce652af809bdc18a3a327
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 # Allow only root to access vboxdrv regardless of the file mode
@@ -44,8 +44,8 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        6.0.10
-Release:        4%{?dist}
+Version:        6.0.12
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -150,6 +150,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Fri Sep 06 2019 Sérgio Basto <sergio@serjux.com> - 6.0.12-1
+- Update to 6.0.12
+
 * Tue Sep 03 2019 Leigh Scott <leigh123linux@googlemail.com> - 6.0.10-4
 - Rebuild for new el7 kernel
 

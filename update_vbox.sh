@@ -1,6 +1,6 @@
-VERSION=6.0.10
+VERSION=6.0.12
 REL=1
-RAWHIDE=31
+RAWHIDE=32
 
 if [ -z "$1" ]
 then
