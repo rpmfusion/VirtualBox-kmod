@@ -45,7 +45,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.0.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -57,6 +57,7 @@ Source1:        excludekernel-filter.txt
 Source2:        https://github.com/jwrdegoede/vboxsf/archive/%{shortcommit1}.zip
 Patch1:         Fixes_for_Kernel_5.3.patch
 Patch2:         kernel-5.patch
+Patch3:         kernel-el7.7.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
@@ -89,6 +90,7 @@ rm -rf vboxsf/
 unzip %{SOURCE2}
 mv vboxsf-%{commit1}/ vboxsf/
 %endif
+%patch3 -p1
 
 popd
 
@@ -150,6 +152,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sat Sep 14 2019 Sérgio Basto <sergio@serjux.com> - 6.0.12-2
+- Add patch for kernel of EL 7.7
+
 * Fri Sep 06 2019 Sérgio Basto <sergio@serjux.com> - 6.0.12-1
 - Update to 6.0.12
 
