@@ -1,0 +1,114 @@
+Index: VirtualBox-6.0.12/src/VBox/HostDrivers/VBoxNetFlt/linux/VBoxNetFlt-linux.c
+===================================================================
+--- VirtualBox-6.0.12.orig/vboxnetflt/linux/VBoxNetFlt-linux.c
++++ VirtualBox-6.0.12/vboxnetflt/linux/VBoxNetFlt-linux.c
+@@ -924,8 +924,13 @@ static void vboxNetFltLinuxSkBufToSG(PVB
+     for (i = 0; i < skb_shinfo(pBuf)->nr_frags; i++)
+     {
+         skb_frag_t *pFrag = &skb_shinfo(pBuf)->frags[i];
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
++        pSG->aSegs[iSeg].cb = pFrag->bv_len;
++        pSG->aSegs[iSeg].pv = VBOX_SKB_KMAP_FRAG(pFrag) + pFrag->bv_offset;
++#else
+         pSG->aSegs[iSeg].cb = pFrag->size;
+         pSG->aSegs[iSeg].pv = VBOX_SKB_KMAP_FRAG(pFrag) + pFrag->page_offset;
++#endif
+         Log6((" %p", pSG->aSegs[iSeg].pv));
+         pSG->aSegs[iSeg++].Phys = NIL_RTHCPHYS;
+         Assert(iSeg <= pSG->cSegsAlloc);
+@@ -940,8 +945,13 @@ static void vboxNetFltLinuxSkBufToSG(PVB
+         for (i = 0; i < skb_shinfo(pFragBuf)->nr_frags; i++)
+         {
+             skb_frag_t *pFrag = &skb_shinfo(pFragBuf)->frags[i];
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
++            pSG->aSegs[iSeg].cb = pFrag->bv_len;
++            pSG->aSegs[iSeg].pv = VBOX_SKB_KMAP_FRAG(pFrag) + pFrag->bv_offset;
++#else
+             pSG->aSegs[iSeg].cb = pFrag->size;
+             pSG->aSegs[iSeg].pv = VBOX_SKB_KMAP_FRAG(pFrag) + pFrag->page_offset;
++#endif
+             Log6((" %p", pSG->aSegs[iSeg].pv));
+             pSG->aSegs[iSeg++].Phys = NIL_RTHCPHYS;
+             Assert(iSeg <= pSG->cSegsAlloc);
+Index: VirtualBox-6.0.12/src/VBox/Runtime/r0drv/linux/alloc-r0drv-linux.c
+===================================================================
+--- VirtualBox-6.0.12.orig/vboxguest/r0drv/linux/alloc-r0drv-linux.c
++++ VirtualBox-6.0.12/vboxguest/r0drv/linux/alloc-r0drv-linux.c
+@@ -444,8 +444,10 @@ RTR0DECL(void *) RTMemContAlloc(PRTCCPHY
+ 
+             SetPageReserved(&paPages[iPage]);
+ #if LINUX_VERSION_CODE > KERNEL_VERSION(2, 4, 20) /** @todo find the exact kernel where change_page_attr was introduced. */
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 4, 0)
+             MY_SET_PAGES_EXEC(&paPages[iPage], 1);
+ #endif
++#endif
+         }
+         *pPhys = page_to_phys(paPages);
+         pvRet = phys_to_virt(page_to_phys(paPages));
+@@ -492,8 +494,10 @@ RTR0DECL(void) RTMemContFree(void *pv, s
+         {
+             ClearPageReserved(&paPages[iPage]);
+ #if LINUX_VERSION_CODE > KERNEL_VERSION(2, 4, 20) /** @todo find the exact kernel where change_page_attr was introduced. */
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 4, 0)
+             MY_SET_PAGES_NOEXEC(&paPages[iPage], 1);
+ #endif
++#endif
+         }
+         __free_pages(paPages, cOrder);
+         IPRT_LINUX_RESTORE_EFL_AC();
+Index: VirtualBox-6.0.12/src/VBox/Runtime/r0drv/linux/thread2-r0drv-linux.c
+===================================================================
+--- VirtualBox-6.0.12.orig/vboxguest/r0drv/linux/thread2-r0drv-linux.c
++++ VirtualBox-6.0.12/vboxguest/r0drv/linux/thread2-r0drv-linux.c
+@@ -36,6 +36,9 @@
+ #include <iprt/errcore.h>
+ #include "internal/thread.h"
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
++#include <uapi/linux/sched/types.h>
++#endif
+ 
+ RTDECL(RTTHREAD) RTThreadSelf(void)
+ {
+
+Index: VirtualBox-6.0.12/src/VBox/Runtime/r0drv/linux/alloc-r0drv-linux.c
+===================================================================
+--- VirtualBox-6.0.12.orig/vboxdrv/r0drv/linux/alloc-r0drv-linux.c
++++ VirtualBox-6.0.12/vboxdrv/r0drv/linux/alloc-r0drv-linux.c
+@@ -444,8 +444,10 @@ RTR0DECL(void *) RTMemContAlloc(PRTCCPHY
+ 
+             SetPageReserved(&paPages[iPage]);
+ #if LINUX_VERSION_CODE > KERNEL_VERSION(2, 4, 20) /** @todo find the exact kernel where change_page_attr was introduced. */
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 4, 0)
+             MY_SET_PAGES_EXEC(&paPages[iPage], 1);
+ #endif
++#endif
+         }
+         *pPhys = page_to_phys(paPages);
+         pvRet = phys_to_virt(page_to_phys(paPages));
+@@ -492,8 +494,10 @@ RTR0DECL(void) RTMemContFree(void *pv, s
+         {
+             ClearPageReserved(&paPages[iPage]);
+ #if LINUX_VERSION_CODE > KERNEL_VERSION(2, 4, 20) /** @todo find the exact kernel where change_page_attr was introduced. */
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 4, 0)
+             MY_SET_PAGES_NOEXEC(&paPages[iPage], 1);
+ #endif
++#endif
+         }
+         __free_pages(paPages, cOrder);
+         IPRT_LINUX_RESTORE_EFL_AC();
+Index: VirtualBox-6.0.12/src/VBox/Runtime/r0drv/linux/thread2-r0drv-linux.c
+===================================================================
+--- VirtualBox-6.0.12.orig/vboxdrv/r0drv/linux/thread2-r0drv-linux.c
++++ VirtualBox-6.0.12/vboxdrv/r0drv/linux/thread2-r0drv-linux.c
+@@ -36,6 +36,9 @@
+ #include <iprt/errcore.h>
+ #include "internal/thread.h"
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 4, 0)
++#include <uapi/linux/sched/types.h>
++#endif
+ 
+ RTDECL(RTTHREAD) RTThreadSelf(void)
+ {
+
