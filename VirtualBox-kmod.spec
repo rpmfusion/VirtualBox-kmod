@@ -44,7 +44,7 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        6.0.12
+Version:        6.0.14
 Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
@@ -55,8 +55,8 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
 Source2:        https://github.com/jwrdegoede/vboxsf/archive/%{shortcommit1}.zip
-Patch1:         Fixes_for_Kernel_5.3.patch
 Patch2:         kernel-5.patch
+Patch4:         fixes_for_5.4.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
@@ -82,13 +82,13 @@ Kernel module for VirtualBox
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
 
-%patch1 -p1
 %patch2 -p1
 %if %{with newvboxsf}
 rm -rf vboxsf/
 unzip %{SOURCE2}
 mv vboxsf-%{commit1}/ vboxsf/
 %endif
+%patch4 -p1
 
 popd
 
@@ -150,6 +150,15 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Oct 17 2019 Sérgio Basto <sergio@serjux.com> - 6.0.14-1
+- Update VBox to 6.0.14
+
+* Thu Oct 03 2019 Sérgio Basto <sergio@serjux.com> - 6.0.12-3
+- Fixes for kernel 5.4
+
+* Sat Sep 14 2019 Sérgio Basto <sergio@serjux.com> - 6.0.12-2
+- Add patch for kernel of EL 7.7
+
 * Fri Sep 06 2019 Sérgio Basto <sergio@serjux.com> - 6.0.12-1
 - Update to 6.0.12
 
