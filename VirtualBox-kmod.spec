@@ -45,7 +45,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.0.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -57,6 +57,7 @@ Source1:        excludekernel-filter.txt
 Source2:        https://github.com/jwrdegoede/vboxsf/archive/%{shortcommit1}.zip
 Patch2:         kernel-5.patch
 Patch4:         fixes_for_5.4.patch
+Patch5:         fixes_for_5.4-rc3.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
@@ -83,6 +84,7 @@ tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{versi
 pushd %{name}-%{version}
 
 %patch2 -p1
+%patch5 -p1
 %if %{with newvboxsf}
 rm -rf vboxsf/
 unzip %{SOURCE2}
@@ -150,6 +152,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sun Oct 20 2019 Sérgio Basto <sergio@serjux.com> - 6.0.14-2
+- Fix for kernel 5.4-rc3
+
 * Thu Oct 17 2019 Sérgio Basto <sergio@serjux.com> - 6.0.14-1
 - Update VBox to 6.0.14
 
