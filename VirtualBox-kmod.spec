@@ -44,8 +44,8 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        6.0.14
-Release:        2%{?dist}
+Version:        6.1.0
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -152,6 +152,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Dec 18 2019 Sérgio Monteiro Basto <sergio@serjux.com> - 6.1.0-1
+- Update to 6.1.0
+
 * Sun Oct 20 2019 Sérgio Basto <sergio@serjux.com> - 6.0.14-2
 - Fix for kernel 5.4-rc3
 
