@@ -11,7 +11,7 @@
 
 # newvboxsf
 # globals for https://github.com/jwrdegoede/vboxsf/archive/fb360320b7d5c2dc74cb958c9b27e8708c1c9bc2.zip
-%global commit1 83b9657878a229c83e4ce652af809bdc18a3a327
+%global commit1 5aba938bcabd978e4615186ad7d8617d633e6f30
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 # Allow only root to access vboxdrv regardless of the file mode
@@ -49,15 +49,12 @@ Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
-Group:          System Environment/Kernel
 License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
-Source2:        https://github.com/jwrdegoede/vboxsf/archive/%{shortcommit1}.zip
+Source2:        https://github.com/jwrdegoede/vboxsf/archive/%{shortcommit1}.tar.gz
 Patch2:         kernel-5.patch
-Patch4:         fixes_for_5.4.patch
-Patch5:         fixes_for_5.4-rc3.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
@@ -79,18 +76,15 @@ Kernel module for VirtualBox
 
 
 %prep
-%setup -T -c
+%setup -T -c -a2
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
 
 %patch2 -p1
-%patch5 -p1
 %if %{with newvboxsf}
 rm -rf vboxsf/
-unzip %{SOURCE2}
-mv vboxsf-%{commit1}/ vboxsf/
+mv ../vboxsf-%{commit1}/ vboxsf/
 %endif
-%patch4 -p1
 
 popd
 
@@ -115,15 +109,14 @@ for kernel_version in %{?kernel_versions}; do
     
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" M="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
-    # copy vboxdrv (for host) module symbols which are used by vboxpci, vboxnetflt and vboxnetadp km's:
+    # copy vboxdrv (for host) module symbols which are used by vboxnetflt and vboxnetadp km's:
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetadp}
     cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetflt}
-    cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxpci}
     %if ! %{with newvboxsf}
     # copy vboxguest (for guest) module symbols which are used by vboxsf km:
     cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxsf}
     %endif
-    for module in vbox{netadp,netflt,sf%{?with_vboxvideo:,video},pci}; do
+    for module in vbox{netadp,netflt,sf%{?with_vboxvideo:,video}}; do
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" M="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
 done
