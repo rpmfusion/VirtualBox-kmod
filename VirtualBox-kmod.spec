@@ -60,8 +60,7 @@ Patch2:         kernel-5.patch
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
 BuildRequires:  %{AkmodsBuildRequires}
 
-# needed for plague to make sure it builds for i586 and i686
-ExclusiveArch:  i686 x86_64
+ExclusiveArch:  x86_64
 
 # get the proper build-sysbuild package from the repo, which
 # tracks in all the kernel-devel packages
@@ -106,7 +105,6 @@ done
 %build
 for kernel_version in %{?kernel_versions}; do
     for module in vboxdrv %{!?with_newvboxsf:vboxguest}; do
-    
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" M="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
     %if ! %{with newvboxsf}

@@ -28,38 +28,36 @@ fi
 if test $stage -le 1
 then
 echo STAGE 1
-BRANCH1=f31
-BRANCH2=fc31
+BRANCH1=f32
+BRANCH2=fc32
 koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
 (koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
 rfpkg push && rfpkg build --nowait ) &
+fi
+if test $stage -le 2
+then
+echo STAGE 2
+BRANCH1=f31
+BRANCH2=fc31
+echo Press enter tag-build $BRANCH1 to continue; read dummy;
+koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
+(koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
+git checkout $BRANCH1 && git merge master && git push && rfpkg build --nowait; git checkout master) &
 BRANCH1=f30
 BRANCH2=fc30
 echo Press enter tag-build $BRANCH1 to continue; read dummy;
 koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
 (koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
 git checkout $BRANCH1 && git merge master && git push && rfpkg build --nowait; git checkout master) &
-BRANCH1=f29
-BRANCH2=fc29
-echo Press enter tag-build $BRANCH1 to continue; read dummy;
-koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
-(koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
-git checkout $BRANCH1 && git merge master && git push && rfpkg build --nowait) &
 #koji-rpmfusion watch-task
-#BRANCH1=f28
-#BRANCH2=fc28
-#echo Press enter tag-build $BRANCH1 to continue; read dummy;
-#koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
-#koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2
-#git checkout $BRANCH1 && git merge master && git push && rfpkg build --nowait; git checkout master
 fi
 
-if test $stage -le 2
+if test $stage -le 3
 then
-echo STAGE 2
-echo Press enter to continue; read dummy;
+echo STAGE 3
 BRANCH1=el7
 BRANCH2=el7
+echo Press enter tag-build $BRANCH1 to continue; read dummy;
 koji-rpmfusion tag-build el7-free-override VirtualBox-$VERSION-$REL.el7
 koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2
 git checkout $BRANCH1 && git merge master && git push && rfpkg build --nowait; git checkout master
