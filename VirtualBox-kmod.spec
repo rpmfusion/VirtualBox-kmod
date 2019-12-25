@@ -45,7 +45,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -108,22 +108,15 @@ for kernel_version in %{?kernel_versions}; do
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" M="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
     %if ! %{with newvboxsf}
-        export KBUILD_EXTRA_SYMBOLS=$(pwd)/kmod_build_${kernel_version%%___*}/vboxguest/Module.symvers
-    %endif
-    # copy vboxdrv (for host) module symbols which are used by vboxnetflt and vboxnetadp km's:
-    cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetadp}
-    cp _kmod_build_${kernel_version%%___*}/{vboxdrv/Module.symvers,vboxnetflt}
-    %if ! %{with newvboxsf}
-    # copy vboxguest (for guest) module symbols which are used by vboxsf km:
-    cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxsf}
+        export KBUILD_EXTRA_SYMBOLS=${PWD}/kmod_build_${kernel_version%%___*}/vboxguest/Module.symvers
     %endif
     make %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" M="${PWD}/_kmod_build_${kernel_version%%___*}/vboxsf"  modules
     for module in vbox{netadp,netflt}; do
-        export KBUILD_EXTRA_SYMBOLS=$(pwd)/_kmod_build_${kernel_version%%___*}/vboxdrv/Module.symvers
+        export KBUILD_EXTRA_SYMBOLS=${PWD}/_kmod_build_${kernel_version%%___*}/vboxdrv/Module.symvers
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" M="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
     %if %{with vboxvideo}
-        export KBUILD_EXTRA_SYMBOLS=$(pwd)/_kmod_build_${kernel_version%%___*}/vboxguest/Module.symvers
+        export KBUILD_EXTRA_SYMBOLS=${PWD}/_kmod_build_${kernel_version%%___*}/vboxguest/Module.symvers
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" M="${PWD}/_kmod_build_${kernel_version%%___*}/vboxvideo"  modules
     %endif
 done
@@ -152,6 +145,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Dec 25 2019 Sérgio Basto <sergio@serjux.com> - 6.1.0-3
+- Removing "old" way to build kmod's
+
 * Tue Dec 24 2019 Sérgio Basto <sergio@serjux.com> - 6.1.0-2
 - New way to build for Kernel 5.5, with kernel v5.5, change the behavior of
   depmod. In earlier versions, it was sufficient to copy the contents of
