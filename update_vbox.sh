@@ -1,6 +1,7 @@
-VERSION=6.1.0
+VERSION=6.1.2
 REL=1
 RAWHIDE=32
+REPOS="31 30"
 
 if [ -z "$1" ]
 then
@@ -37,19 +38,14 @@ fi
 if test $stage -le 2
 then
 echo STAGE 2
-BRANCH1=f31
-BRANCH2=fc31
+for repo in $REPOS ; do
+BRANCH1=f$repo
+BRANCH2=fc$repo
 echo Press enter tag-build $BRANCH1 to continue; read dummy;
 koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
 (koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
 git checkout $BRANCH1 && git merge master && git push && rfpkg build --nowait; git checkout master) &
-BRANCH1=f30
-BRANCH2=fc30
-echo Press enter tag-build $BRANCH1 to continue; read dummy;
-koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
-(koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
-git checkout $BRANCH1 && git merge master && git push && rfpkg build --nowait; git checkout master) &
-#koji-rpmfusion watch-task
+done
 fi
 
 if test $stage -le 3
