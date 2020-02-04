@@ -45,7 +45,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -145,6 +145,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Feb 04 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 6.1.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
 * Sun Jan 19 2020 Leigh Scott <leigh123linux@googlemail.com> - 6.1.2-1
 - Update to 6.1.2
 
