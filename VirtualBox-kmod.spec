@@ -10,7 +10,7 @@
 %endif
 
 # newvboxsf
-# globals for https://github.com/jwrdegoede/vboxsf/archive/fb360320b7d5c2dc74cb958c9b27e8708c1c9bc2.zip
+# globals for https://github.com/jwrdegoede/vboxsf/archive/5aba938bcabd978e4615186ad7d8617d633e6f30.tar.gz
 %global commit1 5aba938bcabd978e4615186ad7d8617d633e6f30
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
@@ -44,8 +44,8 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        6.1.2
-Release:        2%{?dist}
+Version:        6.1.4
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -145,6 +145,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Fri Feb 21 2020 Sérgio Basto <sergio@serjux.com> - 6.1.4-1
+- Update to 6.1.4
+
 * Tue Feb 04 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 6.1.2-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
 

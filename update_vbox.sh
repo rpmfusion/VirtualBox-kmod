@@ -1,7 +1,7 @@
-VERSION=6.1.2
+VERSION=6.1.4
 REL=1
-RAWHIDE=32
-REPOS="31 30"
+RAWHIDE=33
+REPOS="32 31 30"
 
 if [ -z "$1" ]
 then
@@ -12,6 +12,7 @@ fi
 
 git checkout master
 git pull
+
 if test $stage -le 0
 then
 echo STAGE 0
@@ -29,12 +30,13 @@ fi
 if test $stage -le 1
 then
 echo STAGE 1
-BRANCH1=f32
-BRANCH2=fc32
+BRANCH1=f$RAWHIDE
+BRANCH2=fc$RAWHIDE
 koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
 (koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
 rfpkg push && rfpkg build --nowait ) &
 fi
+
 if test $stage -le 2
 then
 echo STAGE 2
