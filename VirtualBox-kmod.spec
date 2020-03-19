@@ -1,18 +1,10 @@
 %if 0%{?fedora}
 %bcond_with    vboxvideo
+%bcond_with    vboxguest
 %else
 %bcond_without vboxvideo
+%bcond_without vboxguest
 %endif
-%if 0%{?fedora} > 27
-%bcond_without  newvboxsf
-%else
-%bcond_with     newvboxsf
-%endif
-
-# newvboxsf
-# globals for https://github.com/jwrdegoede/vboxsf/archive/5aba938bcabd978e4615186ad7d8617d633e6f30.tar.gz
-%global commit1 5aba938bcabd978e4615186ad7d8617d633e6f30
-%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 
 # Allow only root to access vboxdrv regardless of the file mode
 # use only for debugging!
@@ -39,13 +31,13 @@
 #global prerel RC1
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
-%global vboxrel 1
+%global vboxrel 2
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
 Version:        6.1.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -53,7 +45,6 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
-Source2:        https://github.com/jwrdegoede/vboxsf/archive/%{shortcommit1}.tar.gz
 Patch2:         kernel-5.patch
 
 
@@ -75,15 +66,11 @@ Kernel module for VirtualBox
 
 
 %prep
-%setup -T -c -a2
+%setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
 
 %patch2 -p1
-%if %{with newvboxsf}
-rm -rf vboxsf/
-mv ../vboxsf-%{commit1}/ vboxsf/
-%endif
 
 popd
 
@@ -104,13 +91,13 @@ done
 
 %build
 for kernel_version in %{?kernel_versions}; do
-    for module in vboxdrv %{!?with_newvboxsf:vboxguest}; do
+    for module in vboxdrv %{?with_vboxguest:vboxguest}; do
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" M="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
     done
-    %if ! %{with newvboxsf}
+    %if %{with vboxguest}
         export KBUILD_EXTRA_SYMBOLS=${PWD}/kmod_build_${kernel_version%%___*}/vboxguest/Module.symvers
+        make %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" M="${PWD}/_kmod_build_${kernel_version%%___*}/vboxsf"  modules
     %endif
-    make %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" M="${PWD}/_kmod_build_${kernel_version%%___*}/vboxsf"  modules
     for module in vbox{netadp,netflt}; do
         export KBUILD_EXTRA_SYMBOLS=${PWD}/_kmod_build_${kernel_version%%___*}/vboxdrv/Module.symvers
         make VBOX_USE_INSERT_PAGE=1 %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" M="${PWD}/_kmod_build_${kernel_version%%___*}/${module}"  modules
@@ -137,14 +124,20 @@ MODS=$(find $(ls -d %{buildroot}%{_prefix}/lib/modules/* |head -n1) -name '*.ko'
 %if ! %{with vboxvideo}
 rm -rf %{name}-%{version}/vboxvideo
 %endif
-%if %{with newvboxsf}
+%if ! %{with vboxguest}
 rm -rf %{name}-%{version}/vboxguest
+rm -rf %{name}-%{version}/vboxsf
 %endif
 DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 
 %changelog
+* Thu Mar 19 2020 Sérgio Basto <sergio@serjux.com> - 6.1.4-2
+- Since Fedora kernel 5.5.6 , Backport Virtual Box Guest shared folder support
+  from 5.6, so we don't need build "new" vboxsf code, also fix kernel 5.6
+  akmods build.
+
 * Fri Feb 21 2020 Sérgio Basto <sergio@serjux.com> - 6.1.4-1
 - Update to 6.1.4
 
