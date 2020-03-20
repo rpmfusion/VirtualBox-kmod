@@ -31,13 +31,13 @@
 #global prerel RC1
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
-%global vboxrel 2
+%global vboxrel 3
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
 Version:        6.1.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -133,6 +133,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Fri Mar 20 2020 Sérgio Basto <sergio@serjux.com> - 6.1.4-3
+- Force use of VirtualBox-kmodsrc-6.1.4-3
+
 * Thu Mar 19 2020 Sérgio Basto <sergio@serjux.com> - 6.1.4-2
 - Since Fedora kernel 5.5.6 , Backport Virtual Box Guest shared folder support
   from 5.6, so we don't need build "new" vboxsf code, also fix kernel 5.6
