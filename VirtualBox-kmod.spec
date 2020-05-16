@@ -36,7 +36,7 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        6.1.6
+Version:        6.1.8
 Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
@@ -133,6 +133,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sat May 16 2020 Sérgio Basto <sergio@serjux.com> - 6.1.8-1
+- Update to 6.1.8
+
 * Wed Apr 15 2020 Sérgio Basto <sergio@serjux.com> - 6.1.6-1
 - Update to 6.1.6
 
