@@ -37,7 +37,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.1.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -96,6 +96,8 @@ for kernel_version in %{?kernel_versions}; do
     done
     %if %{with vboxguest}
         export KBUILD_EXTRA_SYMBOLS=${PWD}/kmod_build_${kernel_version%%___*}/vboxguest/Module.symvers
+        # copy vboxguest (for guest) module symbols which are used by vboxsf km on building modules, stage 2.
+        cp _kmod_build_${kernel_version%%___*}/{vboxguest/Module.symvers,vboxsf}
         make %{?_smp_mflags} KERN_DIR="${kernel_version##*___}" -C "${kernel_version##*___}" M="${PWD}/_kmod_build_${kernel_version%%___*}/vboxsf"  modules
     %endif
     for module in vbox{netadp,netflt}; do
@@ -133,6 +135,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed May 20 2020 Sérgio Basto <sergio@serjux.com> - 6.1.8-2
+- vboxsf need symbols of vboxguest on building modules, stage 2.
+
 * Sat May 16 2020 Sérgio Basto <sergio@serjux.com> - 6.1.8-1
 - Update to 6.1.8
 
