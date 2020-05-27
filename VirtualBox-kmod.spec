@@ -45,7 +45,6 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
-Patch2:         kernel-5.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time
@@ -69,9 +68,6 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
-
-%patch2 -p1
-
 popd
 
 # error out if there was something wrong with kmodtool
@@ -135,6 +131,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed May 27 2020 Sérgio Basto <sergio@serjux.com>
+- Remove kernel-5.patch
+
 * Wed May 20 2020 Sérgio Basto <sergio@serjux.com> - 6.1.8-2
 - vboxsf need symbols of vboxguest on building modules, stage 2.
 
