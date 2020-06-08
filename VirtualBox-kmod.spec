@@ -36,8 +36,8 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        6.1.8
-Release:        2%{?dist}
+Version:        6.1.10
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -131,6 +131,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Mon Jun 08 2020 Sérgio Basto <sergio@serjux.com> - 6.1.10-1
+- Update to 6.1.10
+
 * Wed May 27 2020 Sérgio Basto <sergio@serjux.com>
 - Remove kernel-5.patch
 

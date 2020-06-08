@@ -1,7 +1,7 @@
-VERSION=6.1.8
+VERSION=6.1.10
 REL=1
 RAWHIDE=33
-REPOS="32 31 30"
+REPOS="32 31"
 
 if [ -z "$1" ]
 then
