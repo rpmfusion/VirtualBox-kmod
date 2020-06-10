@@ -47,7 +47,7 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 Source1:        excludekernel-filter.txt
 
 
-%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time, elfutils-libelf-devel
+%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time, elfutils-libelf-devel, gcc
 BuildRequires:  %{AkmodsBuildRequires}
 
 ExclusiveArch:  x86_64
