@@ -41,8 +41,8 @@ echo STAGE 2
 for repo in $REPOS ; do
 BRANCH1=$repo
 BRANCH2=$repo
-if [[ $i == f* ]]; then
-    BRANCH2=fc${i:1}
+if [[ $repo == f* ]]; then
+    BRANCH2=fc${repo:1}
 fi
 echo Press enter tag-build $BRANCH1 to continue; read dummy;
 koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
