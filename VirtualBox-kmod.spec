@@ -36,8 +36,8 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        6.1.12
-Release:        2%{?dist}
+Version:        6.1.14
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -131,6 +131,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Mon Sep 07 2020 Sérgio Basto <sergio@serjux.com> - 6.1.14-1
+- Update to 6.1.14
+
 * Mon Aug 17 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 6.1.12-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
 
