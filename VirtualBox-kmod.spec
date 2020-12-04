@@ -37,7 +37,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.1.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -45,6 +45,7 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
+Patch1:         fixes_4.10.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time, elfutils-libelf-devel, gcc
@@ -67,6 +68,7 @@ Kernel module for VirtualBox
 %prep
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
+%patch1 -p0
 pushd %{name}-%{version}
 popd
 
@@ -131,6 +133,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Fri Dec 04 2020 Sérgio Basto <sergio@serjux.com> - 6.1.16-2
+- Add fixes for kernel 5.10
+
 * Wed Oct 21 2020 Sérgio Basto <sergio@serjux.com> - 6.1.16-1
 - Update to 6.1.16
 
