@@ -17,7 +17,6 @@
 # a new akmod package will only get build when a new one is actually needed
 %if 0%{?fedora}
 %global buildforkernels akmod
-%global debug_package %{nil}
 %endif
 #akmods still generate debuginfo but have the wrong name:
 #/var/cache/akmods/VirtualBox/VirtualBox-kmod-debuginfo-5.0.4-1.fc21.x86_64.rpm
@@ -48,14 +47,18 @@ Source1:        excludekernel-filter.txt
 Patch1:         fixes_4.10.patch
 
 
-%global AkmodsBuildRequires %{_bindir}/kmodtool, VirtualBox-kmodsrc >= %{version}%{vboxreltag}, xz, time, elfutils-libelf-devel, gcc
+%global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc >= %{version}%{vboxreltag} xz time elfutils-libelf-devel gcc
 BuildRequires:  %{AkmodsBuildRequires}
 
 ExclusiveArch:  x86_64
 
+%if "%{buildforkernels}" != "akmod"
 # get the proper build-sysbuild package from the repo, which
 # tracks in all the kernel-devel packages
 %{!?kernels:BuildRequires: buildsys-build-rpmfusion-kerneldevpkgs-%{?buildforkernels:%{buildforkernels}}%{!?buildforkernels:current}-%{_target_cpu} }
+%else
+%global debug_package %{nil}
+%endif
 
 # kmodtool does its magic here
 %{expand:%(kmodtool --target %{_target_cpu} --repo rpmfusion --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE1} 2>/dev/null) }
@@ -133,6 +136,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sun Dec 06 2020 Sérgio Basto <sergio@serjux.com>
+- We don't need build-sysbuild package when we just build the akmod
+
 * Fri Dec 04 2020 Sérgio Basto <sergio@serjux.com> - 6.1.16-2
 - Add fixes for kernel 5.10
 
