@@ -36,7 +36,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.1.16
-Release:        2%{?dist}
+Release:        3%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -45,6 +45,7 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
 Patch1:         fixes_4.10.patch
+Patch2:         fixes_centos_8.4.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc >= %{version}%{vboxreltag} xz time elfutils-libelf-devel gcc
@@ -72,6 +73,7 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 %patch1 -p0
+%patch2 -p0
 pushd %{name}-%{version}
 popd
 
@@ -136,6 +138,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sun Dec 13 2020 Sérgio Basto <sergio@serjux.com> - 6.1.16-3
+- Add fixes for Centos 8.4
+
 * Sun Dec 06 2020 Sérgio Basto <sergio@serjux.com>
 - We don't need build-sysbuild package when we just build the akmod
 
