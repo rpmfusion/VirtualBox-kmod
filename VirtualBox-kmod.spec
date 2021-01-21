@@ -16,8 +16,8 @@
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
 %if 0%{?fedora}
-%global buildforkernels akmod
 %endif
+%global buildforkernels akmod
 #akmods still generate debuginfo but have the wrong name:
 #/var/cache/akmods/VirtualBox/VirtualBox-kmod-debuginfo-5.0.4-1.fc21.x86_64.rpm
 #/var/cache/akmods/VirtualBox/kmod-VirtualBox-4.1.8-100.fc21.x86_64-5.0.4-1.fc21.x86_64.rpm
@@ -35,8 +35,8 @@
 %global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
-Version:        6.1.16
-Release:        3%{?dist}
+Version:        6.1.18
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -44,8 +44,7 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
-Patch1:         fixes_4.10.patch
-Patch2:         fixes_centos_8.4.patch
+Patch1:         fixes-for-5.11.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc >= %{version}%{vboxreltag} xz time elfutils-libelf-devel gcc
@@ -72,9 +71,8 @@ Kernel module for VirtualBox
 %prep
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
-%patch1 -p0
-%patch2 -p0
 pushd %{name}-%{version}
+%patch1 -p1
 popd
 
 # error out if there was something wrong with kmodtool
@@ -138,6 +136,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Jan 21 2021 Sérgio Basto <sergio@serjux.com> - 6.1.18-1
+- Update to 6.1.18
+
 * Sun Dec 13 2020 Sérgio Basto <sergio@serjux.com> - 6.1.16-3
 - Add fixes for Centos 8.4
 

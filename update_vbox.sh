@@ -1,7 +1,7 @@
-VERSION=6.1.16
+VERSION=6.1.18
 REL=1
 RAWHIDE=34
-REPOS="f33 f32 f31 el8 el7"
+REPOS="f33 f32 el8 el7"
 
 if [ -z "$1" ]
 then
@@ -17,12 +17,12 @@ if test $stage -le 0
 then
 echo STAGE 0
 rpmdev-bumpspec -n $VERSION -c "Update to $VERSION" VirtualBox-kmod.spec
-rfpkg ci -c && git show
 rfpkg srpm && copr-cli build sergiomb/vboxfor23 VirtualBox-kmod-$VERSION-$REL.fc$RAWHIDE.src.rpm
 #rfpkg srpm && mock -r fedora-27-x86_64-rpmfusion_free --no-clean --rebuild smplayer-17.5.0-1.fc27.src.rpm
 #cp VirtualBox-kmod.spec VirtualBox-kmod.spec.new
 #git reset HEAD~1
 #git rm kernel-4.10.0-0.rc5.lnkops.v2.patch
+rfpkg ci -c && git show
 echo Press enter to continue; read dummy;
 #koji-rpmfusion watch-task
 fi
