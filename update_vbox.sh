@@ -22,13 +22,13 @@ rfpkg srpm && copr-cli build sergiomb/vboxfor23 VirtualBox-kmod-$VERSION-$REL.fc
 #cp VirtualBox-kmod.spec VirtualBox-kmod.spec.new
 #git reset HEAD~1
 #git rm kernel-4.10.0-0.rc5.lnkops.v2.patch
-rfpkg ci -c && git show
-echo Press enter to continue; read dummy;
 #koji-rpmfusion watch-task
 fi
 
 if test $stage -le 1; then
 echo STAGE 1
+rfpkg ci -c && git show
+echo Press enter to continue; read dummy;
 BRANCH1=f$RAWHIDE
 BRANCH2=fc$RAWHIDE
 koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
