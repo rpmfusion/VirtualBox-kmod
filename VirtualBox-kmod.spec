@@ -36,7 +36,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.1.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -136,6 +136,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Feb 02 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 6.1.18-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
 * Thu Jan 21 2021 Sérgio Basto <sergio@serjux.com> - 6.1.18-1
 - Update to 6.1.18
 
