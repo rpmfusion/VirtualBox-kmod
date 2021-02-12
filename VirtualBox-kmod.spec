@@ -29,7 +29,6 @@
 
 %global vboxrel 1
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
-%global __arch_install_post   /usr/lib/rpm/check-rpaths   /usr/lib/rpm/check-buildroot
 
 Name:           VirtualBox-kmod
 Version:        6.1.18
