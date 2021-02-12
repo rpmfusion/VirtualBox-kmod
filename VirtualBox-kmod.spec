@@ -564,9 +564,6 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 * Sat Jan 10 2015 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-2.3
 - Rebuilt for kernel
 
-* Sun Dec 21 2014 Sérgio Basto <sergio@serjux.com> - 4.3.20-2.3
-- s/$RPM_BUILD_ROOT/%{buildroot}/g.
-
 * Fri Dec 19 2014 Nicolas Chauvet <kwizart@gmail.com> - 4.3.20-2.2
 - Rebuilt for kernel
 
