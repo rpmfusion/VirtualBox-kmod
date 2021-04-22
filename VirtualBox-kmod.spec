@@ -31,8 +31,8 @@
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 
 Name:           VirtualBox-kmod
-Version:        6.1.18
-Release:        2%{?dist}
+Version:        6.1.20
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -40,7 +40,6 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
-Patch1:         fixes-for-5.11.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc >= %{version}%{vboxreltag} xz time elfutils-libelf-devel gcc
@@ -62,7 +61,7 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
-%patch1 -p1
+#patch1 -p1
 popd
 
 # error out if there was something wrong with kmodtool
@@ -126,6 +125,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Apr 22 2021 Sérgio Basto <sergio@serjux.com> - 6.1.20-1
+- Update to 6.1.20
+
 * Tue Feb 02 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 6.1.18-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
