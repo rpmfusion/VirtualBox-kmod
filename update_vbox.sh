@@ -1,5 +1,5 @@
-VERSION=6.1.22
-REL=1
+VERSION=6.1.26
+REL=2
 RAWHIDE=35
 REPOS="f34 f33 f32 el8 el7"
 
@@ -31,7 +31,8 @@ rfpkg ci -c && git show
 echo Press enter to continue; read dummy;
 BRANCH1=f$RAWHIDE
 BRANCH2=fc$RAWHIDE
-koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
+echo koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
+koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-3.$BRANCH2
 (koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
 rfpkg push && rfpkg build --nowait ) &
 fi
@@ -45,6 +46,7 @@ if [[ $repo == f* ]]; then
     BRANCH2=fc${repo:1}
 fi
 echo Press enter tag-build $BRANCH1 to continue; read dummy;
+echo koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
 koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
 (koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
 git checkout $BRANCH1 && git merge master && git push && rfpkg build --nowait; git checkout master) &

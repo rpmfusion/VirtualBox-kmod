@@ -27,12 +27,12 @@
 #global prerel RC1
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
-%global vboxrel 1
+%global vboxrel 2
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 
 Name:           VirtualBox-kmod
-Version:        6.1.22
-Release:        3%{?dist}
+Version:        6.1.26
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -125,6 +125,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Mon Aug 09 2021 Sérgio Basto <sergio@serjux.com> - 6.1.26-1
+- Update to 6.1.26
+
 * Mon Aug 02 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 6.1.22-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
