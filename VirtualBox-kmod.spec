@@ -15,7 +15,7 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel}
 %global buildforkernels akmod
 %global debug_package %{nil}
 %endif
@@ -32,7 +32,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.1.26
-Release:        2%{?dist}
+Release:        3%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -41,6 +41,7 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
 Patch1:         fixes-for-5.15_fedora.patch
+Patch2:         fixes-for-EL8.5.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc >= %{version}%{vboxreltag} xz time elfutils-libelf-devel gcc
@@ -63,6 +64,7 @@ Kernel module for VirtualBox
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
 %patch1 -p1
+%patch2 -p1
 popd
 
 # error out if there was something wrong with kmodtool
@@ -126,6 +128,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Oct 12 2021 Sérgio Basto <sergio@serjux.com> - 6.1.26-3
+- Add fixes for EL8.5 or Centos Stream kernels
+
 * Mon Sep 13 2021 Sérgio Basto <sergio@serjux.com> - 6.1.26-2
 - Add fixes-for-5.15
 

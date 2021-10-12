@@ -32,7 +32,7 @@ echo Press enter to continue; read dummy;
 BRANCH1=f$RAWHIDE
 BRANCH2=fc$RAWHIDE
 echo koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
-koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-3.$BRANCH2
+koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
 (koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
 rfpkg push && rfpkg build --nowait ) &
 fi
