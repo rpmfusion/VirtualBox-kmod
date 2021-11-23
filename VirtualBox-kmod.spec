@@ -31,8 +31,8 @@
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 
 Name:           VirtualBox-kmod
-Version:        6.1.28
-Release:        2%{?dist}
+Version:        6.1.30
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -125,6 +125,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Mon Nov 22 2021 Sérgio Basto <sergio@serjux.com> - 6.1.30-1
+- Update to 6.1.30
+
 * Fri Nov 19 2021 Nicolas Chauvet <kwizart@gmail.com> - 6.1.28-2
 - Rebuilt
 
