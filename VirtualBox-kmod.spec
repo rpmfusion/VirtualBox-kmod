@@ -32,7 +32,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.1.32
-Release:        1%{?dist}
+Release:        2%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -125,6 +125,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Feb 09 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 6.1.32-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
 * Tue Jan 18 2022 Sérgio Basto <sergio@serjux.com> - 6.1.32-1
 - Update to 6.1.32
 
