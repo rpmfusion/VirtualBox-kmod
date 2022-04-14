@@ -1,4 +1,6 @@
-%if 0%{?fedora}
+# kmod SIG on Centos 9 provides virtualbox-guest-addition
+# https://rpmfusion.org/Howto/VirtualBox#Install_virtual-guest-additions_on_Centos_9_.28stream.29
+%if 0%{?fedora} || 0%{?rhel} >= 9
 %bcond_with    vboxvideo
 %bcond_with    vboxguest
 %else
