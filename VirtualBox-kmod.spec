@@ -129,6 +129,7 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 %changelog
 * Wed Apr 20 2022 Sérgio Basto <sergio@serjux.com> - 6.1.34-1
 - Update to 6.1.34
+- Enable binary kmods on el repos
 
 * Wed Feb 09 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 6.1.32-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
