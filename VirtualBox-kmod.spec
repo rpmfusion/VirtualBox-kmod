@@ -17,10 +17,10 @@
 # "buildforkernels newest" macro for just that build; immediately after
 # queuing that build enable the macro again for subsequent builds; that way
 # a new akmod package will only get build when a new one is actually needed
-%if 0%{?fedora} || 0%{?rhel}
+%if 0%{?fedora}
 %global buildforkernels akmod
-%global debug_package %{nil}
 %endif
+%global debug_package %{nil}
 
 # In prerelease builds (such as betas), this package has the same
 # major version number, while the kernel module abi is not guaranteed
@@ -33,8 +33,8 @@
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 
 Name:           VirtualBox-kmod
-Version:        6.1.32
-Release:        2%{?dist}
+Version:        6.1.34
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -127,6 +127,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Apr 20 2022 Sérgio Basto <sergio@serjux.com> - 6.1.34-1
+- Update to 6.1.34
+
 * Wed Feb 09 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 6.1.32-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
 
