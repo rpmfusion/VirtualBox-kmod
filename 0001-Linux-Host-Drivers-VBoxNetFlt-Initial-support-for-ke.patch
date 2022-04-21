@@ -1,0 +1,32 @@
+From 94e81a17ce6c02791b1f343281b7191b210dccb5 Mon Sep 17 00:00:00 2001
+From: vboxsync <vboxsync@cfe28804-0f27-0410-a406-dd0f0b0b656f>
+Date: Wed, 6 Apr 2022 17:05:49 +0000
+Subject: [PATCH] Linux: Host Drivers: VBoxNetFlt: Initial support for kernel
+ 5.18-rc1, bugref:10209.
+
+git-svn-id: http://www.virtualbox.org/svn/vbox@94501 cfe28804-0f27-0410-a406-dd0f0b0b656f
+---
+ .../VBox/HostDrivers/VBoxNetFlt/linux/VBoxNetFlt-linux.c    | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/trunk/src/VBox/HostDrivers/VBoxNetFlt/linux/VBoxNetFlt-linux.c b/trunk/src/VBox/HostDrivers/VBoxNetFlt/linux/VBoxNetFlt-linux.c
+index 08d985049ec..ef54e7fd8af 100644
+--- a/vboxnetflt/linux/VBoxNetFlt-linux.c
++++ b/vboxnetflt/linux/VBoxNetFlt-linux.c
+@@ -2311,7 +2311,13 @@ int  vboxNetFltPortOsXmit(PVBOXNETFLTINS pThis, void *pvIfData, PINTNETSG pSG, u
+                 vboxNetFltDumpPacket(pSG, true, "host", (fDst & INTNETTRUNKDIR_WIRE) ? 0 : 1);
+                 Log6(("vboxNetFltPortOsXmit: pBuf->cb dump:\n%.*Rhxd\n", sizeof(pBuf->cb), pBuf->cb));
+                 Log6(("vboxNetFltPortOsXmit: netif_rx_ni(%p)\n", pBuf));
++#if RTLNX_VER_MIN(5,18,0)
++                local_bh_disable();
++                err = netif_rx(pBuf);
++                local_bh_enable();
++#else
+                 err = netif_rx_ni(pBuf);
++#endif
+                 if (err)
+                     rc = RTErrConvertFromErrno(err);
+             }
+-- 
+2.34.1
+
