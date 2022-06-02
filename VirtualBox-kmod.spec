@@ -29,12 +29,12 @@
 #global prerel RC1
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
-%global vboxrel 1
+%global vboxrel 3
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 
 Name:           VirtualBox-kmod
 Version:        6.1.34
-Release:        2%{?dist}
+Release:        3%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -42,7 +42,6 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
-Patch1:         0001-Linux-Host-Drivers-VBoxNetFlt-Initial-support-for-ke.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc >= %{version}%{vboxreltag} xz time elfutils-libelf-devel gcc
@@ -64,7 +63,7 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
-%patch1 -p1
+#patch1 -p1
 popd
 
 # error out if there was something wrong with kmodtool
@@ -128,6 +127,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Jun 02 2022 Sérgio Basto <sergio@serjux.com> - 6.1.34-3
+- we have updates in VirtualBox-kmodsrc
+
 * Thu Apr 21 2022 Sérgio Basto <sergio@serjux.com> - 6.1.34-2
 - add kernel 5.18 patch
 
