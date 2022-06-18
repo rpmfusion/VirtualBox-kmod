@@ -29,7 +29,13 @@
 #global prerel RC1
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
+
+%if 0%{?fedora}
 %global vboxrel 3
+%else
+%global vboxrel 2
+%endif
+
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 
 Name:           VirtualBox-kmod
