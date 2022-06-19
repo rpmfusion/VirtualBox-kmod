@@ -40,7 +40,7 @@
 
 Name:           VirtualBox-kmod
 Version:        6.1.34
-Release:        4%{?dist}
+Release:        5%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -49,6 +49,7 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
 Patch1:         cs9.patch
+Patch2:         cs9.v2.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc >= %{version}%{vboxreltag} xz time elfutils-libelf-devel gcc
@@ -71,6 +72,9 @@ Kernel module for VirtualBox
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
 %patch1 -p1
+%if ! 0%{?fedora}
+%patch2 -p1
+%endif
 popd
 
 # error out if there was something wrong with kmodtool
@@ -134,6 +138,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Sun Jun 19 2022 Sérgio Basto <sergio@serjux.com> - 6.1.34-5
+- Add cs9.2.patch
+
 * Sat Jun 18 2022 Sérgio Basto <sergio@serjux.com> - 6.1.34-4
 - Add cs9.patch rfbz#(6328)
 
