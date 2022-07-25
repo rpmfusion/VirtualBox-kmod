@@ -30,17 +30,13 @@
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
 
-%if 0%{?fedora}
-%global vboxrel 3
-%else
-%global vboxrel 2
-%endif
+%global vboxrel 1
 
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 
 Name:           VirtualBox-kmod
-Version:        6.1.34
-Release:        5%{?dist}
+Version:        6.1.36
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -48,7 +44,6 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
-Patch1:         cs9.patch
 Patch2:         cs9.v2.patch
 
 
@@ -71,7 +66,7 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
-%patch1 -p1
+#patch1 -p1
 %if ! 0%{?fedora}
 %patch2 -p1
 %endif
@@ -138,6 +133,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Mon Jul 25 2022 Sérgio Basto <sergio@serjux.com> - 6.1.36-1
+- Update to 6.1.36
+
 * Sun Jun 19 2022 Sérgio Basto <sergio@serjux.com> - 6.1.34-5
 - Add cs9.2.patch
 
