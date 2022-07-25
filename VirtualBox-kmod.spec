@@ -30,17 +30,13 @@
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
 
-%if 0%{?fedora}
-%global vboxrel 3
-%else
-%global vboxrel 2
-%endif
+%global vboxrel 1
 
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 
 Name:           VirtualBox-kmod
-Version:        6.1.34
-Release:        4%{?dist}
+Version:        6.1.36
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -134,6 +130,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Mon Jul 25 2022 Sérgio Basto <sergio@serjux.com> - 6.1.36-1
+- Update to 6.1.36
+
 * Sat Jun 18 2022 Sérgio Basto <sergio@serjux.com> - 6.1.34-4
 - Add cs9.patch rfbz#(6328)
 
