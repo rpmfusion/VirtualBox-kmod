@@ -44,6 +44,7 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
+Patch2:         cs9.v2.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc >= %{version}%{vboxreltag} xz time elfutils-libelf-devel gcc
@@ -66,6 +67,9 @@ Kernel module for VirtualBox
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
 #patch1 -p1
+%if ! 0%{?fedora}
+%patch2 -p1
+%endif
 popd
 
 # error out if there was something wrong with kmodtool
@@ -131,6 +135,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 %changelog
 * Mon Jul 25 2022 Sérgio Basto <sergio@serjux.com> - 6.1.36-1
 - Update to 6.1.36
+
+* Sun Jun 19 2022 Sérgio Basto <sergio@serjux.com> - 6.1.34-5
+- Add cs9.2.patch
 
 * Sat Jun 18 2022 Sérgio Basto <sergio@serjux.com> - 6.1.34-4
 - Add cs9.patch rfbz#(6328)
