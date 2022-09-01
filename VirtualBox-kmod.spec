@@ -35,8 +35,8 @@
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 
 Name:           VirtualBox-kmod
-Version:        6.1.36
-Release:        2%{?dist}
+Version:        6.1.38
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -133,6 +133,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Thu Sep 01 2022 Sérgio Basto <sergio@serjux.com> - 6.1.38-1
+- Update to 6.1.38
+
 * Sat Aug 06 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 6.1.36-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild and ffmpeg
   5.1
