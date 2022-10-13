@@ -1,4 +1,4 @@
-VERSION=6.1.38
+VERSION=6.1.40
 REL=1
 RAWHIDE=38
 REPOS="f37 f36 f35 el9 el8 el7"
@@ -17,7 +17,7 @@ if test $stage -le 0
 then
 echo STAGE 0
 rpmdev-bumpspec -n $VERSION -c "Update to $VERSION" VirtualBox-kmod.spec
-rfpkg srpm && copr-cli build sergiomb/vboxfor23 VirtualBox-kmod-$VERSION-$REL.fc$RAWHIDE.src.rpm
+rfpkg copr-build sergiomb/vboxfor23
 #rfpkg srpm && mock -r fedora-27-x86_64-rpmfusion_free --no-clean --rebuild smplayer-17.5.0-1.fc27.src.rpm
 #cp VirtualBox-kmod.spec VirtualBox-kmod.spec.new
 #git reset HEAD~1
