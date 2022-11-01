@@ -35,7 +35,7 @@
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 
 Name:           VirtualBox-kmod
-Version:        6.1.40
+Version:        7.0.2
 Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
@@ -133,6 +133,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Tue Nov 01 2022 Sérgio Basto <sergio@serjux.com> - 7.0.2-1
+- Update to 7.0.2
+
 * Thu Oct 13 2022 Sérgio Basto <sergio@serjux.com> - 6.1.40-1
 - Update to 6.1.40
 
