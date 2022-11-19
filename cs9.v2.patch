@@ -1,11 +1,11 @@
---- a/vboxnetflt/linux/VBoxNetFlt-linux.c.orig	2022-07-26 00:25:39.750727744 +0100
-+++ b/vboxnetflt/linux/VBoxNetFlt-linux.c	2022-07-26 00:27:46.298624937 +0100
-@@ -2311,7 +2311,7 @@ int  vboxNetFltPortOsXmit(PVBOXNETFLTINS
+--- ./vboxnetflt/linux/VBoxNetFlt-linux.c.orig	2022-11-19 22:49:08.429208984 +0000
++++ ./vboxnetflt/linux/VBoxNetFlt-linux.c	2022-11-19 22:49:16.065180801 +0000
+@@ -2319,7 +2319,7 @@ int  vboxNetFltPortOsXmit(PVBOXNETFLTINS
                  vboxNetFltDumpPacket(pSG, true, "host", (fDst & INTNETTRUNKDIR_WIRE) ? 0 : 1);
                  Log6(("vboxNetFltPortOsXmit: pBuf->cb dump:\n%.*Rhxd\n", sizeof(pBuf->cb), pBuf->cb));
                  Log6(("vboxNetFltPortOsXmit: netif_rx_ni(%p)\n", pBuf));
--#if RTLNX_VER_MIN(5,18,0)
-+#if RTLNX_VER_MIN(5,18,0) || RTLNX_RHEL_MAJ_PREREQ(9,1)
+-#if RTLNX_VER_MIN(5,18,0) || RTLNX_RHEL_MIN(9,2)
++#if RTLNX_VER_MIN(5,18,0) || RTLNX_RHEL_MIN(9,1)
                  local_bh_disable();
                  err = netif_rx(pBuf);
                  local_bh_enable();
