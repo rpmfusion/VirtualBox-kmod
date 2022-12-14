@@ -30,9 +30,13 @@
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
 
-%global vboxrel 1
-
-%global vboxreltag %{?vboxrel:-%{vboxrel}}
+# With commit ad2a3ad54f4ecd07e40a6de590a8b16de5ac34df on Sep 23 2012
+# vboxreltag was made to guarantee one kmodsrc with a minimum releaseversion,
+# but most of the times we may patch the kmodsrc here
+# And we don't need control the releaseversion (if is 6.1.40-1 or 6.1.40-2)
+# on other hand, fix the version of VirtualBox using = instead >= may be useful
+# because akomd will require the exact version that it is prepared for
+# https://bugzilla.rpmfusion.org/show_bug.cgi?id=6519
 
 Name:           VirtualBox-kmod
 Version:        7.0.4
@@ -47,7 +51,7 @@ Source1:        excludekernel-filter.txt
 Patch2:         cs9.v2.patch
 
 
-%global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc >= %{version}%{vboxreltag} xz time elfutils-libelf-devel gcc
+%global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc = %{version} xz time elfutils-libelf-devel gcc
 BuildRequires:  %{AkmodsBuildRequires}
 
 ExclusiveArch:  x86_64
@@ -135,6 +139,7 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 %changelog
 * Sat Nov 19 2022 Sérgio Basto <sergio@serjux.com> - 7.0.4-1
 - Update to 7.0.4
+- Fix for rfbz #6519
 
 * Tue Nov 01 2022 Sérgio Basto <sergio@serjux.com> - 7.0.2-1
 - Update to 7.0.2
