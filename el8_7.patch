@@ -1,0 +1,11 @@
+--- VirtualBox-kmod-7.0.4/vboxvideo/vbox_drv.c	2022-11-19 20:06:39.000000000 +0000
++++ VirtualBox-kmod-7.0.6/vboxvideo/vbox_drv.c	2023-01-18 23:25:19.442934532 +0000
+@@ -48,7 +48,7 @@
+ 
+ /** Detect whether kernel mode setting is OFF. */
+ #if defined(CONFIG_VGA_CONSOLE)
+-# if RTLNX_VER_MIN(5,17,0)
++# if RTLNX_VER_MIN(5,17,0) || RTLNX_RHEL_MAJ_PREREQ(8,7)
+ #  define VBOX_VIDEO_NOMODESET() drm_firmware_drivers_only() && vbox_modeset == -1
+ # elif RTLNX_VER_MIN(4,7,0)
+ #  define VBOX_VIDEO_NOMODESET() vgacon_text_force() && vbox_modeset == -1

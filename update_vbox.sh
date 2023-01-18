@@ -31,13 +31,15 @@ fi
 if test $stage -le 1; then
 echo STAGE 1
 rfpkg ci -c && git show
-echo Press enter to continue; read dummy;
 BRANCH1=f$RAWHIDE
 BRANCH2=fc$RAWHIDE
+echo Press enter tag-build rawhide to continue or n to skip; read dummy;
+if [[ "$dummy" != "n" ]]; then
 echo koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
-rfpkg push && koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
+koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
 (koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
-rfpkg build --nowait ) &
+git checkout $BRANCH1 && rfpkg push && rfpkg build --nowait ) &
+fi
 fi
 
 if test $stage -le 2; then
@@ -51,9 +53,9 @@ fi
 echo Press enter tag-build $BRANCH1 to continue or n to skip; read dummy;
 if [[ "$dummy" != "n" ]]; then
 echo koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
-git checkout $BRANCH1 && git merge master && git push && koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
+koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
 (koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
-git checkout $BRANCH1  && rfpkg build --nowait; git checkout master) &
+git checkout $BRANCH1 && git merge master && git push && rfpkg build --nowait; git checkout master) &
 fi
 done
 fi

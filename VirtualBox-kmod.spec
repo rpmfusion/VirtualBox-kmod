@@ -48,7 +48,7 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
-Patch2:         cs9.v2.patch
+Patch1:         el8_7.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc = %{version} xz time elfutils-libelf-devel gcc
@@ -70,10 +70,7 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
-#patch1 -p1
-%if ! 0%{?fedora}
-%patch2 -p1
-%endif
+%patch1 -p1
 popd
 
 # error out if there was something wrong with kmodtool
