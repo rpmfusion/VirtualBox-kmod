@@ -40,7 +40,7 @@
 
 Name:           VirtualBox-kmod
 Version:        7.0.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -48,7 +48,7 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
-Patch1:         el8_7.patch
+Patch1:         0001-Additions-Linux-vboxvideo-Additional-build-fixes-for.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc = %{version} xz time elfutils-libelf-devel gcc
@@ -132,8 +132,10 @@ rm -rf %{name}-%{version}/vboxsf
 DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
-
 %changelog
+* Fri Mar 31 2023 Sérgio Basto <sergio@serjux.com> - 7.0.6-3
+- apply offical patches for el 8 and 9 but we don't use at 9
+
 * Wed Jan 18 2023 Sérgio Basto <sergio@serjux.com> - 7.0.6-1
 - Update to 7.0.6
 
