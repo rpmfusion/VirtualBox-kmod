@@ -40,7 +40,7 @@
 
 Name:           VirtualBox-kmod
 Version:        7.0.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -133,6 +133,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 %changelog
+* Fri Mar 31 2023 Sérgio Basto <sergio@serjux.com> - 7.0.6-3
+- Add support to Centos Stream 8 (8.8)
+
 * Fri Mar 31 2023 Sérgio Basto <sergio@serjux.com> - 7.0.6-3
 - apply offical patches for el 8 and 9 but we don't use at 9
 
