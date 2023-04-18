@@ -39,8 +39,8 @@
 # https://bugzilla.rpmfusion.org/show_bug.cgi?id=6519
 
 Name:           VirtualBox-kmod
-Version:        7.0.6
-Release:        4%{?dist}
+Version:        7.0.8
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -48,9 +48,8 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
-Patch1:         fixes_for_kernel_6.3.patch
-Patch2:         fix_7.0.6_locking_problems.patch
-Patch3:         0001-Additions-Linux-vboxvideo-Additional-build-fixes-for.patch
+Patch1:         fix_7.0.6_locking_problems.patch
+Patch2:         fixes_for_cs8.8.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc = %{version} xz time elfutils-libelf-devel gcc
@@ -74,7 +73,6 @@ tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{versi
 pushd %{name}-%{version}
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 popd
 
 # error out if there was something wrong with kmodtool
@@ -137,6 +135,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 %changelog
+* Tue Apr 18 2023 Sérgio Basto <sergio@serjux.com> - 7.0.8-1
+- Update to 7.0.8
+
 * Thu Apr 13 2023 Sérgio Basto <sergio@serjux.com> - 7.0.6-4
 - add opensuse patches fix_7.0.6_locking_problems.patch and
   fixes_for_kernel_6.3.patch

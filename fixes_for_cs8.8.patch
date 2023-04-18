@@ -1,0 +1,36 @@
+--- ./vboxvideo/vbox_ttm.c.orig	2023-04-18 23:57:46.583842252 +0100
++++ ./vboxvideo/vbox_ttm.c	2023-04-19 00:00:57.537182564 +0100
+@@ -316,9 +316,9 @@ static struct ttm_tt *vbox_ttm_tt_create
+ #if RTLNX_VER_MAX(5,10,0) && !RTLNX_RHEL_RANGE(8,5, 8,99)
+ 	tt->func = &vbox_tt_backend_func;
+ #endif
+-#if RTLNX_VER_MIN(5,19,0) || RTLNX_RHEL_MAJ_PREREQ(9,2)
++#if RTLNX_VER_MIN(5,19,0) || RTLNX_RHEL_RANGE(8,8, 8,99) || RTLNX_RHEL_MAJ_PREREQ(9,2)
+ 	if (ttm_tt_init(tt, bo, page_flags, ttm_write_combined, 0)) {
+-#elif RTLNX_VER_MIN(5,11,0) || RTLNX_RHEL_RANGE(8,5, 8,99)
++#elif RTLNX_VER_MIN(5,11,0) || RTLNX_RHEL_RANGE(8,5, 8,8)
+ 	if (ttm_tt_init(tt, bo, page_flags, ttm_write_combined)) {
+ #elif RTLNX_VER_MIN(4,17,0) || RTLNX_RHEL_MAJ_PREREQ(7,6) || RTLNX_SUSE_MAJ_PREREQ(15,1) || RTLNX_SUSE_MAJ_PREREQ(12,5)
+ 	if (ttm_tt_init(tt, bo, page_flags)) {
+--- ./vboxvideo/vbox_mode.c.orig	2023-04-18 23:56:36.335084935 +0100
++++ ./vboxvideo/vbox_mode.c	2023-04-19 00:02:53.664781629 +0100
+@@ -45,7 +45,7 @@
+ # include <drm/drm_probe_helper.h>
+ #endif
+ 
+-#if RTLNX_VER_MIN(6,0,0) || RTLNX_RHEL_MAJ_PREREQ(9,2)
++#if RTLNX_VER_MIN(6,0,0) || RTLNX_RHEL_RANGE(8,8, 8,99) || RTLNX_RHEL_MAJ_PREREQ(9,2)
+ # include <drm/drm_edid.h>
+ #endif
+ 
+--- ./vboxvideo/vbox_drv.h.orig	2023-04-18 23:56:20.637139167 +0100
++++ ./vboxvideo/vbox_drv.h	2023-04-19 00:03:40.757619051 +0100
+@@ -184,7 +184,7 @@
+ # include <drm/ttm/ttm_resource.h>
+ #endif
+ 
+-#if RTLNX_VER_MIN(6,0,0) || RTLNX_RHEL_MAJ_PREREQ(9,2)
++#if RTLNX_VER_MIN(6,0,0) || RTLNX_RHEL_RANGE(8,8, 8,99) || RTLNX_RHEL_MAJ_PREREQ(9,2)
+ # include <drm/drm_framebuffer.h>
+ #endif
+ 

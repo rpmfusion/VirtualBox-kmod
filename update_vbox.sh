@@ -1,7 +1,7 @@
-VERSION=7.0.6
+VERSION=7.0.8
 REL=1
-RAWHIDE=38
-REPOS="f37 f36 el9 el8"
+RAWHIDE=39
+REPOS="f38 f37 f36 el9 el8"
 
 if [ -z "$1" ]
 then
@@ -31,19 +31,23 @@ fi
 if test $stage -le 1; then
 echo STAGE 1
 rfpkg ci -c && git show
+fi
+if test $stage -le 2; then
+echo STAGE 2
 BRANCH1=f$RAWHIDE
 BRANCH2=fc$RAWHIDE
 echo Press enter tag-build rawhide to continue or n to skip; read dummy;
 if [[ "$dummy" != "n" ]]; then
 echo koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
+git checkout rawhide && rfpkg push
 koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
 (koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
-git checkout $BRANCH1 && rfpkg push && rfpkg build --nowait ) &
+git checkout rawhide && rfpkg build --nowait ) &
 fi
 fi
 
-if test $stage -le 2; then
-echo STAGE 2
+if test $stage -le 3; then
+echo STAGE 3
 for repo in $REPOS ; do
 BRANCH1=$repo
 BRANCH2=$repo
@@ -53,9 +57,10 @@ fi
 echo Press enter tag-build $BRANCH1 to continue or n to skip; read dummy;
 if [[ "$dummy" != "n" ]]; then
 echo koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
+git checkout $BRANCH1 && git merge master
 koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
 (koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
-git checkout $BRANCH1 && git merge master && git push && rfpkg build --nowait; git checkout master) &
+git checkout $BRANCH1 && rfpkg build --nowait; git checkout master) &
 fi
 done
 fi
