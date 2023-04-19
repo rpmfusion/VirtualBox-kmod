@@ -57,7 +57,7 @@ fi
 echo Press enter tag-build $BRANCH1 to continue or n to skip; read dummy;
 if [[ "$dummy" != "n" ]]; then
 echo koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
-git checkout $BRANCH1 && git merge master
+git checkout $BRANCH1 && git merge master && git push
 koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
 (koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
 git checkout $BRANCH1 && rfpkg build --nowait; git checkout master) &
