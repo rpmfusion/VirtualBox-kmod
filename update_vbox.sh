@@ -1,7 +1,7 @@
-VERSION=7.0.8
+VERSION=7.0.10
 REL=1
 RAWHIDE=39
-REPOS="f38 f37 f36 el9 el8"
+REPOS="f38 f37 el9 el8"
 
 if [ -z "$1" ]
 then
@@ -39,10 +39,10 @@ BRANCH2=fc$RAWHIDE
 echo Press enter tag-build rawhide to continue or n to skip; read dummy;
 if [[ "$dummy" != "n" ]]; then
 echo koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
-git checkout rawhide && rfpkg push
+git checkout master && rfpkg push
 koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
 (koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && \
-git checkout rawhide && rfpkg build --nowait ) &
+git checkout master && rfpkg build --nowait ) &
 fi
 fi
 
