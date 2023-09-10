@@ -40,7 +40,7 @@
 
 Name:           VirtualBox-kmod
 Version:        7.0.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -50,6 +50,7 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 Source1:        excludekernel-filter.txt
 Patch1:         fix_7.0.6_locking_problems.patch
 Patch2:         kernel-6.4.10.patch
+Patch3:         kernel-6.5.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc = %{version} xz time elfutils-libelf-devel gcc
@@ -74,6 +75,7 @@ pushd %{name}-%{version}
 %patch -P 1 -p1
 %patch -P 2 -p1
 popd
+%patch -P 3 -p1
 
 # error out if there was something wrong with kmodtool
 %{?kmodtool_check}
@@ -135,6 +137,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 %changelog
+* Sun Sep 10 2023 Sérgio Basto <sergio@serjux.com> - 7.0.10-3
+- Fixes for kernel-6.5 copied from OpenSuse
+
 * Sat Aug 12 2023 Sérgio Basto <sergio@serjux.com> - 7.0.10-2
 - Add fix for kernel-6.4.10
 

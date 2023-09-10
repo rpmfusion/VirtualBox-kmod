@@ -1,0 +1,441 @@
+Only in VirtualBox-kmod-7.0.10: vboxnetadp
+diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxdrv/include/iprt/cdefs.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxdrv/include/iprt/cdefs.h
+--- VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxdrv/include/iprt/cdefs.h	2023-07-12 17:25:21.000000000 +0100
++++ VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxdrv/include/iprt/cdefs.h	2023-09-10 22:13:17.207356435 +0100
+@@ -38,8 +38,9 @@
+ #ifndef RT_WITHOUT_PRAGMA_ONCE
+ # pragma once
+ #endif
+-
+-
++#if defined(DECLARE_FLEX_ARRAY)
++# include <linux/version.h>
++#endif
+ /** @defgroup grp_rt_cdefs  IPRT Common Definitions and Macros
+  * @{
+  */
+@@ -2960,6 +2961,12 @@
+  * @note    GCC does not permit using this in nested structures, where as MSC
+  *          does.  So, use RT_FLEXIBLE_ARRAY_NESTED for that.
+  *
++ * @note    Linux kernels 6.5+ enforce field-spanning write operations
++ *          and require flexible arrays to end with 'array[]' rather than array[1].
++ *          This construct fails with unions, but VB does not have any such unions.
++ *          This header is used with both kernel- and user-mode code. In user-mode,
++ *          the old method works. If DECLARE_FLEX_ARRAY is defined, we are
++ *          building kernel-mode code and RT_FLEXIBLE_ARRAY is set to blank.
+  * @sa      RT_FLEXIBLE_ARRAY_NESTED, RT_FLEXIBLE_ARRAY_IN_UNION
+  */
+ #if RT_MSC_PREREQ(RT_MSC_VER_VS2005) /** @todo Probably much much earlier. */ \
+@@ -2975,10 +2982,18 @@
+ # if __STDC_VERSION__ >= 1999901L
+ #  define RT_FLEXIBLE_ARRAY
+ # else
+-#  define RT_FLEXIBLE_ARRAY                     1
++#  if defined(DECLARE_FLEX_ARRAY)
++#    define RT_FLEXIBLE_ARRAY
++#  else
++#    define RT_FLEXIBLE_ARRAY                     1
++#  endif
+ # endif
+ #else
++# if defined(DECLARE_FLEX_ARRAY)
++#  define RT_FLEXIBLE_ARRAY
++# else
+ # define RT_FLEXIBLE_ARRAY                      1
++# endif
+ #endif
+ 
+ /** @def RT_FLEXIBLE_ARRAY_EXTENSION
+@@ -3007,7 +3022,9 @@
+ #ifdef _MSC_VER
+ # define RT_FLEXIBLE_ARRAY_NESTED               RT_FLEXIBLE_ARRAY
+ #else
++# if !defined(DECLARE_FLEX_ARRAY)
+ # define RT_FLEXIBLE_ARRAY_NESTED               1
++# endif
+ #endif
+ 
+ /** @def RT_FLEXIBLE_ARRAY_IN_UNION
+@@ -3023,7 +3040,9 @@
+ #ifdef _MSC_VER
+ # define RT_FLEXIBLE_ARRAY_IN_UNION             RT_FLEXIBLE_ARRAY
+ #else
+-# define RT_FLEXIBLE_ARRAY_IN_UNION             1
++# if !defined(DECLARE_FLEX_ARRAY)
++#  define RT_FLEXIBLE_ARRAY_IN_UNION             1
++# endif
+ #endif
+ 
+ /** @def RT_FLEXIBLE_ARRAY_IN_NESTED_UNION
+@@ -3036,7 +3055,9 @@
+ #ifdef _MSC_VER
+ # define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      RT_FLEXIBLE_ARRAY_NESTED
+ #else
+-# define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      1
++# if !defined(DECLARE_FLEX_ARRAY)
++#  define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      1
++# endif
+ #endif
+ 
+ /** @def RT_UNION_NM
+Only in VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxdrv/include/iprt: cdefs.h.orig
+diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxguest/include/iprt/cdefs.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxguest/include/iprt/cdefs.h
+--- VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxguest/include/iprt/cdefs.h	2023-07-12 17:25:21.000000000 +0100
++++ VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxguest/include/iprt/cdefs.h	2023-09-10 22:12:41.853471376 +0100
+@@ -38,8 +38,9 @@
+ #ifndef RT_WITHOUT_PRAGMA_ONCE
+ # pragma once
+ #endif
+-
+-
++#if defined(DECLARE_FLEX_ARRAY)
++# include <linux/version.h>
++#endif
+ /** @defgroup grp_rt_cdefs  IPRT Common Definitions and Macros
+  * @{
+  */
+@@ -2960,6 +2961,12 @@
+  * @note    GCC does not permit using this in nested structures, where as MSC
+  *          does.  So, use RT_FLEXIBLE_ARRAY_NESTED for that.
+  *
++ * @note    Linux kernels 6.5+ enforce field-spanning write operations
++ *          and require flexible arrays to end with 'array[]' rather than array[1].
++ *          This construct fails with unions, but VB does not have any such unions.
++ *          This header is used with both kernel- and user-mode code. In user-mode,
++ *          the old method works. If DECLARE_FLEX_ARRAY is defined, we are
++ *          building kernel-mode code and RT_FLEXIBLE_ARRAY is set to blank.
+  * @sa      RT_FLEXIBLE_ARRAY_NESTED, RT_FLEXIBLE_ARRAY_IN_UNION
+  */
+ #if RT_MSC_PREREQ(RT_MSC_VER_VS2005) /** @todo Probably much much earlier. */ \
+@@ -2975,10 +2982,18 @@
+ # if __STDC_VERSION__ >= 1999901L
+ #  define RT_FLEXIBLE_ARRAY
+ # else
+-#  define RT_FLEXIBLE_ARRAY                     1
++#  if defined(DECLARE_FLEX_ARRAY)
++#    define RT_FLEXIBLE_ARRAY
++#  else
++#    define RT_FLEXIBLE_ARRAY                     1
++#  endif
+ # endif
+ #else
++# if defined(DECLARE_FLEX_ARRAY)
++#  define RT_FLEXIBLE_ARRAY
++# else
+ # define RT_FLEXIBLE_ARRAY                      1
++# endif
+ #endif
+ 
+ /** @def RT_FLEXIBLE_ARRAY_EXTENSION
+@@ -3007,7 +3022,9 @@
+ #ifdef _MSC_VER
+ # define RT_FLEXIBLE_ARRAY_NESTED               RT_FLEXIBLE_ARRAY
+ #else
++# if !defined(DECLARE_FLEX_ARRAY)
+ # define RT_FLEXIBLE_ARRAY_NESTED               1
++# endif
+ #endif
+ 
+ /** @def RT_FLEXIBLE_ARRAY_IN_UNION
+@@ -3023,7 +3040,9 @@
+ #ifdef _MSC_VER
+ # define RT_FLEXIBLE_ARRAY_IN_UNION             RT_FLEXIBLE_ARRAY
+ #else
+-# define RT_FLEXIBLE_ARRAY_IN_UNION             1
++# if !defined(DECLARE_FLEX_ARRAY)
++#  define RT_FLEXIBLE_ARRAY_IN_UNION             1
++# endif
+ #endif
+ 
+ /** @def RT_FLEXIBLE_ARRAY_IN_NESTED_UNION
+@@ -3036,7 +3055,9 @@
+ #ifdef _MSC_VER
+ # define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      RT_FLEXIBLE_ARRAY_NESTED
+ #else
+-# define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      1
++# if !defined(DECLARE_FLEX_ARRAY)
++#  define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      1
++# endif
+ #endif
+ 
+ /** @def RT_UNION_NM
+Only in VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxguest/include/iprt: cdefs.h.orig
+diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxguest/include/VBox/VBoxGuest.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxguest/include/VBox/VBoxGuest.h
+--- VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxguest/include/VBox/VBoxGuest.h	2023-07-12 17:25:14.000000000 +0100
++++ VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxguest/include/VBox/VBoxGuest.h	2023-09-10 22:15:25.028940841 +0100
+@@ -458,8 +458,12 @@ typedef struct VBGLIOCLOG
+         {
+             /** The log message.
+              * The length is determined from the input size and zero termination. */
+-            char                    szMsg[RT_FLEXIBLE_ARRAY_IN_NESTED_UNION];
+-        } In;
++#if defined(DECLARE_FLEX_ARRAY)
++		DECLARE_FLEX_ARRAY(char, szMsg);
++#else	
++		char                    szMsg[RT_FLEXIBLE_ARRAY_IN_NESTED_UNION];
++#endif
++     	} In;
+     } u;
+ } VBGLIOCLOG, RT_FAR *PVBGLIOCLOG;
+ /** @} */
+diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxnetadp/include/iprt/cdefs.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxnetadp/include/iprt/cdefs.h
+--- VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxnetadp/include/iprt/cdefs.h	2023-07-12 17:25:21.000000000 +0100
++++ VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxnetadp/include/iprt/cdefs.h	2023-09-10 22:12:28.116516034 +0100
+@@ -38,8 +38,9 @@
+ #ifndef RT_WITHOUT_PRAGMA_ONCE
+ # pragma once
+ #endif
+-
+-
++#if defined(DECLARE_FLEX_ARRAY)
++# include <linux/version.h>
++#endif
+ /** @defgroup grp_rt_cdefs  IPRT Common Definitions and Macros
+  * @{
+  */
+@@ -2960,6 +2961,12 @@
+  * @note    GCC does not permit using this in nested structures, where as MSC
+  *          does.  So, use RT_FLEXIBLE_ARRAY_NESTED for that.
+  *
++ * @note    Linux kernels 6.5+ enforce field-spanning write operations
++ *          and require flexible arrays to end with 'array[]' rather than array[1].
++ *          This construct fails with unions, but VB does not have any such unions.
++ *          This header is used with both kernel- and user-mode code. In user-mode,
++ *          the old method works. If DECLARE_FLEX_ARRAY is defined, we are
++ *          building kernel-mode code and RT_FLEXIBLE_ARRAY is set to blank.
+  * @sa      RT_FLEXIBLE_ARRAY_NESTED, RT_FLEXIBLE_ARRAY_IN_UNION
+  */
+ #if RT_MSC_PREREQ(RT_MSC_VER_VS2005) /** @todo Probably much much earlier. */ \
+@@ -2975,10 +2982,18 @@
+ # if __STDC_VERSION__ >= 1999901L
+ #  define RT_FLEXIBLE_ARRAY
+ # else
+-#  define RT_FLEXIBLE_ARRAY                     1
++#  if defined(DECLARE_FLEX_ARRAY)
++#    define RT_FLEXIBLE_ARRAY
++#  else
++#    define RT_FLEXIBLE_ARRAY                     1
++#  endif
+ # endif
+ #else
++# if defined(DECLARE_FLEX_ARRAY)
++#  define RT_FLEXIBLE_ARRAY
++# else
+ # define RT_FLEXIBLE_ARRAY                      1
++# endif
+ #endif
+ 
+ /** @def RT_FLEXIBLE_ARRAY_EXTENSION
+@@ -3007,7 +3022,9 @@
+ #ifdef _MSC_VER
+ # define RT_FLEXIBLE_ARRAY_NESTED               RT_FLEXIBLE_ARRAY
+ #else
++# if !defined(DECLARE_FLEX_ARRAY)
+ # define RT_FLEXIBLE_ARRAY_NESTED               1
++# endif
+ #endif
+ 
+ /** @def RT_FLEXIBLE_ARRAY_IN_UNION
+@@ -3023,7 +3040,9 @@
+ #ifdef _MSC_VER
+ # define RT_FLEXIBLE_ARRAY_IN_UNION             RT_FLEXIBLE_ARRAY
+ #else
+-# define RT_FLEXIBLE_ARRAY_IN_UNION             1
++# if !defined(DECLARE_FLEX_ARRAY)
++#  define RT_FLEXIBLE_ARRAY_IN_UNION             1
++# endif
+ #endif
+ 
+ /** @def RT_FLEXIBLE_ARRAY_IN_NESTED_UNION
+@@ -3036,7 +3055,9 @@
+ #ifdef _MSC_VER
+ # define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      RT_FLEXIBLE_ARRAY_NESTED
+ #else
+-# define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      1
++# if !defined(DECLARE_FLEX_ARRAY)
++#  define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      1
++# endif
+ #endif
+ 
+ /** @def RT_UNION_NM
+Only in VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxnetadp/include/iprt: cdefs.h.orig
+diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxnetflt/include/iprt/cdefs.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxnetflt/include/iprt/cdefs.h
+--- VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxnetflt/include/iprt/cdefs.h	2023-07-12 17:25:21.000000000 +0100
++++ VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxnetflt/include/iprt/cdefs.h	2023-09-10 22:13:08.768383873 +0100
+@@ -38,8 +38,9 @@
+ #ifndef RT_WITHOUT_PRAGMA_ONCE
+ # pragma once
+ #endif
+-
+-
++#if defined(DECLARE_FLEX_ARRAY)
++# include <linux/version.h>
++#endif
+ /** @defgroup grp_rt_cdefs  IPRT Common Definitions and Macros
+  * @{
+  */
+@@ -2960,6 +2961,12 @@
+  * @note    GCC does not permit using this in nested structures, where as MSC
+  *          does.  So, use RT_FLEXIBLE_ARRAY_NESTED for that.
+  *
++ * @note    Linux kernels 6.5+ enforce field-spanning write operations
++ *          and require flexible arrays to end with 'array[]' rather than array[1].
++ *          This construct fails with unions, but VB does not have any such unions.
++ *          This header is used with both kernel- and user-mode code. In user-mode,
++ *          the old method works. If DECLARE_FLEX_ARRAY is defined, we are
++ *          building kernel-mode code and RT_FLEXIBLE_ARRAY is set to blank.
+  * @sa      RT_FLEXIBLE_ARRAY_NESTED, RT_FLEXIBLE_ARRAY_IN_UNION
+  */
+ #if RT_MSC_PREREQ(RT_MSC_VER_VS2005) /** @todo Probably much much earlier. */ \
+@@ -2975,10 +2982,18 @@
+ # if __STDC_VERSION__ >= 1999901L
+ #  define RT_FLEXIBLE_ARRAY
+ # else
+-#  define RT_FLEXIBLE_ARRAY                     1
++#  if defined(DECLARE_FLEX_ARRAY)
++#    define RT_FLEXIBLE_ARRAY
++#  else
++#    define RT_FLEXIBLE_ARRAY                     1
++#  endif
+ # endif
+ #else
++# if defined(DECLARE_FLEX_ARRAY)
++#  define RT_FLEXIBLE_ARRAY
++# else
+ # define RT_FLEXIBLE_ARRAY                      1
++# endif
+ #endif
+ 
+ /** @def RT_FLEXIBLE_ARRAY_EXTENSION
+@@ -3007,7 +3022,9 @@
+ #ifdef _MSC_VER
+ # define RT_FLEXIBLE_ARRAY_NESTED               RT_FLEXIBLE_ARRAY
+ #else
++# if !defined(DECLARE_FLEX_ARRAY)
+ # define RT_FLEXIBLE_ARRAY_NESTED               1
++# endif
+ #endif
+ 
+ /** @def RT_FLEXIBLE_ARRAY_IN_UNION
+@@ -3023,7 +3040,9 @@
+ #ifdef _MSC_VER
+ # define RT_FLEXIBLE_ARRAY_IN_UNION             RT_FLEXIBLE_ARRAY
+ #else
+-# define RT_FLEXIBLE_ARRAY_IN_UNION             1
++# if !defined(DECLARE_FLEX_ARRAY)
++#  define RT_FLEXIBLE_ARRAY_IN_UNION             1
++# endif
+ #endif
+ 
+ /** @def RT_FLEXIBLE_ARRAY_IN_NESTED_UNION
+@@ -3036,7 +3055,9 @@
+ #ifdef _MSC_VER
+ # define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      RT_FLEXIBLE_ARRAY_NESTED
+ #else
+-# define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      1
++# if !defined(DECLARE_FLEX_ARRAY)
++#  define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      1
++# endif
+ #endif
+ 
+ /** @def RT_UNION_NM
+Only in VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxnetflt/include/iprt: cdefs.h.orig
+diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxsf/include/iprt/cdefs.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxsf/include/iprt/cdefs.h
+--- VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxsf/include/iprt/cdefs.h	2023-07-12 17:25:21.000000000 +0100
++++ VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxsf/include/iprt/cdefs.h	2023-09-10 22:13:26.540326093 +0100
+@@ -38,8 +38,9 @@
+ #ifndef RT_WITHOUT_PRAGMA_ONCE
+ # pragma once
+ #endif
+-
+-
++#if defined(DECLARE_FLEX_ARRAY)
++# include <linux/version.h>
++#endif
+ /** @defgroup grp_rt_cdefs  IPRT Common Definitions and Macros
+  * @{
+  */
+@@ -2960,6 +2961,12 @@
+  * @note    GCC does not permit using this in nested structures, where as MSC
+  *          does.  So, use RT_FLEXIBLE_ARRAY_NESTED for that.
+  *
++ * @note    Linux kernels 6.5+ enforce field-spanning write operations
++ *          and require flexible arrays to end with 'array[]' rather than array[1].
++ *          This construct fails with unions, but VB does not have any such unions.
++ *          This header is used with both kernel- and user-mode code. In user-mode,
++ *          the old method works. If DECLARE_FLEX_ARRAY is defined, we are
++ *          building kernel-mode code and RT_FLEXIBLE_ARRAY is set to blank.
+  * @sa      RT_FLEXIBLE_ARRAY_NESTED, RT_FLEXIBLE_ARRAY_IN_UNION
+  */
+ #if RT_MSC_PREREQ(RT_MSC_VER_VS2005) /** @todo Probably much much earlier. */ \
+@@ -2975,10 +2982,18 @@
+ # if __STDC_VERSION__ >= 1999901L
+ #  define RT_FLEXIBLE_ARRAY
+ # else
+-#  define RT_FLEXIBLE_ARRAY                     1
++#  if defined(DECLARE_FLEX_ARRAY)
++#    define RT_FLEXIBLE_ARRAY
++#  else
++#    define RT_FLEXIBLE_ARRAY                     1
++#  endif
+ # endif
+ #else
++# if defined(DECLARE_FLEX_ARRAY)
++#  define RT_FLEXIBLE_ARRAY
++# else
+ # define RT_FLEXIBLE_ARRAY                      1
++# endif
+ #endif
+ 
+ /** @def RT_FLEXIBLE_ARRAY_EXTENSION
+@@ -3007,7 +3022,9 @@
+ #ifdef _MSC_VER
+ # define RT_FLEXIBLE_ARRAY_NESTED               RT_FLEXIBLE_ARRAY
+ #else
++# if !defined(DECLARE_FLEX_ARRAY)
+ # define RT_FLEXIBLE_ARRAY_NESTED               1
++# endif
+ #endif
+ 
+ /** @def RT_FLEXIBLE_ARRAY_IN_UNION
+@@ -3023,7 +3040,9 @@
+ #ifdef _MSC_VER
+ # define RT_FLEXIBLE_ARRAY_IN_UNION             RT_FLEXIBLE_ARRAY
+ #else
+-# define RT_FLEXIBLE_ARRAY_IN_UNION             1
++# if !defined(DECLARE_FLEX_ARRAY)
++#  define RT_FLEXIBLE_ARRAY_IN_UNION             1
++# endif
+ #endif
+ 
+ /** @def RT_FLEXIBLE_ARRAY_IN_NESTED_UNION
+@@ -3036,7 +3055,9 @@
+ #ifdef _MSC_VER
+ # define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      RT_FLEXIBLE_ARRAY_NESTED
+ #else
+-# define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      1
++# if !defined(DECLARE_FLEX_ARRAY)
++#  define RT_FLEXIBLE_ARRAY_IN_NESTED_UNION      1
++# endif
+ #endif
+ 
+ /** @def RT_UNION_NM
+diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxsf/include/VBox/VBoxGuest.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxsf/include/VBox/VBoxGuest.h
+--- VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxsf/include/VBox/VBoxGuest.h	2023-07-12 17:25:14.000000000 +0100
++++ VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxsf/include/VBox/VBoxGuest.h	2023-09-10 22:15:34.166911131 +0100
+@@ -458,8 +458,12 @@ typedef struct VBGLIOCLOG
+         {
+             /** The log message.
+              * The length is determined from the input size and zero termination. */
+-            char                    szMsg[RT_FLEXIBLE_ARRAY_IN_NESTED_UNION];
+-        } In;
++#if defined(DECLARE_FLEX_ARRAY)
++		DECLARE_FLEX_ARRAY(char, szMsg);
++#else	
++		char                    szMsg[RT_FLEXIBLE_ARRAY_IN_NESTED_UNION];
++#endif
++     	} In;
+     } u;
+ } VBGLIOCLOG, RT_FAR *PVBGLIOCLOG;
+ /** @} */
