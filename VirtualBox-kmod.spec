@@ -35,7 +35,7 @@
 %global vboxreltag %{?vboxrel:-%{vboxrel}}
 
 Name:           VirtualBox-kmod
-Version:        6.1.40
+Version:        6.1.48
 Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
@@ -44,7 +44,6 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
-Patch2:         cs9.v2.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc >= %{version}%{vboxreltag} xz time elfutils-libelf-devel gcc
@@ -68,7 +67,7 @@ tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{versi
 pushd %{name}-%{version}
 #patch1 -p1
 %if ! 0%{?fedora}
-%patch2 -p1
+#patch2 -p1
 %endif
 popd
 
@@ -133,6 +132,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 
 
 %changelog
+* Wed Oct 18 2023 Sérgio Basto <sergio@serjux.com> - 6.1.48-1
+- Update VirtualBox-kmod to 6.1.48
+
 * Thu Oct 13 2022 Sérgio Basto <sergio@serjux.com> - 6.1.40-1
 - Update to 6.1.40
 
