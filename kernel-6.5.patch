@@ -1,7 +1,7 @@
 Only in VirtualBox-kmod-7.0.10: vboxnetadp
-diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxdrv/include/iprt/cdefs.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxdrv/include/iprt/cdefs.h
---- VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxdrv/include/iprt/cdefs.h	2023-07-12 17:25:21.000000000 +0100
-+++ VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxdrv/include/iprt/cdefs.h	2023-09-10 22:13:17.207356435 +0100
+diff -urp VirtualBox-kmod-7.0.10/vboxdrv/include/iprt/cdefs.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxdrv/include/iprt/cdefs.h
+--- VirtualBox-kmod-7.0.10/vboxdrv/include/iprt/cdefs.h	2023-07-12 17:25:21.000000000 +0100
++++ VirtualBox-kmod-7.0.10/vboxdrv/include/iprt/cdefs.h	2023-09-10 22:13:17.207356435 +0100
 @@ -38,8 +38,9 @@
  #ifndef RT_WITHOUT_PRAGMA_ONCE
  # pragma once
@@ -80,9 +80,9 @@ diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxdrv/include/ipr
  
  /** @def RT_UNION_NM
 Only in VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxdrv/include/iprt: cdefs.h.orig
-diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxguest/include/iprt/cdefs.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxguest/include/iprt/cdefs.h
---- VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxguest/include/iprt/cdefs.h	2023-07-12 17:25:21.000000000 +0100
-+++ VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxguest/include/iprt/cdefs.h	2023-09-10 22:12:41.853471376 +0100
+diff -urp VirtualBox-kmod-7.0.10/vboxguest/include/iprt/cdefs.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxguest/include/iprt/cdefs.h
+--- VirtualBox-kmod-7.0.10/vboxguest/include/iprt/cdefs.h	2023-07-12 17:25:21.000000000 +0100
++++ VirtualBox-kmod-7.0.10/vboxguest/include/iprt/cdefs.h	2023-09-10 22:12:41.853471376 +0100
 @@ -38,8 +38,9 @@
  #ifndef RT_WITHOUT_PRAGMA_ONCE
  # pragma once
@@ -161,9 +161,9 @@ diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxguest/include/i
  
  /** @def RT_UNION_NM
 Only in VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxguest/include/iprt: cdefs.h.orig
-diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxguest/include/VBox/VBoxGuest.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxguest/include/VBox/VBoxGuest.h
---- VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxguest/include/VBox/VBoxGuest.h	2023-07-12 17:25:14.000000000 +0100
-+++ VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxguest/include/VBox/VBoxGuest.h	2023-09-10 22:15:25.028940841 +0100
+diff -urp VirtualBox-kmod-7.0.10/vboxguest/include/VBox/VBoxGuest.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxguest/include/VBox/VBoxGuest.h
+--- VirtualBox-kmod-7.0.10/vboxguest/include/VBox/VBoxGuest.h	2023-07-12 17:25:14.000000000 +0100
++++ VirtualBox-kmod-7.0.10/vboxguest/include/VBox/VBoxGuest.h	2023-09-10 22:15:25.028940841 +0100
 @@ -458,8 +458,12 @@ typedef struct VBGLIOCLOG
          {
              /** The log message.
@@ -179,9 +179,9 @@ diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxguest/include/V
      } u;
  } VBGLIOCLOG, RT_FAR *PVBGLIOCLOG;
  /** @} */
-diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxnetadp/include/iprt/cdefs.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxnetadp/include/iprt/cdefs.h
---- VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxnetadp/include/iprt/cdefs.h	2023-07-12 17:25:21.000000000 +0100
-+++ VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxnetadp/include/iprt/cdefs.h	2023-09-10 22:12:28.116516034 +0100
+diff -urp VirtualBox-kmod-7.0.10/vboxnetadp/include/iprt/cdefs.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxnetadp/include/iprt/cdefs.h
+--- VirtualBox-kmod-7.0.10/vboxnetadp/include/iprt/cdefs.h	2023-07-12 17:25:21.000000000 +0100
++++ VirtualBox-kmod-7.0.10/vboxnetadp/include/iprt/cdefs.h	2023-09-10 22:12:28.116516034 +0100
 @@ -38,8 +38,9 @@
  #ifndef RT_WITHOUT_PRAGMA_ONCE
  # pragma once
@@ -260,9 +260,9 @@ diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxnetadp/include/
  
  /** @def RT_UNION_NM
 Only in VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxnetadp/include/iprt: cdefs.h.orig
-diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxnetflt/include/iprt/cdefs.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxnetflt/include/iprt/cdefs.h
---- VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxnetflt/include/iprt/cdefs.h	2023-07-12 17:25:21.000000000 +0100
-+++ VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxnetflt/include/iprt/cdefs.h	2023-09-10 22:13:08.768383873 +0100
+diff -urp VirtualBox-kmod-7.0.10/vboxnetflt/include/iprt/cdefs.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxnetflt/include/iprt/cdefs.h
+--- VirtualBox-kmod-7.0.10/vboxnetflt/include/iprt/cdefs.h	2023-07-12 17:25:21.000000000 +0100
++++ VirtualBox-kmod-7.0.10/vboxnetflt/include/iprt/cdefs.h	2023-09-10 22:13:08.768383873 +0100
 @@ -38,8 +38,9 @@
  #ifndef RT_WITHOUT_PRAGMA_ONCE
  # pragma once
@@ -341,9 +341,9 @@ diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxnetflt/include/
  
  /** @def RT_UNION_NM
 Only in VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxnetflt/include/iprt: cdefs.h.orig
-diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxsf/include/iprt/cdefs.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxsf/include/iprt/cdefs.h
---- VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxsf/include/iprt/cdefs.h	2023-07-12 17:25:21.000000000 +0100
-+++ VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxsf/include/iprt/cdefs.h	2023-09-10 22:13:26.540326093 +0100
+diff -urp VirtualBox-kmod-7.0.10/vboxsf/include/iprt/cdefs.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxsf/include/iprt/cdefs.h
+--- VirtualBox-kmod-7.0.10/vboxsf/include/iprt/cdefs.h	2023-07-12 17:25:21.000000000 +0100
++++ VirtualBox-kmod-7.0.10/vboxsf/include/iprt/cdefs.h	2023-09-10 22:13:26.540326093 +0100
 @@ -38,8 +38,9 @@
  #ifndef RT_WITHOUT_PRAGMA_ONCE
  # pragma once
@@ -421,9 +421,9 @@ diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxsf/include/iprt
  #endif
  
  /** @def RT_UNION_NM
-diff -urp VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxsf/include/VBox/VBoxGuest.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxsf/include/VBox/VBoxGuest.h
---- VirtualBox-kmod-7.0.10.orig/VirtualBox-kmod-7.0.10/vboxsf/include/VBox/VBoxGuest.h	2023-07-12 17:25:14.000000000 +0100
-+++ VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxsf/include/VBox/VBoxGuest.h	2023-09-10 22:15:34.166911131 +0100
+diff -urp VirtualBox-kmod-7.0.10/vboxsf/include/VBox/VBoxGuest.h VirtualBox-kmod-7.0.10/VirtualBox-kmod-7.0.10/vboxsf/include/VBox/VBoxGuest.h
+--- VirtualBox-kmod-7.0.10/vboxsf/include/VBox/VBoxGuest.h	2023-07-12 17:25:14.000000000 +0100
++++ VirtualBox-kmod-7.0.10/vboxsf/include/VBox/VBoxGuest.h	2023-09-10 22:15:34.166911131 +0100
 @@ -458,8 +458,12 @@ typedef struct VBGLIOCLOG
          {
              /** The log message.
