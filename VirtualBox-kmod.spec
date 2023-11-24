@@ -40,7 +40,7 @@
 
 Name:           VirtualBox-kmod
 Version:        7.0.12
-Release:        1%{?dist}
+Release:        1%{?dist}.1
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -135,6 +135,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 %changelog
+* Fri Nov 24 2023 Sérgio Basto <sergio@serjux.com> - 7.0.12-1.1
+- Rebuilt RHEL 8.9
+
 * Wed Oct 18 2023 Sérgio Basto <sergio@serjux.com> - 7.0.12-1
 - Update to 7.0.12
 
