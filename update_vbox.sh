@@ -1,7 +1,7 @@
-VERSION=7.0.12
+VERSION=7.0.14
 REL=1
 RAWHIDE=40
-REPOS="f39 f38 f37 el9 el8"
+REPOS="f39 f38 el9 el8"
 
 if [ -z "$1" ]
 then
@@ -17,6 +17,8 @@ if test $stage -le 0
 then
 echo STAGE 0
 rpmdev-bumpspec -n $VERSION -c "Update to $VERSION" VirtualBox-kmod.spec
+echo "checking patches"
+rfpkg prep
 echo Press enter to build on copr or n to skip; read dummy;
 if [[ "$dummy" != "n" ]]; then
 rfpkg copr-build sergiomb/vboxfor23
