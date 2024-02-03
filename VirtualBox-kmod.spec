@@ -40,7 +40,7 @@
 
 Name:           VirtualBox-kmod
 Version:        7.0.14
-Release:        2%{?dist}
+Release:        3%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -133,6 +133,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 %changelog
+* Sat Feb 03 2024 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 7.0.14-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
+
 * Fri Jan 19 2024 Sérgio Basto <sergio@serjux.com> - 7.0.14-2
 - kernel-6.5.patch removed, fixed upstream, according OpenSuse package.
 
