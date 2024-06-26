@@ -1,0 +1,60 @@
+diff -rup VirtualBox-kmod-7.0.18.orig/vboxdrv/r0drv/linux/memobj-r0drv-linux.c VirtualBox-kmod-7.0.18/vboxdrv/r0drv/linux/memobj-r0drv-linux.c
+--- VirtualBox-kmod-7.0.18.orig/vboxdrv/r0drv/linux/memobj-r0drv-linux.c	2024-05-02 09:15:19.000000000 +0100
++++ VirtualBox-kmod-7.0.18/vboxdrv/r0drv/linux/memobj-r0drv-linux.c	2024-06-26 15:06:46.623757799 +0100
+@@ -1441,7 +1441,7 @@ DECLHIDDEN(int) rtR0MemObjNativeLockUser
+             {
+                 flush_dcache_page(pMemLnx->apPages[rc]);
+ # if GET_USER_PAGES_API < KERNEL_VERSION(6, 5, 0)
+-#  if RTLNX_VER_MIN(6,3,0)
++#  if RTLNX_VER_MIN(6,3,0) || RTLNX_RHEL_MIN(9,4)
+                 vm_flags_set(papVMAs[rc], VM_DONTCOPY | VM_LOCKED);
+ #  else
+                 papVMAs[rc]->vm_flags |= VM_DONTCOPY | VM_LOCKED;
+@@ -1451,7 +1451,7 @@ DECLHIDDEN(int) rtR0MemObjNativeLockUser
+ 
+             LNX_MM_UP_READ(pTask->mm);
+ 
+-# if GET_USER_PAGES_API < KERNEL_VERSION(6, 5, 0)
++# if GET_USER_PAGES_API < KERNEL_VERSION(6, 5, 0) && RTLNX_RHEL_MAX(9,3)
+             RTMemFree(papVMAs);
+ # endif
+ 
+@@ -1923,7 +1923,7 @@ DECLHIDDEN(int) rtR0MemObjNativeMapUser(
+                     /* Thes flags help making 100% sure some bad stuff wont happen (swap, core, ++).
+                      * See remap_pfn_range() in mm/memory.c */
+ 
+-#if    RTLNX_VER_MIN(6,3,0)
++#if    RTLNX_VER_MIN(6,3,0) || RTLNX_RHEL_MIN(9,4)
+                     vm_flags_set(vma, VM_DONTEXPAND | VM_DONTDUMP);
+ #elif  RTLNX_VER_MIN(3,7,0)
+                     vma->vm_flags |= VM_DONTEXPAND | VM_DONTDUMP;
+diff -rup VirtualBox-kmod-7.0.18.orig/vboxguest/r0drv/linux/memobj-r0drv-linux.c VirtualBox-kmod-7.0.18/vboxguest/r0drv/linux/memobj-r0drv-linux.c
+--- VirtualBox-kmod-7.0.18.orig/vboxguest/r0drv/linux/memobj-r0drv-linux.c	2024-05-02 09:15:19.000000000 +0100
++++ VirtualBox-kmod-7.0.18/vboxguest/r0drv/linux/memobj-r0drv-linux.c	2024-06-26 15:06:46.623757799 +0100
+@@ -1441,7 +1441,7 @@ DECLHIDDEN(int) rtR0MemObjNativeLockUser
+             {
+                 flush_dcache_page(pMemLnx->apPages[rc]);
+ # if GET_USER_PAGES_API < KERNEL_VERSION(6, 5, 0)
+-#  if RTLNX_VER_MIN(6,3,0)
++#  if RTLNX_VER_MIN(6,3,0) || RTLNX_RHEL_MIN(9,4)
+                 vm_flags_set(papVMAs[rc], VM_DONTCOPY | VM_LOCKED);
+ #  else
+                 papVMAs[rc]->vm_flags |= VM_DONTCOPY | VM_LOCKED;
+@@ -1451,7 +1451,7 @@ DECLHIDDEN(int) rtR0MemObjNativeLockUser
+ 
+             LNX_MM_UP_READ(pTask->mm);
+ 
+-# if GET_USER_PAGES_API < KERNEL_VERSION(6, 5, 0)
++# if GET_USER_PAGES_API < KERNEL_VERSION(6, 5, 0) && RTLNX_RHEL_MAX(9,3)
+             RTMemFree(papVMAs);
+ # endif
+ 
+@@ -1923,7 +1923,7 @@ DECLHIDDEN(int) rtR0MemObjNativeMapUser(
+                     /* Thes flags help making 100% sure some bad stuff wont happen (swap, core, ++).
+                      * See remap_pfn_range() in mm/memory.c */
+ 
+-#if    RTLNX_VER_MIN(6,3,0)
++#if    RTLNX_VER_MIN(6,3,0) || RTLNX_RHEL_MIN(9,4)
+                     vm_flags_set(vma, VM_DONTEXPAND | VM_DONTDUMP);
+ #elif  RTLNX_VER_MIN(3,7,0)
+                     vma->vm_flags |= VM_DONTEXPAND | VM_DONTDUMP;
