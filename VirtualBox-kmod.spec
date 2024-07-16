@@ -39,8 +39,8 @@
 # https://bugzilla.rpmfusion.org/show_bug.cgi?id=6519
 
 Name:           VirtualBox-kmod
-Version:        7.0.18
-Release:        2%{?dist}
+Version:        7.0.20
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -49,7 +49,6 @@ URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
 Patch1:         fix_7.0.6_locking_problems.patch
-Patch2:         centos9.5.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc = %{version} xz time elfutils-libelf-devel gcc
@@ -72,7 +71,6 @@ Kernel module for VirtualBox
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
 %patch -P1 -p1
-%patch -P2 -p1
 popd
 
 # error out if there was something wrong with kmodtool
@@ -135,6 +133,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 %changelog
+* Tue Jul 16 2024 Sérgio Basto <sergio@serjux.com> - 7.0.20-1
+- Update to 7.0.20
+
 * Wed Jun 26 2024 Sérgio Basto <sergio@serjux.com> - 7.0.18-2
 - Fixes for Centos 9.4
 
