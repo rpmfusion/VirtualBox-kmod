@@ -1,7 +1,7 @@
-VERSION=7.1.0
+VERSION=7.1.2
 REL=1
 RAWHIDE=42
-REPOS="f41 f40 f39 el9 el8"
+REPOS="f41 f40 f39 el9"
 
 if [ -z "$1" ]
 then
@@ -38,6 +38,9 @@ if test $stage -le 2; then
 echo STAGE 2
 BRANCH1=f$RAWHIDE
 BRANCH2=fc$RAWHIDE
+echo "koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2"
+echo "koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && "
+echo "git checkout master && rfpkg build --nowait "
 echo Press enter tag-build rawhide to continue or n to skip; read dummy;
 if [[ "$dummy" != "n" ]]; then
 echo koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
@@ -56,6 +59,9 @@ BRANCH2=$repo
 if [[ $repo == f* ]]; then
     BRANCH2=fc${repo:1}
 fi
+echo "koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2"
+echo "koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 &&"
+echo "git checkout $BRANCH1 && rfpkg build --nowait; git checkout master"
 echo Press enter tag-build $BRANCH1 to continue or n to skip; read dummy;
 if [[ "$dummy" != "n" ]]; then
 echo koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2
