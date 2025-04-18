@@ -1,0 +1,106 @@
+diff -rup VirtualBox-kmod-7.1.8/vboxdrv/Makefile-footer.gmk VirtualBox-kmod-7.1.8.new/vboxdrv/Makefile-footer.gmk
+--- VirtualBox-kmod-7.1.8/vboxdrv/Makefile-footer.gmk	2025-04-14 18:58:30.000000000 +0100
++++ VirtualBox-kmod-7.1.8.new/vboxdrv/Makefile-footer.gmk	2025-04-18 21:59:04.329041139 +0100
+@@ -115,6 +115,7 @@ VBOXMOD_EXT := ko
+ 
+ # build defs
+ EXTRA_CFLAGS += $(VBOXMOD_CFLAGS) $(addprefix -I,$(KERN_INCL) $(VBOXMOD_INCL)) $(VBOXMOD_0_KFLAGS) $(KDEBUG)
++ccflags-y += $(EXTRA_CFLAGS)
+ $(VBOXMOD_0_TARGET)-y := $(VBOXMOD_OBJS)
+ obj-m += $(VBOXMOD_0_TARGET).o
+ 
+diff -rup VirtualBox-kmod-7.1.8/vboxdrv/r0drv/linux/timer-r0drv-linux.c VirtualBox-kmod-7.1.8.new/vboxdrv/r0drv/linux/timer-r0drv-linux.c
+--- VirtualBox-kmod-7.1.8/vboxdrv/r0drv/linux/timer-r0drv-linux.c	2025-04-14 18:59:15.000000000 +0100
++++ VirtualBox-kmod-7.1.8.new/vboxdrv/r0drv/linux/timer-r0drv-linux.c	2025-04-18 23:10:55.299897835 +0100
+@@ -422,7 +422,11 @@ static void rtTimerLnxStopSubTimer(PRTTI
+     }
+     else
+ #endif
++#if RTLNX_VER_MIN(6,2,0)
++        timer_delete(&pSubTimer->u.Std.LnxTimer);
++#else
+         del_timer(&pSubTimer->u.Std.LnxTimer);
++#endif
+ 
+     rtTimerLnxSetState(&pSubTimer->enmState, RTTIMERLNXSTATE_STOPPED);
+ }
+@@ -470,7 +474,11 @@ static void rtTimerLnxDestroyIt(PRTTIMER
+             hrtimer_cancel(&pTimer->aSubTimers[iCpu].u.Hr.LnxTimer);
+         else
+ #endif
++#if RTLNX_VER_MIN(6,2,0)
++            timer_delete_sync(&pTimer->aSubTimers[iCpu].u.Std.LnxTimer);
++#else
+             del_timer_sync(&pTimer->aSubTimers[iCpu].u.Std.LnxTimer);
++#endif
+     }
+ 
+     /*
+@@ -1626,8 +1634,12 @@ RTDECL(int) RTTimerCreateEx(PRTTIMER *pp
+ #ifdef RTTIMER_LINUX_WITH_HRTIMER
+         if (pTimer->fHighRes)
+         {
++#if RTLNX_VER_MIN(6,13,0)
++            hrtimer_setup(&pTimer->aSubTimers[iCpu].u.Hr.LnxTimer, rtTimerLinuxHrCallback, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
++#else
+             hrtimer_init(&pTimer->aSubTimers[iCpu].u.Hr.LnxTimer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
+             pTimer->aSubTimers[iCpu].u.Hr.LnxTimer.function     = rtTimerLinuxHrCallback;
++#endif
+         }
+         else
+ #endif
+diff -rup VirtualBox-kmod-7.1.8/vboxguest/Makefile-footer.gmk VirtualBox-kmod-7.1.8.new/vboxguest/Makefile-footer.gmk
+--- VirtualBox-kmod-7.1.8/vboxguest/Makefile-footer.gmk	2025-04-14 18:58:30.000000000 +0100
++++ VirtualBox-kmod-7.1.8.new/vboxguest/Makefile-footer.gmk	2025-04-18 21:59:04.329041139 +0100
+@@ -115,6 +115,7 @@ VBOXMOD_EXT := ko
+ 
+ # build defs
+ EXTRA_CFLAGS += $(VBOXMOD_CFLAGS) $(addprefix -I,$(KERN_INCL) $(VBOXMOD_INCL)) $(VBOXMOD_0_KFLAGS) $(KDEBUG)
++ccflags-y += $(EXTRA_CFLAGS)
+ $(VBOXMOD_0_TARGET)-y := $(VBOXMOD_OBJS)
+ obj-m += $(VBOXMOD_0_TARGET).o
+ 
+diff -rup VirtualBox-kmod-7.1.8/vboxnetadp/Makefile-footer.gmk VirtualBox-kmod-7.1.8.new/vboxnetadp/Makefile-footer.gmk
+--- VirtualBox-kmod-7.1.8/vboxnetadp/Makefile-footer.gmk	2025-04-14 18:58:30.000000000 +0100
++++ VirtualBox-kmod-7.1.8.new/vboxnetadp/Makefile-footer.gmk	2025-04-18 21:59:04.329041139 +0100
+@@ -115,6 +115,7 @@ VBOXMOD_EXT := ko
+ 
+ # build defs
+ EXTRA_CFLAGS += $(VBOXMOD_CFLAGS) $(addprefix -I,$(KERN_INCL) $(VBOXMOD_INCL)) $(VBOXMOD_0_KFLAGS) $(KDEBUG)
++ccflags-y += $(EXTRA_CFLAGS)
+ $(VBOXMOD_0_TARGET)-y := $(VBOXMOD_OBJS)
+ obj-m += $(VBOXMOD_0_TARGET).o
+ 
+diff -rup VirtualBox-kmod-7.1.8/vboxnetflt/Makefile-footer.gmk VirtualBox-kmod-7.1.8.new/vboxnetflt/Makefile-footer.gmk
+--- VirtualBox-kmod-7.1.8/vboxnetflt/Makefile-footer.gmk	2025-04-14 18:58:30.000000000 +0100
++++ VirtualBox-kmod-7.1.8.new/vboxnetflt/Makefile-footer.gmk	2025-04-18 21:59:04.329041139 +0100
+@@ -115,6 +115,7 @@ VBOXMOD_EXT := ko
+ 
+ # build defs
+ EXTRA_CFLAGS += $(VBOXMOD_CFLAGS) $(addprefix -I,$(KERN_INCL) $(VBOXMOD_INCL)) $(VBOXMOD_0_KFLAGS) $(KDEBUG)
++ccflags-y += $(EXTRA_CFLAGS)
+ $(VBOXMOD_0_TARGET)-y := $(VBOXMOD_OBJS)
+ obj-m += $(VBOXMOD_0_TARGET).o
+ 
+diff -rup VirtualBox-kmod-7.1.8/vboxsf/Makefile-footer.gmk VirtualBox-kmod-7.1.8.new/vboxsf/Makefile-footer.gmk
+--- VirtualBox-kmod-7.1.8/vboxsf/Makefile-footer.gmk	2025-04-14 18:58:30.000000000 +0100
++++ VirtualBox-kmod-7.1.8.new/vboxsf/Makefile-footer.gmk	2025-04-18 21:59:04.329041139 +0100
+@@ -115,6 +115,7 @@ VBOXMOD_EXT := ko
+ 
+ # build defs
+ EXTRA_CFLAGS += $(VBOXMOD_CFLAGS) $(addprefix -I,$(KERN_INCL) $(VBOXMOD_INCL)) $(VBOXMOD_0_KFLAGS) $(KDEBUG)
++ccflags-y += $(EXTRA_CFLAGS)
+ $(VBOXMOD_0_TARGET)-y := $(VBOXMOD_OBJS)
+ obj-m += $(VBOXMOD_0_TARGET).o
+ 
+diff -rup VirtualBox-kmod-7.1.8/vboxvideo/Makefile-footer.gmk VirtualBox-kmod-7.1.8.new/vboxvideo/Makefile-footer.gmk
+--- VirtualBox-kmod-7.1.8/vboxvideo/Makefile-footer.gmk	2025-04-16 00:56:49.000000000 +0100
++++ VirtualBox-kmod-7.1.8.new/vboxvideo/Makefile-footer.gmk	2025-04-18 22:01:24.201192383 +0100
+@@ -115,6 +115,7 @@ VBOXMOD_EXT := ko
+ 
+ # build defs
+ EXTRA_CFLAGS += $(VBOXMOD_CFLAGS) $(addprefix -I,$(KERN_INCL) $(VBOXMOD_INCL)) $(VBOXMOD_0_KFLAGS) $(KDEBUG)
++ccflags-y += $(EXTRA_CFLAGS)
+ $(VBOXMOD_0_TARGET)-y := $(VBOXMOD_OBJS)
+ obj-m += $(VBOXMOD_0_TARGET).o
+ 
