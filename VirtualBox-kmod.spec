@@ -39,8 +39,8 @@
 # https://bugzilla.rpmfusion.org/show_bug.cgi?id=6519
 
 Name:           VirtualBox-kmod
-Version:        7.1.8
-Release:        2%{?dist}
+Version:        7.1.10
+Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -48,7 +48,6 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
-Patch1:         linux-6.15.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc = %{version} xz time elfutils-libelf-devel gcc
@@ -70,7 +69,7 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
-%patch -P1 -p1
+#%%patch -P1 -p1
 popd
 
 # error out if there was something wrong with kmodtool
@@ -133,6 +132,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 %changelog
+* Fri Jun 06 2025 Sérgio Basto <sergio@serjux.com> - 7.1.10-1
+- Update to 7.1.10
+
 * Fri Apr 18 2025 Sérgio Basto <sergio@serjux.com> - 7.1.8-2
 - Fixes for kernel-6.15
 
