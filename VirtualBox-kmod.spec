@@ -40,7 +40,7 @@
 
 Name:           VirtualBox-kmod
 Version:        7.1.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -132,6 +132,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 %changelog
+* Sat Jul 26 2025 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 7.1.10-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_43_Mass_Rebuild
+
 * Fri Jun 06 2025 Sérgio Basto <sergio@serjux.com> - 7.1.10-1
 - Update to 7.1.10
 
