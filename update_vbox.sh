@@ -1,7 +1,7 @@
-VERSION=7.1.12
+VERSION=7.2.0
 REL=1
-RAWHIDE=43
-REPOS="f42 f41 el9"
+RAWHIDE=44
+REPOS="f43 f42 f41 el9"
 
 if [ -z "$1" ]
 then
