@@ -39,6 +39,7 @@ echo STAGE 2
 BRANCH1=f$RAWHIDE
 BRANCH2=fc$RAWHIDE
 echo "koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2"
+echo "git checkout master && rfpkg push"
 echo "koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 && "
 echo "git checkout master && rfpkg build --nowait "
 echo Press enter tag-build rawhide to continue or n to skip; read dummy;
@@ -60,6 +61,7 @@ if [[ $repo == f* ]]; then
     BRANCH2=fc${repo:1}
 fi
 echo "koji-rpmfusion tag-build $BRANCH1-free-override VirtualBox-$VERSION-$REL.$BRANCH2"
+echo "git checkout $BRANCH1 && git merge master && git push"
 echo "koji-rpmfusion wait-repo $BRANCH1-free-build --build=VirtualBox-$VERSION-$REL.$BRANCH2 &&"
 echo "git checkout $BRANCH1 && rfpkg build --nowait; git checkout master"
 echo Press enter tag-build $BRANCH1 to continue or n to skip; read dummy;
