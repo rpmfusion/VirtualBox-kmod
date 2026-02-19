@@ -40,7 +40,7 @@
 
 Name:           VirtualBox-kmod
 Version:        7.2.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
@@ -48,6 +48,7 @@ License:        GPLv2 or CDDL
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
+Patch1:         kernel-6.19.patch
 
 
 %global AkmodsBuildRequires %{_bindir}/kmodtool VirtualBox-kmodsrc = %{version} xz time elfutils-libelf-devel gcc
@@ -69,7 +70,7 @@ Kernel module for VirtualBox
 %setup -T -c
 tar --use-compress-program xz -xf %{_datadir}/%{name}-%{version}/%{name}-%{version}.tar.xz
 pushd %{name}-%{version}
-#%%patch -P1 -p1
+%autopatch -p1
 popd
 
 # error out if there was something wrong with kmodtool
@@ -132,6 +133,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 %changelog
+* Wed Feb 18 2026 Sérgio Basto <sergio@serjux.com> - 7.2.6-2
+- Fixes for kernel 4.19
+
 * Fri Jan 30 2026 Sérgio Basto <sergio@serjux.com> - 7.2.6-1
 - Update to 7.2.6
 
