@@ -44,7 +44,7 @@ Release:        2%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
 Summary:        Kernel module for VirtualBox
-License:        GPLv2 or CDDL
+License:        GPL-3.0-only AND (GPL-3.0-only OR CDDL-1.0)
 URL:            http://www.virtualbox.org/wiki/VirtualBox
 # This filters out the XEN kernel, since we don't run on XEN
 Source1:        excludekernel-filter.txt
