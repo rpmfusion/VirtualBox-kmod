@@ -30,7 +30,7 @@
 %global prereltag %{?prerel:_%(awk 'BEGIN {print toupper("%{prerel}")}')}
 
 
-# With commit ad2a3ad54f4ecd07e40a6de590a8b16de5ac34df on Sep 23 2012
+# With commit ad2a3ad54f4ecd07e40a6de590a8b16de5ac34df on Sep 23 2022
 # vboxreltag was made to guarantee one kmodsrc with a minimum releaseversion,
 # but most of the times we may patch the kmodsrc here
 # And we don't need control the releaseversion (if is 6.1.40-1 or 6.1.40-2)
