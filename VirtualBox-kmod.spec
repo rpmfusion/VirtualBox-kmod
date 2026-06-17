@@ -39,7 +39,7 @@
 # https://bugzilla.rpmfusion.org/show_bug.cgi?id=6519
 
 Name:           VirtualBox-kmod
-Version:        7.2.8
+Version:        7.2.10
 Release:        1%{?dist}
 #Release:        1%%{?prerel:.%%{prerel}}%%{?dist}
 
@@ -132,6 +132,9 @@ DIRS=$(ls %{name}-%{version} |wc -l)
 [ $MODS = $DIRS ] || [ $MODS = 0 ]
 
 %changelog
+* Wed Jun 17 2026 Sérgio Basto <sergio@serjux.com> - 7.2.10-1
+- Update to 7.2.10
+
 * Wed Apr 22 2026 Sérgio Basto <sergio@serjux.com> - 7.2.8-1
 - Update to 7.2.8
 
