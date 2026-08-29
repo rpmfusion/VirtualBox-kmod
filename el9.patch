@@ -1,0 +1,448 @@
+diff --git a/src/VBox/Additions/linux/sharedfolders/regops.c b/src/VBox/Additions/linux/sharedfolders/regops.c
+index fa5e935cdf6..f56c4a4ed79 100644
+--- a/vboxsf/regops.c
++++ b/vboxsf/regops.c
+@@ -3257,7 +3257,9 @@ static loff_t vbsf_reg_llseek(struct file *file, loff_t off, int whence)
+  || (defined(CONFIG_SUSE_KERNEL) && RTLNX_VER_MIN(3,0,101) /** @todo figure when exactly */)
+ static int vbsf_reg_fsync(struct file *file, loff_t start, loff_t end, int datasync)
+ {
+-# if RTLNX_VER_MIN(3,16,0)
++# if RTLNX_VER_MIN(7,1,0)
++    return simple_fsync_noflush(file, start, end, datasync);
++# elif RTLNX_VER_MIN(3,16,0)
+     return __generic_file_fsync(file, start, end, datasync);
+ # else
+     return generic_file_fsync(file, start, end, datasync);
+diff --git a/vboxdrv/r0drv/linux/dbgkrnlinfo-r0drv-linux.c b/vboxdrv/r0drv/linux/dbgkrnlinfo-r0drv-linux.c
+index 37f52d5df7e..d33e86207fa 100644
+--- a/vboxdrv/r0drv/linux/dbgkrnlinfo-r0drv-linux.c
++++ b/vboxdrv/r0drv/linux/dbgkrnlinfo-r0drv-linux.c
+@@ -61,12 +61,14 @@
+ #include <iprt/dbg.h>
+ 
+ #include <iprt/asm.h>
++#include <iprt/asm-amd64-x86.h>
+ #include <iprt/assert.h>
+ #include <iprt/ctype.h>
+ #include <iprt/err.h>
+ #include <iprt/file.h>
+ #include <iprt/mem.h>
+ #include <iprt/string.h>
++#include <iprt/thread.h>
+ #include "internal/magics.h"
+ 
+ 
+@@ -86,6 +88,18 @@
+ #endif
+ 
+ 
++#define X86_CPUID_STEXT_FEATURE_EDX_CET_IBT RT_BIT_32(20)
++#ifndef MSR_IA32_S_CET
++# define MSR_IA32_S_CET                     0x6a2
++#endif
++#ifndef MSR_IA32_CET_ENDBR_EN
++# define MSR_IA32_CET_ENDBR_EN              RT_BIT_64(2)
++#endif
++#ifndef MSR_IA32_CET_SUPPRESS
++# define MSR_IA32_CET_SUPPRESS              RT_BIT_64(10)
++#endif
++
++
+ /*********************************************************************************************************************************
+ *   Structures and Typedefs                                                                                                      *
+ *********************************************************************************************************************************/
+@@ -348,7 +362,7 @@ static int rtR0DbgKrnlInfoLnxQuerySymbolKprobe(const char *pszSymbol, void **ppv
+                skips after symbol resolving for register_kprobe(). */
+             uint32_t u32EndBr = 0;
+             __get_kernel_nofault(&u32EndBr, ((u32 *)&pbAddr[-4]), u32, l_fault);
+-#  if RTLNX_VER_MIN(6,15,0)
++#  if RTLNX_VER_MIN(6,15,0) || RTLNX_SUSE_ADLP_MAJ_LNX_PREREQ(6, 12)
+             if (__is_endbr(u32EndBr))
+ #  else
+             if (is_endbr(u32EndBr))
+@@ -577,7 +591,29 @@ RTR0DECL(int) RTR0DbgKrnlInfoQuerySymbol(RTDBGKRNLINFO hKrnlInfo, const char *ps
+     if (!g_pfnKallsymsLookupName)
+         return rtR0DbgKrnlInfoLnxQuerySymbolKprobe(pszSymbol, ppvSymbol);
+ 
+-    if ((*ppvSymbol = (void *)g_pfnKallsymsLookupName(pszSymbol)) != NULL)
++    /*
++     * Note! kallsyms_lookup_name isn't exported, so we have to temporarily disable the
++     *       indirect branch track machinery in order to call it safely.
++     *       (Setting the SUPPRESS bit to 1 probably won't help much here, as
++     *       the call is done via __x86_indirect_thunk_xxx.)
++     */
++    RTTHREADPREEMPTSTATE Preempt = RTTHREADPREEMPTSTATE_INITIALIZER;
++    uint32_t const uLeaves = ASMCpuId_EAX(0);
++    RTThreadPreemptDisable(&Preempt);
++    if (   uLeaves >= 7
++        && RTX86IsValidStdRange(uLeaves)
++        && (ASMCpuIdEx_EDX(7, 0) & X86_CPUID_STEXT_FEATURE_EDX_CET_IBT))
++    {
++        uint64_t const fSupCet = ASMRdMsr(MSR_IA32_S_CET);
++        ASMWrMsr(MSR_IA32_S_CET, fSupCet & ~MSR_IA32_CET_ENDBR_EN);
++        *ppvSymbol = (void *)g_pfnKallsymsLookupName(pszSymbol);
++        ASMWrMsr(MSR_IA32_S_CET, fSupCet);
++    }
++    else
++        *ppvSymbol = (void *)g_pfnKallsymsLookupName(pszSymbol);
++    RTThreadPreemptRestore(&Preempt);
++
++    if (*ppvSymbol != NULL)
+         return VINF_SUCCESS;
+ #endif
+ 
+diff --git a/vboxdrv/r0drv/linux/fileio-r0drv-linux.c b/vboxdrv/r0drv/linux/fileio-r0drv-linux.c
+index 08ce73c4078..d9281f0f91e 100644
+--- a/vboxdrv/r0drv/linux/fileio-r0drv-linux.c
++++ b/vboxdrv/r0drv/linux/fileio-r0drv-linux.c
+@@ -156,7 +156,7 @@ RTDECL(int) RTFileOpen(PRTFILE phFile, const char *pszFilename, uint64_t fOpen)
+          */
+ # if RTLNX_VER_MIN(6,10,0)
+         struct file *pFile = kernel_file_open(&Path, fOpenMode, current_cred());
+-# elif RTLNX_VER_MIN(6,5,0)
++# elif RTLNX_VER_MIN(6,5,0) || RTLNX_RHEL_RANGE(9,8, 9,99)
+         struct file *pFile = kernel_file_open(&Path, fOpenMode, d_inode(Path.dentry), current_cred());
+ # elif RTLNX_VER_MIN(4,19,0)
+         struct file *pFile = open_with_fake_path(&Path, fOpenMode, d_inode(Path.dentry), current_cred());
+diff --git a/vboxdrv/r0drv/linux/initterm-r0drv-linux.c b/vboxdrv/r0drv/linux/initterm-r0drv-linux.c
+index 1f495dbe8fe..91c0db8c350 100644
+--- a/vboxdrv/r0drv/linux/initterm-r0drv-linux.c
++++ b/vboxdrv/r0drv/linux/initterm-r0drv-linux.c
+@@ -46,6 +46,9 @@
+ #include "internal/initterm.h"
+ 
+ 
++#define X86_CPUID_STEXT_FEATURE_EDX_CET_IBT RT_BIT_32(20)
++
++
+ /*********************************************************************************************************************************
+ *   Global Variables                                                                                                             *
+ *********************************************************************************************************************************/
+@@ -60,6 +63,12 @@ static DECLARE_TASK_QUEUE(g_rtR0LnxWorkQueue);
+  * This is a special mm structure used to manage the kernel address space. */
+ struct mm_struct *g_pLnxInitMm = NULL;
+ 
++
++/** Whether CET is supported on this CPU. */
++bool g_fLnxIsCetSupported = false;
++/** Whether CET is enabled. */
++bool g_fLnxIsCetEnabled  = false;
++
+ #if RTLNX_VER_MIN(6,19,0) && (defined(RT_ARCH_AMD64) || defined(RT_ARCH_X86))
+ /** Pointer to __flush_tlb_all kernel symbol. */
+ __typeof__(__flush_tlb_all) *g_pfnLinuxFlushTlbAll;
+@@ -128,6 +137,24 @@ DECLHIDDEN(int) rtR0InitNative(void)
+         rc = VERR_NO_MEMORY;
+ #endif
+ 
++    /*
++     * Support for calling dynamic functions on CET-enabled (control flow
++     * enforcement technology) kernels.
++     */
++    g_fLnxIsCetSupported = false;
++    g_fLnxIsCetEnabled   = false;
++    {
++        uint32_t uLeaves = ASMCpuId_EAX(0);
++        if (   uLeaves >= 7
++            && RTX86IsValidStdRange(uLeaves)
++            && (ASMCpuIdEx_EDX(7, 0) & X86_CPUID_STEXT_FEATURE_EDX_CET_IBT))
++        {
++            uint64_t const fSupCet = ASMRdMsr(MSR_IA32_S_CET);
++            g_fLnxIsCetSupported = true;
++            g_fLnxIsCetEnabled   = RT_BOOL(fSupCet & MSR_IA32_CET_ENDBR_EN);
++        }
++    }
++
+     /*
+      * There are some unexported symbols we want, try get them:
+      *
+diff --git a/vboxdrv/r0drv/linux/memobj-r0drv-linux.c b/vboxdrv/r0drv/linux/memobj-r0drv-linux.c
+index 18751a91f6f..2291b1d0ea5 100644
+--- a/vboxdrv/r0drv/linux/memobj-r0drv-linux.c
++++ b/vboxdrv/r0drv/linux/memobj-r0drv-linux.c
+@@ -2155,7 +2155,7 @@ static void rtR0MemObjLinuxFlushTlbAll(void)
+ {
+ # if RTLNX_VER_MIN(6,19,0)
+     if (RT_LIKELY(RT_VALID_PTR(g_pfnLinuxFlushTlbAll)))
+-        g_pfnLinuxFlushTlbAll();
++        RTLNX_CET_UNSAFE_CALL(g_pfnLinuxFlushTlbAll, g_pfnLinuxFlushTlbAll());
+     else
+     {
+         uint32_t uMax;
+diff --git a/vboxdrv/r0drv/linux/the-linux-kernel.h b/vboxdrv/r0drv/linux/the-linux-kernel.h
+index f863cf51c8d..963c3691810 100644
+--- a/vboxdrv/r0drv/linux/the-linux-kernel.h
++++ b/vboxdrv/r0drv/linux/the-linux-kernel.h
+@@ -516,5 +516,61 @@ extern struct mm_struct *g_pLnxInitMm;
+ extern void (*g_pfnLinuxFlushTlbAll)(void);
+ #endif
+ 
++/*
++ * Support machinery for calling dynamically resolved code.
++ */
++
++/** @def RTLNX_CET_UNSAFE_CALL
++ * Wrapper for calling code that may be missing an ENDBR instruction.
++ *
++ * This will disable preemption and, if necessary, disable ENDBR checks.
++ *
++ * @param a_pfn         The function being called.
++ * @param a_CallExpr    The call expression.
++ */
++#if (defined(RT_ARCH_AMD64) || defined(RT_ARCH_X86)) && defined(CONFIG_X86_CET)
++# define RTLNX_CET_UNSAFE_CALL(a_pfn, a_CallExpr) do { \
++        RTTHREADPREEMPTSTATE Preempt = RTTHREADPREEMPTSTATE_INITIALIZER; \
++        RTThreadPreemptDisable(&Preempt); \
++        if (!g_fLnxIsCetSupported || *(uint32_t const *)(uintptr_t)(a_pfn) == RTLNX_CET_ENDBR) \
++        { \
++            a_CallExpr; \
++        } \
++        else \
++        { \
++            uint64_t const fSupCet = ASMRdMsr(MSR_IA32_S_CET); \
++            ASMWrMsr(MSR_IA32_S_CET, fSupCet & ~MSR_IA32_CET_ENDBR_EN); \
++            a_CallExpr; \
++            ASMWrMsr(MSR_IA32_S_CET, fSupCet); \
++        } \
++        RTThreadPreemptRestore(&Preempt); \
++    } while (0)
++#else
++# define RTLNX_CET_UNSAFE_CALL(a_pfn, a_CallExpr) do { \
++        RTTHREADPREEMPTSTATE Preempt = RTTHREADPREEMPTSTATE_INITIALIZER; \
++        RTThreadPreemptDisable(&Preempt); \
++        a_CallExpr; \
++        RTThreadPreemptRestore(&Preempt); \
++    } while (0)
++#endif
++
++#ifdef RT_ARCH_AMD64
++# define RTLNX_CET_ENDBR                    UINT32_C(0xfa1e0ff3) /* endbr64 */
++#elif defined(RT_ARCH_X86)
++# define RTLNX_CET_ENDBR                    UINT32_C(0xfb1e0ff3) /* endbr32 */
++#endif
++
++#ifndef MSR_IA32_S_CET
++# define MSR_IA32_S_CET                     0x6a2
++#endif
++#ifndef MSR_IA32_CET_ENDBR_EN
++# define MSR_IA32_CET_ENDBR_EN              RT_BIT_64(2)
++#endif
++#ifndef MSR_IA32_CET_SUPPRESS
++# define MSR_IA32_CET_SUPPRESS              RT_BIT_64(10)
++#endif
++
++extern bool g_fLnxIsCetSupported;
++extern bool g_fLnxIsCetEnabled;
+ 
+ #endif /* !IPRT_INCLUDED_SRC_r0drv_linux_the_linux_kernel_h */
+diff --git a/vboxdrv/r0drv/linux/timer-r0drv-linux.c b/vboxdrv/r0drv/linux/timer-r0drv-linux.c
+index 7b2d3ab0c8a..c1a0e8db715 100644
+--- a/vboxdrv/r0drv/linux/timer-r0drv-linux.c
++++ b/vboxdrv/r0drv/linux/timer-r0drv-linux.c
+@@ -748,7 +748,7 @@ static enum hrtimer_restart rtTimerLinuxHrCallback(struct hrtimer *pHrTimer)
+  */
+ static void rtTimerLinuxStdCallback(struct timer_list *pLnxTimer)
+ {
+-# if RTLNX_VER_MIN(6,16,0) || RTLNX_RHEL_RANGE(10,2, 10,99)
++# if RTLNX_VER_MIN(6,16,0) || RTLNX_RHEL_RANGE(9,8, 9,99) || RTLNX_RHEL_RANGE(10,2, 10,99)
+     PRTTIMERLNXSUBTIMER pSubTimer = timer_container_of(pSubTimer, pLnxTimer, u.Std.LnxTimer);
+ # else
+     PRTTIMERLNXSUBTIMER pSubTimer = from_timer(pSubTimer, pLnxTimer, u.Std.LnxTimer);
+diff --git a/vboxdrv/r0drv/linux/the-linux-kernel.h b/vboxdrv/r0drv/linux/the-linux-kernel.h
+index f863cf51c8d..963c3691810 100644
+--- a/vboxsf/r0drv/linux/the-linux-kernel.h
++++ b/vboxsf/r0drv/linux/the-linux-kernel.h
+@@ -516,5 +516,61 @@ extern struct mm_struct *g_pLnxInitMm;
+ extern void (*g_pfnLinuxFlushTlbAll)(void);
+ #endif
+ 
++/*
++ * Support machinery for calling dynamically resolved code.
++ */
++
++/** @def RTLNX_CET_UNSAFE_CALL
++ * Wrapper for calling code that may be missing an ENDBR instruction.
++ *
++ * This will disable preemption and, if necessary, disable ENDBR checks.
++ *
++ * @param a_pfn         The function being called.
++ * @param a_CallExpr    The call expression.
++ */
++#if (defined(RT_ARCH_AMD64) || defined(RT_ARCH_X86)) && defined(CONFIG_X86_CET)
++# define RTLNX_CET_UNSAFE_CALL(a_pfn, a_CallExpr) do { \
++        RTTHREADPREEMPTSTATE Preempt = RTTHREADPREEMPTSTATE_INITIALIZER; \
++        RTThreadPreemptDisable(&Preempt); \
++        if (!g_fLnxIsCetSupported || *(uint32_t const *)(uintptr_t)(a_pfn) == RTLNX_CET_ENDBR) \
++        { \
++            a_CallExpr; \
++        } \
++        else \
++        { \
++            uint64_t const fSupCet = ASMRdMsr(MSR_IA32_S_CET); \
++            ASMWrMsr(MSR_IA32_S_CET, fSupCet & ~MSR_IA32_CET_ENDBR_EN); \
++            a_CallExpr; \
++            ASMWrMsr(MSR_IA32_S_CET, fSupCet); \
++        } \
++        RTThreadPreemptRestore(&Preempt); \
++    } while (0)
++#else
++# define RTLNX_CET_UNSAFE_CALL(a_pfn, a_CallExpr) do { \
++        RTTHREADPREEMPTSTATE Preempt = RTTHREADPREEMPTSTATE_INITIALIZER; \
++        RTThreadPreemptDisable(&Preempt); \
++        a_CallExpr; \
++        RTThreadPreemptRestore(&Preempt); \
++    } while (0)
++#endif
++
++#ifdef RT_ARCH_AMD64
++# define RTLNX_CET_ENDBR                    UINT32_C(0xfa1e0ff3) /* endbr64 */
++#elif defined(RT_ARCH_X86)
++# define RTLNX_CET_ENDBR                    UINT32_C(0xfb1e0ff3) /* endbr32 */
++#endif
++
++#ifndef MSR_IA32_S_CET
++# define MSR_IA32_S_CET                     0x6a2
++#endif
++#ifndef MSR_IA32_CET_ENDBR_EN
++# define MSR_IA32_CET_ENDBR_EN              RT_BIT_64(2)
++#endif
++#ifndef MSR_IA32_CET_SUPPRESS
++# define MSR_IA32_CET_SUPPRESS              RT_BIT_64(10)
++#endif
++
++extern bool g_fLnxIsCetSupported;
++extern bool g_fLnxIsCetEnabled;
+ 
+ #endif /* !IPRT_INCLUDED_SRC_r0drv_linux_the_linux_kernel_h */
+diff --git a/vboxdrv/r0drv/linux/the-linux-kernel.h b/vboxdrv/r0drv/linux/the-linux-kernel.h
+index f863cf51c8d..963c3691810 100644
+--- a/vboxnetflt/r0drv/linux/the-linux-kernel.h
++++ b/vboxnetflt/r0drv/linux/the-linux-kernel.h
+@@ -516,5 +516,61 @@ extern struct mm_struct *g_pLnxInitMm;
+ extern void (*g_pfnLinuxFlushTlbAll)(void);
+ #endif
+ 
++/*
++ * Support machinery for calling dynamically resolved code.
++ */
++
++/** @def RTLNX_CET_UNSAFE_CALL
++ * Wrapper for calling code that may be missing an ENDBR instruction.
++ *
++ * This will disable preemption and, if necessary, disable ENDBR checks.
++ *
++ * @param a_pfn         The function being called.
++ * @param a_CallExpr    The call expression.
++ */
++#if (defined(RT_ARCH_AMD64) || defined(RT_ARCH_X86)) && defined(CONFIG_X86_CET)
++# define RTLNX_CET_UNSAFE_CALL(a_pfn, a_CallExpr) do { \
++        RTTHREADPREEMPTSTATE Preempt = RTTHREADPREEMPTSTATE_INITIALIZER; \
++        RTThreadPreemptDisable(&Preempt); \
++        if (!g_fLnxIsCetSupported || *(uint32_t const *)(uintptr_t)(a_pfn) == RTLNX_CET_ENDBR) \
++        { \
++            a_CallExpr; \
++        } \
++        else \
++        { \
++            uint64_t const fSupCet = ASMRdMsr(MSR_IA32_S_CET); \
++            ASMWrMsr(MSR_IA32_S_CET, fSupCet & ~MSR_IA32_CET_ENDBR_EN); \
++            a_CallExpr; \
++            ASMWrMsr(MSR_IA32_S_CET, fSupCet); \
++        } \
++        RTThreadPreemptRestore(&Preempt); \
++    } while (0)
++#else
++# define RTLNX_CET_UNSAFE_CALL(a_pfn, a_CallExpr) do { \
++        RTTHREADPREEMPTSTATE Preempt = RTTHREADPREEMPTSTATE_INITIALIZER; \
++        RTThreadPreemptDisable(&Preempt); \
++        a_CallExpr; \
++        RTThreadPreemptRestore(&Preempt); \
++    } while (0)
++#endif
++
++#ifdef RT_ARCH_AMD64
++# define RTLNX_CET_ENDBR                    UINT32_C(0xfa1e0ff3) /* endbr64 */
++#elif defined(RT_ARCH_X86)
++# define RTLNX_CET_ENDBR                    UINT32_C(0xfb1e0ff3) /* endbr32 */
++#endif
++
++#ifndef MSR_IA32_S_CET
++# define MSR_IA32_S_CET                     0x6a2
++#endif
++#ifndef MSR_IA32_CET_ENDBR_EN
++# define MSR_IA32_CET_ENDBR_EN              RT_BIT_64(2)
++#endif
++#ifndef MSR_IA32_CET_SUPPRESS
++# define MSR_IA32_CET_SUPPRESS              RT_BIT_64(10)
++#endif
++
++extern bool g_fLnxIsCetSupported;
++extern bool g_fLnxIsCetEnabled;
+ 
+ #endif /* !IPRT_INCLUDED_SRC_r0drv_linux_the_linux_kernel_h */
+diff --git a/vboxdrv/r0drv/linux/the-linux-kernel.h b/vboxdrv/r0drv/linux/the-linux-kernel.h
+index f863cf51c8d..963c3691810 100644
+--- a/vboxnetadp/r0drv/linux/the-linux-kernel.h
++++ b/vboxnetadp/r0drv/linux/the-linux-kernel.h
+@@ -516,5 +516,61 @@ extern struct mm_struct *g_pLnxInitMm;
+ extern void (*g_pfnLinuxFlushTlbAll)(void);
+ #endif
+ 
++/*
++ * Support machinery for calling dynamically resolved code.
++ */
++
++/** @def RTLNX_CET_UNSAFE_CALL
++ * Wrapper for calling code that may be missing an ENDBR instruction.
++ *
++ * This will disable preemption and, if necessary, disable ENDBR checks.
++ *
++ * @param a_pfn         The function being called.
++ * @param a_CallExpr    The call expression.
++ */
++#if (defined(RT_ARCH_AMD64) || defined(RT_ARCH_X86)) && defined(CONFIG_X86_CET)
++# define RTLNX_CET_UNSAFE_CALL(a_pfn, a_CallExpr) do { \
++        RTTHREADPREEMPTSTATE Preempt = RTTHREADPREEMPTSTATE_INITIALIZER; \
++        RTThreadPreemptDisable(&Preempt); \
++        if (!g_fLnxIsCetSupported || *(uint32_t const *)(uintptr_t)(a_pfn) == RTLNX_CET_ENDBR) \
++        { \
++            a_CallExpr; \
++        } \
++        else \
++        { \
++            uint64_t const fSupCet = ASMRdMsr(MSR_IA32_S_CET); \
++            ASMWrMsr(MSR_IA32_S_CET, fSupCet & ~MSR_IA32_CET_ENDBR_EN); \
++            a_CallExpr; \
++            ASMWrMsr(MSR_IA32_S_CET, fSupCet); \
++        } \
++        RTThreadPreemptRestore(&Preempt); \
++    } while (0)
++#else
++# define RTLNX_CET_UNSAFE_CALL(a_pfn, a_CallExpr) do { \
++        RTTHREADPREEMPTSTATE Preempt = RTTHREADPREEMPTSTATE_INITIALIZER; \
++        RTThreadPreemptDisable(&Preempt); \
++        a_CallExpr; \
++        RTThreadPreemptRestore(&Preempt); \
++    } while (0)
++#endif
++
++#ifdef RT_ARCH_AMD64
++# define RTLNX_CET_ENDBR                    UINT32_C(0xfa1e0ff3) /* endbr64 */
++#elif defined(RT_ARCH_X86)
++# define RTLNX_CET_ENDBR                    UINT32_C(0xfb1e0ff3) /* endbr32 */
++#endif
++
++#ifndef MSR_IA32_S_CET
++# define MSR_IA32_S_CET                     0x6a2
++#endif
++#ifndef MSR_IA32_CET_ENDBR_EN
++# define MSR_IA32_CET_ENDBR_EN              RT_BIT_64(2)
++#endif
++#ifndef MSR_IA32_CET_SUPPRESS
++# define MSR_IA32_CET_SUPPRESS              RT_BIT_64(10)
++#endif
++
++extern bool g_fLnxIsCetSupported;
++extern bool g_fLnxIsCetEnabled;
+ 
+ #endif /* !IPRT_INCLUDED_SRC_r0drv_linux_the_linux_kernel_h */
